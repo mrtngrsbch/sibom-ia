@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm uninstall:*)",
+      "Bash(pnpm install:*)",
+      "Bash(xargs kill:*)",
+      "Bash(python3:*)",
+      "Bash(source venv/bin/activate)",
+      "Bash(pip install:*)",
+      "Bash(python sibom_scraper.py:*)",
+      "Bash(for f in *.json)",
+      "Bash(do echo \"=== $f ===\")",
+      "Bash(done)",
+      "Bash(while ps aux)",
+      "Bash(do sleep 5)",
+      "Bash(xargs cat:*)",
+      "Bash(tree:*)"
+    ]
+  }
+}

@@ -54,7 +54,7 @@ JSON2Markdown Converter = https://memochou1993.github.io/json2markdown-converter
 | 60º | 11/04/2023 | 60º de Alberti | [https://sibom.slyt.gba.gob.ar/bulletins/8352](https://sibom.slyt.gba.gob.ar/bulletins/8352) | ✅ Completado |
 | 59º | 01/03/2023 | 59º de Alberti | [https://sibom.slyt.gba.gob.ar/bulletins/8174](https://sibom.slyt.gba.gob.ar/bulletins/8174) | ✅ Completado |
 | 58º | 18/01/2023 | 58º de Alberti | [https://sibom.slyt.gba.gob.ar/bulletins/8128](https://sibom.slyt.gba.gob.ar/bulletins/8128) | ✅ Completado |
-| 57º | 12/10/2018 | 57º de Adolfo Gonzales Chaves | [https://sibom.slyt.gba.gob.ar/bulletins/1490](https://sibom.slyt.gba.gob.ar/bulletins/1490) | ✅ Completado |
+| 57º | 11/01/2023 | 57º de Alberti | [https://sibom.slyt.gba.gob.ar/bulletins/8046](https://sibom.slyt.gba.gob.ar/bulletins/8046) | ✅ Completado |
 | 56º | 12/10/2018 | 56º de Adolfo Gonzales Chaves | [https://sibom.slyt.gba.gob.ar/bulletins/1466](https://sibom.slyt.gba.gob.ar/bulletins/1466) | ✅ Completado |
 | 55º | 08/10/2018 | 55º de Adolfo Gonzales Chaves | [https://sibom.slyt.gba.gob.ar/bulletins/1465](https://sibom.slyt.gba.gob.ar/bulletins/1465) | ✅ Completado |
 | 54º | 08/10/2018 | 54º de Adolfo Gonzales Chaves | [https://sibom.slyt.gba.gob.ar/bulletins/1464](https://sibom.slyt.gba.gob.ar/bulletins/1464) | ✅ Completado |

@@ -788,7 +788,7 @@ Ejemplos de uso:
         table.add_row("Errores", str(errors))
         table.add_row("Sin contenido", str(no_content))
         table.add_row("Tiempo total", f"{elapsed:.1f}s")
-        table.add_row("Tiempo por boletín", f"{elapsed/len(results):.1f}s")
+        table.add_row("Tiempo por boletín", f"{elapsed/len(results):.1f}s" if len(results) > 0 else "N/A")
         table.add_row("Carpeta boletines", "boletines/")
         table.add_row("Resumen consolidado", str(output_path))
 

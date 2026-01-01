@@ -1,7 +1,10 @@
 /**
  * FAQs Cacheadas para el Chatbot Legal
  * Respuestas predefinidas para preguntas frecuentes sobre legislación municipal
+ * Ahora incluye soporte para contenido dinámico actualizable
  */
+
+import { updateFAQWithDynamicContent, isDynamicFAQ } from './dynamic-faq-generator';
 
 export interface CachedFAQ {
   id: string;
@@ -304,9 +307,59 @@ interface ScoredFAQ {
 }
 
 /**
- * Busca FAQs que coincidan con una consulta
+ * Busca FAQs que coincidan con una consulta, incluyendo contenido dinámico
  */
-export function findMatchingFAQs(query: string): CachedFAQ[] {
+export async function findMatchingFAQs(query: string): Promise<CachedFAQ[]> {
+  const queryLower = query.toLowerCase();
+  const queryTerms = queryLower.split(/\s+/);
+  
+  const scoredFAQs: ScoredFAQ[] = await Promise.all(cachedFAQs.map(async faq => {
+    let finalFAQ = faq;
+    
+    // Si el FAQ tiene contenido dinámico, actualizarlo
+    if (isDynamicFAQ(faq.id)) {
+      const dynamicFAQ = await updateFAQWithDynamicContent(faq.id);
+      if (dynamicFAQ) {
+        finalFAQ = dynamicFAQ;
+      }
+    }
+    
+    let score = 0;
+    
+    // Coincidencia exacta en la pregunta
+    if (queryLower === finalFAQ.question.toLowerCase()) {
+      score += 100;
+    }
+    
+    // Coincidencia en palabras clave
+    for (const term of queryTerms) {
+      if (finalFAQ.question.toLowerCase().includes(term)) {
+        score += 20;
+      }
+      for (const keyword of finalFAQ.keywords) {
+        if (keyword.includes(term) || term.includes(keyword)) {
+          score += 15;
+        }
+      }
+    }
+    
+    return { faq: finalFAQ, score };
+  }));
+  
+  // Ordenar por puntuacion y filtrar solo las relevantes
+  scoredFAQs.sort((a, b) => b.score - a.score);
+  
+  return scoredFAQs
+    .filter(item => item.score > 0)
+    .map(item => item.faq)
+    .slice(0, 3);
+}
+
+/**
+ * Versión sincrónica de findMatchingFAQs (para compatibilidad)
+ * Solo busca en FAQs estáticos, sin contenido dinámico
+ */
+export function findMatchingFAQsSync(query: string): CachedFAQ[] {
   const queryLower = query.toLowerCase();
   const queryTerms = queryLower.split(/\s+/);
   
@@ -343,17 +396,41 @@ export function findMatchingFAQs(query: string): CachedFAQ[] {
 }
 
 /**
- * Verifica si una consulta es suficientemente especifica para FAQ
+ * Verifica si una consulta es suficientemente especifica para FAQ (versión async)
  */
-export function isFaqQuery(query: string): boolean {
-  const matching = findMatchingFAQs(query);
+export async function isFaqQuery(query: string): Promise<boolean> {
+  const matching = await findMatchingFAQs(query);
   return matching.length > 0;
 }
 
 /**
- * Obtiene una FAQ especifica por ID
+ * Verifica si una consulta es suficientemente especifica para FAQ (versión sync)
  */
-export function getFAQById(id: string): CachedFAQ | undefined {
+export function isFaqQuerySync(query: string): boolean {
+  const matching = findMatchingFAQsSync(query);
+  return matching.length > 0;
+}
+
+/**
+ * Obtiene una FAQ especifica por ID con contenido dinámico actualizado
+ */
+export async function getFAQById(id: string): Promise<CachedFAQ | undefined> {
+  const baseFAQ = cachedFAQs.find(faq => faq.id === id);
+  if (!baseFAQ) return undefined;
+  
+  // Si el FAQ tiene contenido dinámico, actualizarlo
+  if (isDynamicFAQ(id)) {
+    const dynamicFAQ = await updateFAQWithDynamicContent(id);
+    return dynamicFAQ || baseFAQ;
+  }
+  
+  return baseFAQ;
+}
+
+/**
+ * Obtiene una FAQ especifica por ID (versión sincrónica)
+ */
+export function getFAQByIdSync(id: string): CachedFAQ | undefined {
   return cachedFAQs.find(faq => faq.id === id);
 }
 

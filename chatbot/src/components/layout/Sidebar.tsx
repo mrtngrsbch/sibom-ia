@@ -34,24 +34,66 @@ function formatDate(isoDate: string): string {
 export function Sidebar() {
   const [stats, setStats] = useState<DatabaseStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [lastKnownUpdate, setLastKnownUpdate] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function fetchStats() {
-      try {
-        const response = await fetch('/api/stats');
-        if (response.ok) {
-          const data = await response.json();
-          setStats(data);
-        }
-      } catch (error) {
-        console.error('Error fetching stats:', error);
-      } finally {
-        setLoading(false);
+  // Función para obtener estadísticas
+  const fetchStats = async (invalidateCache = false) => {
+    try {
+      // Si se solicita invalidar cache, llamar al endpoint de refresh primero
+      if (invalidateCache) {
+        await fetch('/api/refresh', { method: 'POST' });
+        console.log('[Sidebar] Cache invalidado');
       }
-    }
 
+      const response = await fetch('/api/stats');
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data);
+        
+        // Si hay nueva fecha de actualización, actualizar
+        if (data.lastUpdated !== lastKnownUpdate) {
+          setLastKnownUpdate(data.lastUpdated);
+          console.log('[Sidebar] Datos actualizados:', {
+            totalDocuments: data.totalDocuments,
+            municipalities: data.municipalities,
+            lastUpdated: data.lastUpdated
+          });
+        }
+      }
+    } catch (error) {
+      console.error('[Sidebar] Error fetching stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Cargar datos iniciales
+  useEffect(() => {
     fetchStats();
   }, []);
+
+  // Polling cada 30 segundos para detectar cambios
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        // Verificar si hay actualizaciones sin invalidar cache
+        const response = await fetch('/api/refresh');
+        if (response.ok) {
+          const data = await response.json();
+          
+          // Si cambió la fecha de actualización, recargar datos invalidando cache
+          if (data.lastUpdated && data.lastUpdated !== lastKnownUpdate) {
+            console.log('[Sidebar] Detectado cambio en índice, recargando...');
+            await fetchStats(true);
+          }
+        }
+      } catch (error) {
+        console.error('[Sidebar] Error en polling:', error);
+      }
+    }, 30000); // Cada 30 segundos
+
+    return () => clearInterval(interval);
+  }, [lastKnownUpdate]);
 
   return (
     <div className="flex flex-col h-full bg-white dark:bg-slate-900">

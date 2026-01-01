@@ -79,10 +79,11 @@ export interface SearchResult {
  * @description Sistema de recuperación de información optimizado con indexación
  */
 
-// Cache en memoria para el índice
+// Cache en memoria para el índice con verificación de cambios
 let indexCache: IndexEntry[] = [];
 let cacheTimestamp: number = 0;
-const CACHE_DURATION = 10 * 60 * 1000; // 10 minutos
+let lastFileModTime: number = 0; // Timestamp del archivo de índice
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutos (solo si el archivo no cambió)
 
 /**
  * Obtiene la ruta base de datos desde env var o usa default
@@ -97,18 +98,51 @@ function getDataBasePath(): string {
 }
 
 /**
- * Carga el índice de documentos
+ * Verifica si el archivo de índice ha cambiado
+ */
+async function hasIndexFileChanged(): Promise<boolean> {
+  const basePath = getDataBasePath();
+  const indexPath = path.join(basePath, 'boletines_index.json');
+  
+  try {
+    const stats = await fs.stat(indexPath);
+    const fileModTime = stats.mtimeMs;
+    
+    // Si es la primera vez o el archivo cambió
+    if (lastFileModTime === 0 || fileModTime > lastFileModTime) {
+      lastFileModTime = fileModTime;
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('[RAG] Error verificando cambios en índice:', error);
+    return false;
+  }
+}
+
+/**
+ * Carga el índice de documentos con detección automática de cambios
  */
 async function loadIndex(): Promise<IndexEntry[]> {
   const now = Date.now();
+  const basePath = getDataBasePath();
+  const indexPath = path.join(basePath, 'boletines_index.json');
+
+  // Verificar si el archivo cambió (detección de actualizaciones)
+  const fileChanged = await hasIndexFileChanged();
   
-  // Usar cache si está vigente
-  if (indexCache.length > 0 && now - cacheTimestamp < CACHE_DURATION) {
+  // Usar cache si:
+  // 1. Tenemos datos en cache
+  // 2. El archivo NO ha cambiado
+  // 3. No ha pasado el tiempo de duración del cache
+  if (indexCache.length > 0 && !fileChanged && now - cacheTimestamp < CACHE_DURATION) {
     return indexCache;
   }
 
-  const basePath = getDataBasePath();
-  const indexPath = path.join(basePath, 'boletines_index.json');
+  // Si el archivo cambió, recargar índice
+  if (fileChanged && indexCache.length > 0) {
+    console.log(`[RAG] 🔄 Detectado cambio en índice - Recargando automáticamente...`);
+  }
 
   try {
     const content = await fs.readFile(indexPath, 'utf-8');
@@ -118,11 +152,11 @@ async function loadIndex(): Promise<IndexEntry[]> {
     cacheTimestamp = now;
     
     if (process.env.NODE_ENV !== 'production') {
-      console.log(`[RAG] Índice cargado: ${indexCache.length} documentos`);
+      console.log(`[RAG] ✅ Índice cargado: ${indexCache.length} documentos`);
     }
     return indexCache;
   } catch (error) {
-    console.error('[RAG] Error cargando índice:', error);
+    console.error('[RAG] ❌ Error cargando índice:', error);
     return [];
   }
 }
@@ -292,9 +326,12 @@ export async function getDatabaseStats() {
 }
 
 /**
- * Fuerza la recarga del cache
+ * Fuerza la recarga del cache en la próxima consulta
+ * @description Invalida tanto el cache de datos como el timestamp de modificación
  */
 export function invalidateCache() {
   indexCache = [];
   cacheTimestamp = 0;
+  lastFileModTime = 0; // Forzar re-verificación del archivo
+  console.log('[RAG] 🔄 Cache invalidado - se recargará en la próxima consulta');
 }

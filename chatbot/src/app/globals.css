@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 255 255 255;
+  --foreground: 15 23 42;
+  --primary: 14 165 233;
+  --primary-foreground: 255 255 255;
+  --muted: 241 245 249;
+  --muted-foreground: 100 116 139;
+  --border: 226 232 240;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: 15 23 42;
+    --foreground: 248 250 252;
+    --primary: 56 189 248;
+    --primary-foreground: 15 23 42;
+    --muted: 30 41 59;
+    --muted-foreground: 148 163 184;
+    --border: 51 65 85;
+  }
+}
+
+body {
+  background-color: rgb(var(--background));
+  color: rgb(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(var(--muted));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--muted-foreground) / 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--muted-foreground) / 0.5);
+}
+
+/* Animaciones suaves */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s ease-out;
+}
+
+/* Markdown styles */
+.prose-legal {
+  @apply text-slate-700 dark:text-slate-300;
+  @apply leading-relaxed;
+}
+
+.prose-legal h1 {
+  @apply text-xl font-bold text-slate-900 dark:text-white mb-4 mt-6;
+}
+
+.prose-legal h2 {
+  @apply text-lg font-semibold text-slate-800 dark:text-slate-100 mb-3 mt-5;
+}
+
+.prose-legal p {
+  @apply mb-3;
+}
+
+.prose-legal a {
+  @apply text-primary-600 hover:text-primary-700 underline;
+}
+
+.prose-legal ul {
+  @apply list-disc list-inside mb-3 ml-4;
+}
+
+.prose-legal ol {
+  @apply list-decimal list-inside mb-3 ml-4;
+}

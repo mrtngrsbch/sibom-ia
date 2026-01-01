@@ -1,4 +1,4 @@
-# SIBOM Scraper Assistant
+# SIBOM IA
 
 Herramienta de extracción de boletines oficiales municipales de SIBOM (Sistema Integrado de Boletines Oficiales Municipales de la Provincia de Buenos Aires).
 

@@ -7,61 +7,6 @@ x|# Observatorio de transparencia municipal de la Provincia de Buenos Aires
 
 | Municipio                           | URL                                      | datos |
 | :---------------------------------- | ---------------------------------------- | ----- |
-| Municipio de Almirante Brown        | https://sibom.slyt.gba.gob.ar/cities/4   | no    |
-| Municipio de Ayacucho               | https://sibom.slyt.gba.gob.ar/cities/7   | no    |
-| Municipio de Azul                   | https://sibom.slyt.gba.gob.ar/cities/8   | no    |
-| Municipio de Berazategui            | https://sibom.slyt.gba.gob.ar/cities/13  | no    |
-| Municipio de Berisso                | https://sibom.slyt.gba.gob.ar/cities/14  | no    |
-| Municipio de Cañuelas               | https://sibom.slyt.gba.gob.ar/cities/19  | no    |
-| Municipio de Carlos Casares         | https://sibom.slyt.gba.gob.ar/cities/21  | no    |
-| Municipio de Colón                  | https://sibom.slyt.gba.gob.ar/cities/25  | no    |
-| Municipio De la Costa               | https://sibom.slyt.gba.gob.ar/cities/34  | no    |
-| Municipio de Ensenada               | https://sibom.slyt.gba.gob.ar/cities/37  | no    |
-| Municipio de Escobar                | https://sibom.slyt.gba.gob.ar/cities/38  | no    |
-| Municipio de Esteban Echeverría     | https://sibom.slyt.gba.gob.ar/cities/39  | no    |
-| Municipio de Ezeiza                 | https://sibom.slyt.gba.gob.ar/cities/41  | no    |
-| Municipio de Florencio Varela       | https://sibom.slyt.gba.gob.ar/cities/42  | no    |
-| Municipio de General Alvarado       | https://sibom.slyt.gba.gob.ar/cities/44  | no    |
-| Municipio de General Las Heras      | https://sibom.slyt.gba.gob.ar/cities/50  | no    |
-| Municipio de General Madariaga      | https://sibom.slyt.gba.gob.ar/cities/52  | no    |
-| Municipio de General Pinto          | https://sibom.slyt.gba.gob.ar/cities/54  | no    |
-| Municipio de General Rodríguez      | https://sibom.slyt.gba.gob.ar/cities/56  | no    |
-| Municipio de Hurlingham             | https://sibom.slyt.gba.gob.ar/cities/62  | no    |
-| Municipio de Ituzaingó              | https://sibom.slyt.gba.gob.ar/cities/63  | no    |
-| Municipio de José C. Paz            | https://sibom.slyt.gba.gob.ar/cities/64  | no    |
-| Municipio de Junín                  | https://sibom.slyt.gba.gob.ar/cities/65  | no    |
-| Municipio de La Plata               | https://sibom.slyt.gba.gob.ar/cities/66  | no    |
-| Municipio de Lanús                  | https://sibom.slyt.gba.gob.ar/cities/67  | no    |
-| Municipio de Laprida                | https://sibom.slyt.gba.gob.ar/cities/68  | no    |
-| Municipio de Las Flores             | https://sibom.slyt.gba.gob.ar/cities/69  | no    |
-| Municipio de Leandro N. Alem        | https://sibom.slyt.gba.gob.ar/cities/70  | no    |
-| Municipio de Lezama                 | https://sibom.slyt.gba.gob.ar/cities/71  | no    |
-| Municipio de Lomas de Zamora        | https://sibom.slyt.gba.gob.ar/cities/75  | no    |
-| Municipio de Maipú                  | https://sibom.slyt.gba.gob.ar/cities/78  | no    |
-| Municipio de Malvinas Argentinas    | https://sibom.slyt.gba.gob.ar/cities/79  | no    |
-| Municipio de Marcos Paz             | https://sibom.slyt.gba.gob.ar/cities/81  | no    |
-| Municipio de Monte                  | https://sibom.slyt.gba.gob.ar/cities/84  | no    |
-| Municipio de Morón                  | https://sibom.slyt.gba.gob.ar/cities/87  | no    |
-| Municipio de Navarro                | https://sibom.slyt.gba.gob.ar/cities/88  | no    |
-| Municipio de Olavarria              | https://sibom.slyt.gba.gob.ar/cities/91  | no    |
-| Municipio de Pehuajó                | https://sibom.slyt.gba.gob.ar/cities/93  | no    |
-| Municipio de Pila                   | https://sibom.slyt.gba.gob.ar/cities/96  | no    |
-| Municipio de Presidente Perón       | https://sibom.slyt.gba.gob.ar/cities/98  | no    |
-| Municipio de Punta Indio            | https://sibom.slyt.gba.gob.ar/cities/100 | no    |
-| Municipio de San Antonio de Areco   | https://sibom.slyt.gba.gob.ar/cities/112 | no    |
-| Municipio de San Cayetano           | https://sibom.slyt.gba.gob.ar/cities/113 | no    |
-| Municipio de San Fernando           | https://sibom.slyt.gba.gob.ar/cities/114 | no    |
-| Municipio de San Isidro             | https://sibom.slyt.gba.gob.ar/cities/115 | no    |
-| Municipio de San Miguel             | https://sibom.slyt.gba.gob.ar/cities/116 | no    |
-| Municipio de San Nicolás            | https://sibom.slyt.gba.gob.ar/cities/117 | no    |
-| Municipio de San Pedro              | https://sibom.slyt.gba.gob.ar/cities/118 | no    |
-| Municipio de San Vicente            | https://sibom.slyt.gba.gob.ar/cities/119 | no    |
-| Municipio de Suipacha               | https://sibom.slyt.gba.gob.ar/cities/120 | no    |
-| Municipio de Tigre                  | https://sibom.slyt.gba.gob.ar/cities/123 | no    |
-| Municipio de Tordillo               | https://sibom.slyt.gba.gob.ar/cities/124 | no    |
-| Municipio de Tres Arroyos           | https://sibom.slyt.gba.gob.ar/cities/127 | no    |
-| Municipio de Villarino              | https://sibom.slyt.gba.gob.ar/cities/133 | no    |
-| Municipio de La Matanza             | https://sibom.slyt.gba.gob.ar/cities/136 | no    |
 | Municipio de Adolfo Alsina          | https://sibom.slyt.gba.gob.ar/cities/1   | yes   |
 | Municipio de Adolfo Gonzales Chaves | https://sibom.slyt.gba.gob.ar/cities/2   | yes   |
 | Municipio de Alberti                | https://sibom.slyt.gba.gob.ar/cities/3   | yes   |
@@ -141,3 +86,58 @@ x|# Observatorio de transparencia municipal de la Provincia de Buenos Aires
 | Municipio de Vicente López          | https://sibom.slyt.gba.gob.ar/cities/131 | yes   |
 | Municipio de Villa Gesell           | https://sibom.slyt.gba.gob.ar/cities/132 | yes   |
 | Municipio de Zárate                 | https://sibom.slyt.gba.gob.ar/cities/134 | yes   |
+| Municipio de Almirante Brown        | https://sibom.slyt.gba.gob.ar/cities/4   | no    |
+| Municipio de Ayacucho               | https://sibom.slyt.gba.gob.ar/cities/7   | no    |
+| Municipio de Azul                   | https://sibom.slyt.gba.gob.ar/cities/8   | no    |
+| Municipio de Berazategui            | https://sibom.slyt.gba.gob.ar/cities/13  | no    |
+| Municipio de Berisso                | https://sibom.slyt.gba.gob.ar/cities/14  | no    |
+| Municipio de Cañuelas               | https://sibom.slyt.gba.gob.ar/cities/19  | no    |
+| Municipio de Carlos Casares         | https://sibom.slyt.gba.gob.ar/cities/21  | no    |
+| Municipio de Colón                  | https://sibom.slyt.gba.gob.ar/cities/25  | no    |
+| Municipio De la Costa               | https://sibom.slyt.gba.gob.ar/cities/34  | no    |
+| Municipio de Ensenada               | https://sibom.slyt.gba.gob.ar/cities/37  | no    |
+| Municipio de Escobar                | https://sibom.slyt.gba.gob.ar/cities/38  | no    |
+| Municipio de Esteban Echeverría     | https://sibom.slyt.gba.gob.ar/cities/39  | no    |
+| Municipio de Ezeiza                 | https://sibom.slyt.gba.gob.ar/cities/41  | no    |
+| Municipio de Florencio Varela       | https://sibom.slyt.gba.gob.ar/cities/42  | no    |
+| Municipio de General Alvarado       | https://sibom.slyt.gba.gob.ar/cities/44  | no    |
+| Municipio de General Las Heras      | https://sibom.slyt.gba.gob.ar/cities/50  | no    |
+| Municipio de General Madariaga      | https://sibom.slyt.gba.gob.ar/cities/52  | no    |
+| Municipio de General Pinto          | https://sibom.slyt.gba.gob.ar/cities/54  | no    |
+| Municipio de General Rodríguez      | https://sibom.slyt.gba.gob.ar/cities/56  | no    |
+| Municipio de Hurlingham             | https://sibom.slyt.gba.gob.ar/cities/62  | no    |
+| Municipio de Ituzaingó              | https://sibom.slyt.gba.gob.ar/cities/63  | no    |
+| Municipio de José C. Paz            | https://sibom.slyt.gba.gob.ar/cities/64  | no    |
+| Municipio de Junín                  | https://sibom.slyt.gba.gob.ar/cities/65  | no    |
+| Municipio de La Plata               | https://sibom.slyt.gba.gob.ar/cities/66  | no    |
+| Municipio de Lanús                  | https://sibom.slyt.gba.gob.ar/cities/67  | no    |
+| Municipio de Laprida                | https://sibom.slyt.gba.gob.ar/cities/68  | no    |
+| Municipio de Las Flores             | https://sibom.slyt.gba.gob.ar/cities/69  | no    |
+| Municipio de Leandro N. Alem        | https://sibom.slyt.gba.gob.ar/cities/70  | no    |
+| Municipio de Lezama                 | https://sibom.slyt.gba.gob.ar/cities/71  | no    |
+| Municipio de Lomas de Zamora        | https://sibom.slyt.gba.gob.ar/cities/75  | no    |
+| Municipio de Maipú                  | https://sibom.slyt.gba.gob.ar/cities/78  | no    |
+| Municipio de Malvinas Argentinas    | https://sibom.slyt.gba.gob.ar/cities/79  | no    |
+| Municipio de Marcos Paz             | https://sibom.slyt.gba.gob.ar/cities/81  | no    |
+| Municipio de Monte                  | https://sibom.slyt.gba.gob.ar/cities/84  | no    |
+| Municipio de Morón                  | https://sibom.slyt.gba.gob.ar/cities/87  | no    |
+| Municipio de Navarro                | https://sibom.slyt.gba.gob.ar/cities/88  | no    |
+| Municipio de Olavarria              | https://sibom.slyt.gba.gob.ar/cities/91  | no    |
+| Municipio de Pehuajó                | https://sibom.slyt.gba.gob.ar/cities/93  | no    |
+| Municipio de Pila                   | https://sibom.slyt.gba.gob.ar/cities/96  | no    |
+| Municipio de Presidente Perón       | https://sibom.slyt.gba.gob.ar/cities/98  | no    |
+| Municipio de Punta Indio            | https://sibom.slyt.gba.gob.ar/cities/100 | no    |
+| Municipio de San Antonio de Areco   | https://sibom.slyt.gba.gob.ar/cities/112 | no    |
+| Municipio de San Cayetano           | https://sibom.slyt.gba.gob.ar/cities/113 | no    |
+| Municipio de San Fernando           | https://sibom.slyt.gba.gob.ar/cities/114 | no    |
+| Municipio de San Isidro             | https://sibom.slyt.gba.gob.ar/cities/115 | no    |
+| Municipio de San Miguel             | https://sibom.slyt.gba.gob.ar/cities/116 | no    |
+| Municipio de San Nicolás            | https://sibom.slyt.gba.gob.ar/cities/117 | no    |
+| Municipio de San Pedro              | https://sibom.slyt.gba.gob.ar/cities/118 | no    |
+| Municipio de San Vicente            | https://sibom.slyt.gba.gob.ar/cities/119 | no    |
+| Municipio de Suipacha               | https://sibom.slyt.gba.gob.ar/cities/120 | no    |
+| Municipio de Tigre                  | https://sibom.slyt.gba.gob.ar/cities/123 | no    |
+| Municipio de Tordillo               | https://sibom.slyt.gba.gob.ar/cities/124 | no    |
+| Municipio de Tres Arroyos           | https://sibom.slyt.gba.gob.ar/cities/127 | no    |
+| Municipio de Villarino              | https://sibom.slyt.gba.gob.ar/cities/133 | no    |
+| Municipio de La Matanza             | https://sibom.slyt.gba.gob.ar/cities/136 | no    |

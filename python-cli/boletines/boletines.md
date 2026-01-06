@@ -5,480 +5,480 @@ JSON2Markdown Converter = https://memochou1993.github.io/json2markdown-converter
 
 | Number | Date | Description | Link | Status |
 |--------|------|-------------|------|--------|
-| 105º | 23/12/2025 | 105º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/14046](https://sibom.slyt.gba.gob.ar/bulletins/14046) | ✅ Completado |
-| 104º | 11/12/2025 | 104º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/14045](https://sibom.slyt.gba.gob.ar/bulletins/14045) | ✅ Completado |
-| 103º | 14/11/2025 | 103º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13865](https://sibom.slyt.gba.gob.ar/bulletins/13865) | ✅ Completado |
-| 102º | 12/11/2025 | 102º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13864](https://sibom.slyt.gba.gob.ar/bulletins/13864) | ✅ Completado |
-| 101º | 15/10/2025 | 101º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13699](https://sibom.slyt.gba.gob.ar/bulletins/13699) | ✅ Completado |
-| 100º | 14/10/2025 | 100º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13696](https://sibom.slyt.gba.gob.ar/bulletins/13696) | ✅ Completado |
-| 99º | 14/10/2025 | 99º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13695](https://sibom.slyt.gba.gob.ar/bulletins/13695) | ✅ Completado |
-| 98º | 13/10/2025 | 98º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13556](https://sibom.slyt.gba.gob.ar/bulletins/13556) | ✅ Completado |
+| 105º | 30/12/2021 | 105º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6301](https://sibom.slyt.gba.gob.ar/bulletins/6301) | ✅ Completado |
+| 104º | 02/12/2021 | 104º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6245](https://sibom.slyt.gba.gob.ar/bulletins/6245) | ✅ Completado |
+| 103º | 24/11/2021 | 103º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6211](https://sibom.slyt.gba.gob.ar/bulletins/6211) | ✅ Completado |
+| 102º | 16/11/2021 | 102º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6172](https://sibom.slyt.gba.gob.ar/bulletins/6172) | ✅ Completado |
+| 101º | 05/11/2021 | 101º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6123](https://sibom.slyt.gba.gob.ar/bulletins/6123) | ✅ Completado |
+| 100º | 26/10/2021 | 100º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6049](https://sibom.slyt.gba.gob.ar/bulletins/6049) | ✅ Completado |
+| 99º | 07/10/2021 | 99º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6039](https://sibom.slyt.gba.gob.ar/bulletins/6039) | ✅ Completado |
+| 98º | 05/10/2021 | 98º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/5986](https://sibom.slyt.gba.gob.ar/bulletins/5986) | ✅ Completado |
 | #13556 | N/A | Boletín 13556 | [https://sibom.slyt.gba.gob.ar/bulletins/13556](https://sibom.slyt.gba.gob.ar/bulletins/13556) | ✅ Completado |
-| 97º | 16/09/2025 | 97º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13516](https://sibom.slyt.gba.gob.ar/bulletins/13516) | ✅ Completado |
-| 96º | 12/09/2025 | 96º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13511](https://sibom.slyt.gba.gob.ar/bulletins/13511) | ✅ Completado |
-| 95º | 12/09/2025 | 95º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13342](https://sibom.slyt.gba.gob.ar/bulletins/13342) | ✅ Completado |
-| 94º | 08/08/2025 | 94º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13276](https://sibom.slyt.gba.gob.ar/bulletins/13276) | ✅ Completado |
-| 93º | 08/08/2025 | 93º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13196](https://sibom.slyt.gba.gob.ar/bulletins/13196) | ✅ Completado |
-| 92º | 16/07/2025 | 92º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13117](https://sibom.slyt.gba.gob.ar/bulletins/13117) | ✅ Completado |
-| 91º | 08/07/2025 | 91º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13086](https://sibom.slyt.gba.gob.ar/bulletins/13086) | ✅ Completado |
-| 90º | 12/06/2025 | 90º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12968](https://sibom.slyt.gba.gob.ar/bulletins/12968) | ✅ Completado |
-| 89º | 12/06/2025 | 89º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12899](https://sibom.slyt.gba.gob.ar/bulletins/12899) | ✅ Completado |
-| 88º | 20/05/2025 | 88º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12816](https://sibom.slyt.gba.gob.ar/bulletins/12816) | ✅ Completado |
-| 87º | 20/05/2025 | 87º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12772](https://sibom.slyt.gba.gob.ar/bulletins/12772) | ✅ Completado |
-| 86º | 07/05/2025 | 86º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12732](https://sibom.slyt.gba.gob.ar/bulletins/12732) | ✅ Completado |
-| 85º | 07/05/2025 | 85º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12731](https://sibom.slyt.gba.gob.ar/bulletins/12731) | ✅ Completado |
-| 84º | 07/05/2025 | 84º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12719](https://sibom.slyt.gba.gob.ar/bulletins/12719) | ✅ Completado |
-| 83º | 21/03/2025 | 83º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12439](https://sibom.slyt.gba.gob.ar/bulletins/12439) | ✅ Completado |
-| 82º | 18/02/2025 | 82º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12116](https://sibom.slyt.gba.gob.ar/bulletins/12116) | ✅ Completado |
-| 81º | 20/01/2025 | 81º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12106](https://sibom.slyt.gba.gob.ar/bulletins/12106) | ✅ Completado |
-| 80º | 23/12/2024 | 80º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11847](https://sibom.slyt.gba.gob.ar/bulletins/11847) | ✅ Completado |
-| 79º | 05/12/2024 | 79º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11816](https://sibom.slyt.gba.gob.ar/bulletins/11816) | ✅ Completado |
-| 78º | 05/12/2024 | 78º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11815](https://sibom.slyt.gba.gob.ar/bulletins/11815) | ✅ Completado |
-| 77º | 05/12/2024 | 77º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11580](https://sibom.slyt.gba.gob.ar/bulletins/11580) | ✅ Completado |
-| 76º | 02/10/2024 | 76º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11465](https://sibom.slyt.gba.gob.ar/bulletins/11465) | ✅ Completado |
-| 75º | 17/09/2024 | 75º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11317](https://sibom.slyt.gba.gob.ar/bulletins/11317) | ✅ Completado |
-| 74º | 05/09/2024 | 74º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11304](https://sibom.slyt.gba.gob.ar/bulletins/11304) | ✅ Completado |
-| 73º | 03/09/2024 | 73º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11205](https://sibom.slyt.gba.gob.ar/bulletins/11205) | ✅ Completado |
-| 72º | 14/08/2024 | 72º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11145](https://sibom.slyt.gba.gob.ar/bulletins/11145) | ✅ Completado |
-| 71º | 14/08/2024 | 71º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11095](https://sibom.slyt.gba.gob.ar/bulletins/11095) | ✅ Completado |
-| 70º | 17/07/2024 | 70º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/10849](https://sibom.slyt.gba.gob.ar/bulletins/10849) | ✅ Completado |
-| 69º | 19/06/2024 | 69º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/10673](https://sibom.slyt.gba.gob.ar/bulletins/10673) | ✅ Completado |
-| 68º | 25/04/2024 | 68º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/10478](https://sibom.slyt.gba.gob.ar/bulletins/10478) | ✅ Completado |
-| 67º | 16/04/2024 | 67º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/10441](https://sibom.slyt.gba.gob.ar/bulletins/10441) | ✅ Completado |
-| 66º | 12/04/2024 | 66º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/10349](https://sibom.slyt.gba.gob.ar/bulletins/10349) | ✅ Completado |
-| 65º | 21/03/2024 | 65º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/10087](https://sibom.slyt.gba.gob.ar/bulletins/10087) | ✅ Completado |
-| 64º | 21/12/2023 | 64º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/9902](https://sibom.slyt.gba.gob.ar/bulletins/9902) | ✅ Completado |
-| 63º | 14/12/2023 | 63º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/9857](https://sibom.slyt.gba.gob.ar/bulletins/9857) | ✅ Completado |
-| 62º | 06/12/2023 | 62º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/9796](https://sibom.slyt.gba.gob.ar/bulletins/9796) | ✅ Completado |
-| 61º | 27/11/2023 | 61º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/9735](https://sibom.slyt.gba.gob.ar/bulletins/9735) | ✅ Completado |
-| 60º | 24/10/2023 | 60º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/9539](https://sibom.slyt.gba.gob.ar/bulletins/9539) | ✅ Completado |
-| 59º | 11/10/2023 | 59º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/9498](https://sibom.slyt.gba.gob.ar/bulletins/9498) | ✅ Completado |
-| 58º | 02/10/2023 | 58º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/9391](https://sibom.slyt.gba.gob.ar/bulletins/9391) | ✅ Completado |
-| 57º | 10/08/2023 | 57º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/9210](https://sibom.slyt.gba.gob.ar/bulletins/9210) | ✅ Completado |
-| 56º | 07/08/2023 | 56º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/9164](https://sibom.slyt.gba.gob.ar/bulletins/9164) | ✅ Completado |
-| 55º | 07/07/2023 | 55º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/8898](https://sibom.slyt.gba.gob.ar/bulletins/8898) | ✅ Completado |
-| 54º | 15/06/2023 | 54º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/8590](https://sibom.slyt.gba.gob.ar/bulletins/8590) | ✅ Completado |
-| 53º | 17/04/2023 | 53º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/8261](https://sibom.slyt.gba.gob.ar/bulletins/8261) | ✅ Completado |
-| 52º | 05/01/2023 | 52º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/8019](https://sibom.slyt.gba.gob.ar/bulletins/8019) | ✅ Completado |
-| 51º | 30/11/2022 | 51º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/7865](https://sibom.slyt.gba.gob.ar/bulletins/7865) | ✅ Completado |
-| 50º | 31/10/2022 | 50º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/7705](https://sibom.slyt.gba.gob.ar/bulletins/7705) | ✅ Completado |
-| 49º | 28/09/2022 | 49º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/7612](https://sibom.slyt.gba.gob.ar/bulletins/7612) | ✅ Completado |
-| 48º | 22/09/2022 | 48º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/7491](https://sibom.slyt.gba.gob.ar/bulletins/7491) | ✅ Completado |
-| 47º | 01/08/2022 | 47º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/7303](https://sibom.slyt.gba.gob.ar/bulletins/7303) | ✅ Completado |
-| 46º | 12/07/2022 | 46º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/7212](https://sibom.slyt.gba.gob.ar/bulletins/7212) | ✅ Completado |
-| 45º | 03/06/2022 | 45º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/7083](https://sibom.slyt.gba.gob.ar/bulletins/7083) | ✅ Completado |
-| 44º | 26/05/2022 | 44º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/6906](https://sibom.slyt.gba.gob.ar/bulletins/6906) | ✅ Completado |
-| 43º | 28/03/2022 | 43º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/6779](https://sibom.slyt.gba.gob.ar/bulletins/6779) | ✅ Completado |
-| 42º | 23/03/2022 | 42º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/6696](https://sibom.slyt.gba.gob.ar/bulletins/6696) | ✅ Completado |
-| 41º | 15/02/2022 | 41º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/6602](https://sibom.slyt.gba.gob.ar/bulletins/6602) | ✅ Completado |
-| 40º | 13/12/2021 | 40º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/6290](https://sibom.slyt.gba.gob.ar/bulletins/6290) | ✅ Completado |
-| 39º | 12/11/2021 | 39º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/6147](https://sibom.slyt.gba.gob.ar/bulletins/6147) | ✅ Completado |
-| 38º | 12/10/2021 | 38º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/6041](https://sibom.slyt.gba.gob.ar/bulletins/6041) | ✅ Completado |
-| 37º | 08/09/2021 | 37º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/5831](https://sibom.slyt.gba.gob.ar/bulletins/5831) | ✅ Completado |
-| 36º | 18/08/2021 | 36º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/5754](https://sibom.slyt.gba.gob.ar/bulletins/5754) | ✅ Completado |
-| 35º | 26/07/2021 | 35º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/5682](https://sibom.slyt.gba.gob.ar/bulletins/5682) | ✅ Completado |
-| 34º | 16/06/2021 | 34º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/5498](https://sibom.slyt.gba.gob.ar/bulletins/5498) | ✅ Completado |
-| 33º | 03/06/2021 | 33º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/5453](https://sibom.slyt.gba.gob.ar/bulletins/5453) | ✅ Completado |
-| 32º | 01/06/2021 | 32º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/5141](https://sibom.slyt.gba.gob.ar/bulletins/5141) | ✅ Completado |
-| 31º | 23/03/2021 | 31º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/5088](https://sibom.slyt.gba.gob.ar/bulletins/5088) | ✅ Completado |
-| 30º | 23/03/2021 | 30º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/5013](https://sibom.slyt.gba.gob.ar/bulletins/5013) | ✅ Completado |
-| 29º | 03/03/2021 | 29º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4890](https://sibom.slyt.gba.gob.ar/bulletins/4890) | ✅ Completado |
-| 28º | 01/02/2021 | 28º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4802](https://sibom.slyt.gba.gob.ar/bulletins/4802) | ✅ Completado |
-| 27º | 15/01/2021 | 27º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4786](https://sibom.slyt.gba.gob.ar/bulletins/4786) | ✅ Completado |
-| 26º | 14/01/2021 | 26º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4760](https://sibom.slyt.gba.gob.ar/bulletins/4760) | ✅ Completado |
-| 25º | 07/01/2021 | 25º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4632](https://sibom.slyt.gba.gob.ar/bulletins/4632) | ✅ Completado |
-| 24º | 15/12/2020 | 24º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4473](https://sibom.slyt.gba.gob.ar/bulletins/4473) | ✅ Completado |
-| 23º | 04/11/2020 | 23º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4347](https://sibom.slyt.gba.gob.ar/bulletins/4347) | ✅ Completado |
-| 22º | 13/10/2020 | 22º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4316](https://sibom.slyt.gba.gob.ar/bulletins/4316) | ✅ Completado |
-| 21º | 06/10/2020 | 21º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4229](https://sibom.slyt.gba.gob.ar/bulletins/4229) | ✅ Completado |
-| 20º | 16/09/2020 | 20º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4192](https://sibom.slyt.gba.gob.ar/bulletins/4192) | ✅ Completado |
-| 19º | 09/09/2020 | 19º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4100](https://sibom.slyt.gba.gob.ar/bulletins/4100) | ✅ Completado |
-| 18º | 24/08/2020 | 18º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4051](https://sibom.slyt.gba.gob.ar/bulletins/4051) | ✅ Completado |
-| 17º | 11/08/2020 | 17º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/3963](https://sibom.slyt.gba.gob.ar/bulletins/3963) | ✅ Completado |
-| 16º | 17/07/2020 | 16º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/3866](https://sibom.slyt.gba.gob.ar/bulletins/3866) | ✅ Completado |
-| 15º | 08/01/2020 | 15º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2878](https://sibom.slyt.gba.gob.ar/bulletins/2878) | ✅ Completado |
-| 14º | 11/11/2019 | 14º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2758](https://sibom.slyt.gba.gob.ar/bulletins/2758) | ✅ Completado |
-| 13º | 08/10/2019 | 13º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2636](https://sibom.slyt.gba.gob.ar/bulletins/2636) | ✅ Completado |
-| 12º | 29/08/2019 | 12º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2496](https://sibom.slyt.gba.gob.ar/bulletins/2496) | ✅ Completado |
-| 11º | 19/07/2019 | 11º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2431](https://sibom.slyt.gba.gob.ar/bulletins/2431) | ✅ Completado |
-| 10º | 01/07/2019 | 10º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2383](https://sibom.slyt.gba.gob.ar/bulletins/2383) | ✅ Completado |
-| 9º | 12/06/2019 | 9º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2221](https://sibom.slyt.gba.gob.ar/bulletins/2221) | ✅ Completado |
-| 8º | 30/04/2019 | 8º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2150](https://sibom.slyt.gba.gob.ar/bulletins/2150) | ✅ Completado |
-| 7º | 18/04/2019 | 7º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2081](https://sibom.slyt.gba.gob.ar/bulletins/2081) | ✅ Completado |
-| 6º | 29/03/2019 | 6º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2036](https://sibom.slyt.gba.gob.ar/bulletins/2036) | ✅ Completado |
-| 5º | 18/03/2019 | 5º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/1795](https://sibom.slyt.gba.gob.ar/bulletins/1795) | ✅ Completado |
-| 4º | 02/01/2019 | 4º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/1672](https://sibom.slyt.gba.gob.ar/bulletins/1672) | ✅ Completado |
-| 3º | 03/12/2018 | 3º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/1564](https://sibom.slyt.gba.gob.ar/bulletins/1564) | ✅ Completado |
-| 2º | 31/10/2018 | 2º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/1479](https://sibom.slyt.gba.gob.ar/bulletins/1479) | ✅ Completado |
-| 1º | 08/10/2018 | 1º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/1213](https://sibom.slyt.gba.gob.ar/bulletins/1213) | ✅ Completado |
-| 108º | 30/12/2025 | 108º de Adolfo Alsina | [https://sibom.slyt.gba.gob.ar/bulletins/14089](https://sibom.slyt.gba.gob.ar/bulletins/14089) | ✅ Completado |
-| 107º | 30/04/2025 | 107º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12698](https://sibom.slyt.gba.gob.ar/bulletins/12698) | ✅ Completado |
-| 106º | 29/04/2025 | 106º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12684](https://sibom.slyt.gba.gob.ar/bulletins/12684) | ✅ Completado |
-| 274º | 22/11/2022 | 274º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7848](https://sibom.slyt.gba.gob.ar/bulletins/7848) | ✅ Completado |
-| 273º | 27/10/2022 | 273º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7742](https://sibom.slyt.gba.gob.ar/bulletins/7742) | ✅ Completado |
-| 272º | 14/10/2022 | 272º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7688](https://sibom.slyt.gba.gob.ar/bulletins/7688) | ✅ Completado |
-| 271º | 03/10/2022 | 271º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7649](https://sibom.slyt.gba.gob.ar/bulletins/7649) | ✅ Completado |
-| 270º | 29/09/2022 | 270º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7630](https://sibom.slyt.gba.gob.ar/bulletins/7630) | ✅ Completado |
-| 269º | 21/09/2022 | 269º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7605](https://sibom.slyt.gba.gob.ar/bulletins/7605) | ✅ Completado |
-| 268º | 20/09/2022 | 268º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7578](https://sibom.slyt.gba.gob.ar/bulletins/7578) | ✅ Completado |
-| 267º | 13/09/2022 | 267º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7557](https://sibom.slyt.gba.gob.ar/bulletins/7557) | ✅ Completado |
-| 266º | 08/09/2022 | 266º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7529](https://sibom.slyt.gba.gob.ar/bulletins/7529) | ✅ Completado |
-| 265º | 01/09/2022 | 265º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7509](https://sibom.slyt.gba.gob.ar/bulletins/7509) | ✅ Completado |
-| 264º | 26/08/2022 | 264º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7470](https://sibom.slyt.gba.gob.ar/bulletins/7470) | ✅ Completado |
-| 263º | 11/08/2022 | 263º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7402](https://sibom.slyt.gba.gob.ar/bulletins/7402) | ✅ Completado |
-| 262º | 11/08/2022 | 262º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7399](https://sibom.slyt.gba.gob.ar/bulletins/7399) | ✅ Completado |
-| 261º | 19/07/2022 | 261º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7304](https://sibom.slyt.gba.gob.ar/bulletins/7304) | ✅ Completado |
-| 260º | 18/07/2022 | 260º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7297](https://sibom.slyt.gba.gob.ar/bulletins/7297) | ✅ Completado |
-| 259º | 14/07/2022 | 259º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7289](https://sibom.slyt.gba.gob.ar/bulletins/7289) | ✅ Completado |
-| 258º | 04/07/2022 | 258º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7238](https://sibom.slyt.gba.gob.ar/bulletins/7238) | ✅ Completado |
-| 257º | 21/06/2022 | 257º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7185](https://sibom.slyt.gba.gob.ar/bulletins/7185) | ✅ Completado |
-| 256º | 01/06/2022 | 256º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7101](https://sibom.slyt.gba.gob.ar/bulletins/7101) | ✅ Completado |
-| 255º | 31/05/2022 | 255º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7092](https://sibom.slyt.gba.gob.ar/bulletins/7092) | ✅ Completado |
-| 254º | 31/05/2022 | 254º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7091](https://sibom.slyt.gba.gob.ar/bulletins/7091) | ✅ Completado |
-| 253º | 26/05/2022 | 253º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7069](https://sibom.slyt.gba.gob.ar/bulletins/7069) | ✅ Completado |
-| 252º | 20/05/2022 | 252º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7055](https://sibom.slyt.gba.gob.ar/bulletins/7055) | ✅ Completado |
-| 251º | 16/05/2022 | 251º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7034](https://sibom.slyt.gba.gob.ar/bulletins/7034) | ✅ Completado |
-| 250º | 11/05/2022 | 250º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7006](https://sibom.slyt.gba.gob.ar/bulletins/7006) | ✅ Completado |
-| 249º | 10/05/2022 | 249º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6978](https://sibom.slyt.gba.gob.ar/bulletins/6978) | ✅ Completado |
-| 248º | 02/05/2022 | 248º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6963](https://sibom.slyt.gba.gob.ar/bulletins/6963) | ✅ Completado |
-| 247º | 28/04/2022 | 247º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6942](https://sibom.slyt.gba.gob.ar/bulletins/6942) | ✅ Completado |
-| 246º | 26/04/2022 | 246º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6937](https://sibom.slyt.gba.gob.ar/bulletins/6937) | ✅ Completado |
-| 245º | 25/04/2022 | 245º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6934](https://sibom.slyt.gba.gob.ar/bulletins/6934) | ✅ Completado |
-| 244º | 22/04/2022 | 244º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6927](https://sibom.slyt.gba.gob.ar/bulletins/6927) | ✅ Completado |
-| 243º | 21/04/2022 | 243º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6919](https://sibom.slyt.gba.gob.ar/bulletins/6919) | ✅ Completado |
-| 242º | 21/04/2022 | 242º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6914](https://sibom.slyt.gba.gob.ar/bulletins/6914) | ✅ Completado |
-| 241º | 19/04/2022 | 241º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6903](https://sibom.slyt.gba.gob.ar/bulletins/6903) | ✅ Completado |
-| 240º | 13/04/2022 | 240º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6879](https://sibom.slyt.gba.gob.ar/bulletins/6879) | ✅ Completado |
-| 239º | 12/04/2022 | 239º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6871](https://sibom.slyt.gba.gob.ar/bulletins/6871) | ✅ Completado |
-| 238º | 06/04/2022 | 238º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6848](https://sibom.slyt.gba.gob.ar/bulletins/6848) | ✅ Completado |
-| 237º | 04/04/2022 | 237º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6656](https://sibom.slyt.gba.gob.ar/bulletins/6656) | ✅ Completado |
-| 236º | 21/02/2022 | 236º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6649](https://sibom.slyt.gba.gob.ar/bulletins/6649) | ✅ Completado |
-| 235º | 31/01/2022 | 235º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6563](https://sibom.slyt.gba.gob.ar/bulletins/6563) | ✅ Completado |
-| 234º | 27/01/2022 | 234º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6556](https://sibom.slyt.gba.gob.ar/bulletins/6556) | ✅ Completado |
-| 233º | 25/01/2022 | 233º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6543](https://sibom.slyt.gba.gob.ar/bulletins/6543) | ✅ Completado |
-| 232º | 21/01/2022 | 232º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6538](https://sibom.slyt.gba.gob.ar/bulletins/6538) | ✅ Completado |
-| 231º | 20/01/2022 | 231º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6531](https://sibom.slyt.gba.gob.ar/bulletins/6531) | ✅ Completado |
-| 230º | 19/01/2022 | 230º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6521](https://sibom.slyt.gba.gob.ar/bulletins/6521) | ✅ Completado |
-| 229º | 18/01/2022 | 229º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6520](https://sibom.slyt.gba.gob.ar/bulletins/6520) | ✅ Completado |
-| 228º | 04/01/2022 | 228º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6454](https://sibom.slyt.gba.gob.ar/bulletins/6454) | ✅ Completado |
-| 227º | 21/12/2021 | 227º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6364](https://sibom.slyt.gba.gob.ar/bulletins/6364) | ✅ Completado |
-| 226º | 30/11/2021 | 226º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6274](https://sibom.slyt.gba.gob.ar/bulletins/6274) | ✅ Completado |
-| 225º | 26/11/2021 | 225º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6259](https://sibom.slyt.gba.gob.ar/bulletins/6259) | ✅ Completado |
-| 224º | 23/11/2021 | 224º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6235](https://sibom.slyt.gba.gob.ar/bulletins/6235) | ✅ Completado |
-| 223º | 19/11/2021 | 223º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6227](https://sibom.slyt.gba.gob.ar/bulletins/6227) | ✅ Completado |
-| 222º | 17/11/2021 | 222º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6214](https://sibom.slyt.gba.gob.ar/bulletins/6214) | ✅ Completado |
-| 221º | 16/11/2021 | 221º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6208](https://sibom.slyt.gba.gob.ar/bulletins/6208) | ✅ Completado |
-| 220º | 04/11/2021 | 220º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6166](https://sibom.slyt.gba.gob.ar/bulletins/6166) | ✅ Completado |
-| 219º | 02/11/2021 | 219º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6149](https://sibom.slyt.gba.gob.ar/bulletins/6149) | ✅ Completado |
-| 218º | 20/10/2021 | 218º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6099](https://sibom.slyt.gba.gob.ar/bulletins/6099) | ✅ Completado |
-| 217º | 15/10/2021 | 217º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6082](https://sibom.slyt.gba.gob.ar/bulletins/6082) | ✅ Completado |
-| 216º | 15/10/2021 | 216º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6079](https://sibom.slyt.gba.gob.ar/bulletins/6079) | ✅ Completado |
-| 215º | 14/10/2021 | 215º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6070](https://sibom.slyt.gba.gob.ar/bulletins/6070) | ✅ Completado |
-| 214º | 06/10/2021 | 214º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6043](https://sibom.slyt.gba.gob.ar/bulletins/6043) | ✅ Completado |
-| 213º | 05/10/2021 | 213º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6035](https://sibom.slyt.gba.gob.ar/bulletins/6035) | ✅ Completado |
-| 212º | 04/10/2021 | 212º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6029](https://sibom.slyt.gba.gob.ar/bulletins/6029) | ✅ Completado |
-| 211º | 01/10/2021 | 211º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/6025](https://sibom.slyt.gba.gob.ar/bulletins/6025) | ✅ Completado |
-| 210º | 24/09/2021 | 210º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/5999](https://sibom.slyt.gba.gob.ar/bulletins/5999) | ✅ Completado |
-| 209º | 13/09/2021 | 209º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/5959](https://sibom.slyt.gba.gob.ar/bulletins/5959) | ✅ Completado |
-| 208º | 10/09/2021 | 208º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/5953](https://sibom.slyt.gba.gob.ar/bulletins/5953) | ✅ Completado |
-| 207º | 10/09/2021 | 207º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/5952](https://sibom.slyt.gba.gob.ar/bulletins/5952) | ✅ Completado |
-| 206º | 09/09/2021 | 206º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/5945](https://sibom.slyt.gba.gob.ar/bulletins/5945) | ✅ Completado |
-| 205º | 27/08/2021 | 205º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/5880](https://sibom.slyt.gba.gob.ar/bulletins/5880) | ✅ Completado |
-| 204º | 17/08/2021 | 204º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/5822](https://sibom.slyt.gba.gob.ar/bulletins/5822) | ✅ Completado |
-| 203º | 12/08/2021 | 203º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/5801](https://sibom.slyt.gba.gob.ar/bulletins/5801) | ✅ Completado |
-| 202º | 06/08/2021 | 202º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/5774](https://sibom.slyt.gba.gob.ar/bulletins/5774) | ✅ Completado |
-| 201º | 04/08/2021 | 201º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/5763](https://sibom.slyt.gba.gob.ar/bulletins/5763) | ✅ Completado |
-| 200º | 04/08/2021 | 200º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/5762](https://sibom.slyt.gba.gob.ar/bulletins/5762) | ✅ Completado |
-| 199º | 04/08/2021 | 199º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/5678](https://sibom.slyt.gba.gob.ar/bulletins/5678) | ✅ Completado |
-| 198º | 30/12/2025 | 198º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/14184](https://sibom.slyt.gba.gob.ar/bulletins/14184) | ✅ Completado |
-| 197º | 29/12/2025 | 197º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/14176](https://sibom.slyt.gba.gob.ar/bulletins/14176) | ✅ Completado |
-| 196º | 26/12/2025 | 196º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/14164](https://sibom.slyt.gba.gob.ar/bulletins/14164) | ✅ Completado |
-| 195º | 23/12/2025 | 195º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/14146](https://sibom.slyt.gba.gob.ar/bulletins/14146) | ✅ Completado |
-| 194º | 22/12/2025 | 194º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/14140](https://sibom.slyt.gba.gob.ar/bulletins/14140) | ✅ Completado |
-| 193º | 19/12/2025 | 193º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/14124](https://sibom.slyt.gba.gob.ar/bulletins/14124) | ✅ Completado |
-| 192º | 18/12/2025 | 192º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/14109](https://sibom.slyt.gba.gob.ar/bulletins/14109) | ✅ Completado |
-| 191º | 16/12/2025 | 191º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/14088](https://sibom.slyt.gba.gob.ar/bulletins/14088) | ✅ Completado |
-| 190º | 15/12/2025 | 190º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/14068](https://sibom.slyt.gba.gob.ar/bulletins/14068) | ✅ Completado |
-| 189º | 11/12/2025 | 189º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/14054](https://sibom.slyt.gba.gob.ar/bulletins/14054) | ✅ Completado |
-| 188º | 05/12/2025 | 188º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/14026](https://sibom.slyt.gba.gob.ar/bulletins/14026) | ✅ Completado |
-| 187º | 04/12/2025 | 187º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/14019](https://sibom.slyt.gba.gob.ar/bulletins/14019) | ✅ Completado |
-| 186º | 02/12/2025 | 186º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13997](https://sibom.slyt.gba.gob.ar/bulletins/13997) | ✅ Completado |
-| 185º | 01/12/2025 | 185º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13988](https://sibom.slyt.gba.gob.ar/bulletins/13988) | ✅ Completado |
-| 184º | 27/11/2025 | 184º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13967](https://sibom.slyt.gba.gob.ar/bulletins/13967) | ✅ Completado |
-| 183º | 20/11/2025 | 183º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13934](https://sibom.slyt.gba.gob.ar/bulletins/13934) | ✅ Completado |
-| 182º | 19/11/2025 | 182º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13920](https://sibom.slyt.gba.gob.ar/bulletins/13920) | ✅ Completado |
-| 181º | 18/11/2025 | 181º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13913](https://sibom.slyt.gba.gob.ar/bulletins/13913) | ✅ Completado |
-| 180º | 17/11/2025 | 180º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13905](https://sibom.slyt.gba.gob.ar/bulletins/13905) | ✅ Completado |
-| 179º | 14/11/2025 | 179º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13899](https://sibom.slyt.gba.gob.ar/bulletins/13899) | ✅ Completado |
-| 178º | 12/11/2025 | 178º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13873](https://sibom.slyt.gba.gob.ar/bulletins/13873) | ✅ Completado |
-| 177º | 11/11/2025 | 177º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13862](https://sibom.slyt.gba.gob.ar/bulletins/13862) | ✅ Completado |
-| 176º | 09/11/2025 | 176º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13843](https://sibom.slyt.gba.gob.ar/bulletins/13843) | ✅ Completado |
-| 175º | 05/11/2025 | 175º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13826](https://sibom.slyt.gba.gob.ar/bulletins/13826) | ✅ Completado |
-| 174º | 31/10/2025 | 174º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13805](https://sibom.slyt.gba.gob.ar/bulletins/13805) | ✅ Completado |
-| 173º | 29/10/2025 | 173º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13790](https://sibom.slyt.gba.gob.ar/bulletins/13790) | ✅ Completado |
-| 172º | 24/10/2025 | 172º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13761](https://sibom.slyt.gba.gob.ar/bulletins/13761) | ✅ Completado |
-| 171º | 17/10/2025 | 171º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13724](https://sibom.slyt.gba.gob.ar/bulletins/13724) | ✅ Completado |
-| 170º | 16/10/2025 | 170º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13718](https://sibom.slyt.gba.gob.ar/bulletins/13718) | ✅ Completado |
-| 169º | 14/10/2025 | 169º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13702](https://sibom.slyt.gba.gob.ar/bulletins/13702) | ✅ Completado |
-| 168º | 14/10/2025 | 168º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13697](https://sibom.slyt.gba.gob.ar/bulletins/13697) | ✅ Completado |
-| 167º | 09/10/2025 | 167º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13684](https://sibom.slyt.gba.gob.ar/bulletins/13684) | ✅ Completado |
-| 166º | 08/10/2025 | 166º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13673](https://sibom.slyt.gba.gob.ar/bulletins/13673) | ✅ Completado |
-| 165º | 02/10/2025 | 165º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13639](https://sibom.slyt.gba.gob.ar/bulletins/13639) | ✅ Completado |
-| 164º | 24/09/2025 | 164º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13577](https://sibom.slyt.gba.gob.ar/bulletins/13577) | ✅ Completado |
-| 163º | 17/09/2025 | 163º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13539](https://sibom.slyt.gba.gob.ar/bulletins/13539) | ✅ Completado |
-| 162º | 17/09/2025 | 162º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13537](https://sibom.slyt.gba.gob.ar/bulletins/13537) | ✅ Completado |
-| 161º | 11/09/2025 | 161º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13505](https://sibom.slyt.gba.gob.ar/bulletins/13505) | ✅ Completado |
-| 160º | 08/09/2025 | 160º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13483](https://sibom.slyt.gba.gob.ar/bulletins/13483) | ✅ Completado |
-| 159º | 05/09/2025 | 159º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13475](https://sibom.slyt.gba.gob.ar/bulletins/13475) | ✅ Completado |
-| 158º | 03/09/2025 | 158º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13456](https://sibom.slyt.gba.gob.ar/bulletins/13456) | ✅ Completado |
-| 157º | 01/09/2025 | 157º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13434](https://sibom.slyt.gba.gob.ar/bulletins/13434) | ✅ Completado |
-| 156º | 27/08/2025 | 156º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13408](https://sibom.slyt.gba.gob.ar/bulletins/13408) | ✅ Completado |
-| 155º | 26/08/2025 | 155º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13398](https://sibom.slyt.gba.gob.ar/bulletins/13398) | ✅ Completado |
-| 154º | 25/08/2025 | 154º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13389](https://sibom.slyt.gba.gob.ar/bulletins/13389) | ✅ Completado |
-| 153º | 22/08/2025 | 153º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13379](https://sibom.slyt.gba.gob.ar/bulletins/13379) | ✅ Completado |
-| 152º | 21/08/2025 | 152º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13368](https://sibom.slyt.gba.gob.ar/bulletins/13368) | ✅ Completado |
-| 151º | 20/08/2025 | 151º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13350](https://sibom.slyt.gba.gob.ar/bulletins/13350) | ✅ Completado |
-| 150º | 13/08/2025 | 150º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13308](https://sibom.slyt.gba.gob.ar/bulletins/13308) | ✅ Completado |
-| 149º | 12/08/2025 | 149º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13298](https://sibom.slyt.gba.gob.ar/bulletins/13298) | ✅ Completado |
-| 148º | 11/08/2025 | 148º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13285](https://sibom.slyt.gba.gob.ar/bulletins/13285) | ✅ Completado |
-| 147º | 08/08/2025 | 147º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13281](https://sibom.slyt.gba.gob.ar/bulletins/13281) | ✅ Completado |
-| 146º | 08/08/2025 | 146º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13280](https://sibom.slyt.gba.gob.ar/bulletins/13280) | ✅ Completado |
-| 145º | 07/08/2025 | 145º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13271](https://sibom.slyt.gba.gob.ar/bulletins/13271) | ✅ Completado |
-| 144º | 05/08/2025 | 144º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13251](https://sibom.slyt.gba.gob.ar/bulletins/13251) | ✅ Completado |
-| 143º | 31/07/2025 | 143º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13213](https://sibom.slyt.gba.gob.ar/bulletins/13213) | ✅ Completado |
-| 142º | 30/07/2025 | 142º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13208](https://sibom.slyt.gba.gob.ar/bulletins/13208) | ✅ Completado |
-| 141º | 23/07/2025 | 141º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13180](https://sibom.slyt.gba.gob.ar/bulletins/13180) | ✅ Completado |
-| 140º | 22/07/2025 | 140º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13176](https://sibom.slyt.gba.gob.ar/bulletins/13176) | ✅ Completado |
-| 139º | 18/07/2025 | 139º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13162](https://sibom.slyt.gba.gob.ar/bulletins/13162) | ✅ Completado |
-| 138º | 17/07/2025 | 138º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13154](https://sibom.slyt.gba.gob.ar/bulletins/13154) | ✅ Completado |
-| 137º | 14/07/2025 | 137º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13143](https://sibom.slyt.gba.gob.ar/bulletins/13143) | ✅ Completado |
-| 136º | 10/07/2025 | 136º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13127](https://sibom.slyt.gba.gob.ar/bulletins/13127) | ✅ Completado |
-| 135º | 07/07/2025 | 135º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13108](https://sibom.slyt.gba.gob.ar/bulletins/13108) | ✅ Completado |
-| 134º | 03/07/2025 | 134º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13090](https://sibom.slyt.gba.gob.ar/bulletins/13090) | ✅ Completado |
-| 133º | 01/07/2025 | 133º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13070](https://sibom.slyt.gba.gob.ar/bulletins/13070) | ✅ Completado |
-| 132º | 27/06/2025 | 132º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13054](https://sibom.slyt.gba.gob.ar/bulletins/13054) | ✅ Completado |
-| 131º | 23/06/2025 | 131º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13020](https://sibom.slyt.gba.gob.ar/bulletins/13020) | ✅ Completado |
-| 130º | 18/06/2025 | 130º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/13004](https://sibom.slyt.gba.gob.ar/bulletins/13004) | ✅ Completado |
-| 129º | 17/06/2025 | 129º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12995](https://sibom.slyt.gba.gob.ar/bulletins/12995) | ✅ Completado |
-| 128º | 12/06/2025 | 128º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12971](https://sibom.slyt.gba.gob.ar/bulletins/12971) | ✅ Completado |
-| 127º | 11/06/2025 | 127º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12960](https://sibom.slyt.gba.gob.ar/bulletins/12960) | ✅ Completado |
-| 126º | 06/06/2025 | 126º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12938](https://sibom.slyt.gba.gob.ar/bulletins/12938) | ✅ Completado |
-| 125º | 05/06/2025 | 125º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12926](https://sibom.slyt.gba.gob.ar/bulletins/12926) | ✅ Completado |
-| 124º | 04/06/2025 | 124º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12915](https://sibom.slyt.gba.gob.ar/bulletins/12915) | ✅ Completado |
-| 123º | 03/06/2025 | 123º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12905](https://sibom.slyt.gba.gob.ar/bulletins/12905) | ✅ Completado |
-| 122º | 02/06/2025 | 122º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12896](https://sibom.slyt.gba.gob.ar/bulletins/12896) | ✅ Completado |
-| 121º | 29/05/2025 | 121º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12882](https://sibom.slyt.gba.gob.ar/bulletins/12882) | ✅ Completado |
-| 120º | 28/05/2025 | 120º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12870](https://sibom.slyt.gba.gob.ar/bulletins/12870) | ✅ Completado |
-| 119º | 27/05/2025 | 119º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12862](https://sibom.slyt.gba.gob.ar/bulletins/12862) | ✅ Completado |
-| 118º | 26/05/2025 | 118º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12851](https://sibom.slyt.gba.gob.ar/bulletins/12851) | ✅ Completado |
-| 117º | 23/05/2025 | 117º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12836](https://sibom.slyt.gba.gob.ar/bulletins/12836) | ✅ Completado |
-| 116º | 20/05/2025 | 116º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12819](https://sibom.slyt.gba.gob.ar/bulletins/12819) | ✅ Completado |
-| 115º | 19/05/2025 | 115º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12811](https://sibom.slyt.gba.gob.ar/bulletins/12811) | ✅ Completado |
-| 114º | 17/05/2025 | 114º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12799](https://sibom.slyt.gba.gob.ar/bulletins/12799) | ✅ Completado |
-| 113º | 16/05/2025 | 113º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12794](https://sibom.slyt.gba.gob.ar/bulletins/12794) | ✅ Completado |
-| 112º | 15/05/2025 | 112º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12785](https://sibom.slyt.gba.gob.ar/bulletins/12785) | ✅ Completado |
-| 111º | 14/05/2025 | 111º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12770](https://sibom.slyt.gba.gob.ar/bulletins/12770) | ✅ Completado |
-| 110º | 12/05/2025 | 110º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12758](https://sibom.slyt.gba.gob.ar/bulletins/12758) | ✅ Completado |
-| 109º | 08/05/2025 | 109º de Zárate | [https://sibom.slyt.gba.gob.ar/bulletins/12742](https://sibom.slyt.gba.gob.ar/bulletins/12742) | ✅ Completado |
-| 278º | 02/12/2022 | 278º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7905](https://sibom.slyt.gba.gob.ar/bulletins/7905) | ✅ Completado |
-| 277º | 01/12/2022 | 277º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7898](https://sibom.slyt.gba.gob.ar/bulletins/7898) | ✅ Completado |
-| 276º | 30/11/2022 | 276º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7881](https://sibom.slyt.gba.gob.ar/bulletins/7881) | ✅ Completado |
-| 275º | 29/11/2022 | 275º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7875](https://sibom.slyt.gba.gob.ar/bulletins/7875) | ✅ Completado |
-| 473º | 03/02/2023 | 473º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/8084](https://sibom.slyt.gba.gob.ar/bulletins/8084) | ✅ Completado |
-| 472º | 03/01/2023 | 472º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/8077](https://sibom.slyt.gba.gob.ar/bulletins/8077) | ✅ Completado |
-| 471º | 03/01/2023 | 471º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/8058](https://sibom.slyt.gba.gob.ar/bulletins/8058) | ✅ Completado |
-| 470º | 30/12/2022 | 470º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/8057](https://sibom.slyt.gba.gob.ar/bulletins/8057) | ✅ Completado |
-| 469º | 30/12/2022 | 469º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/8056](https://sibom.slyt.gba.gob.ar/bulletins/8056) | ✅ Completado |
-| 468º | 29/12/2022 | 468º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7997](https://sibom.slyt.gba.gob.ar/bulletins/7997) | ✅ Completado |
-| 467º | 21/12/2022 | 467º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7974](https://sibom.slyt.gba.gob.ar/bulletins/7974) | ✅ Completado |
-| 466º | 15/12/2022 | 466º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7872](https://sibom.slyt.gba.gob.ar/bulletins/7872) | ✅ Completado |
-| 465º | 24/11/2022 | 465º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7851](https://sibom.slyt.gba.gob.ar/bulletins/7851) | ✅ Completado |
-| 464º | 22/11/2022 | 464º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7671](https://sibom.slyt.gba.gob.ar/bulletins/7671) | ✅ Completado |
-| 463º | 06/10/2022 | 463º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7667](https://sibom.slyt.gba.gob.ar/bulletins/7667) | ✅ Completado |
-| 462º | 06/10/2022 | 462º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7560](https://sibom.slyt.gba.gob.ar/bulletins/7560) | ✅ Completado |
-| 461º | 13/09/2022 | 461º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7547](https://sibom.slyt.gba.gob.ar/bulletins/7547) | ✅ Completado |
-| 460º | 09/09/2022 | 460º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7539](https://sibom.slyt.gba.gob.ar/bulletins/7539) | ✅ Completado |
-| 459º | 08/09/2022 | 459º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7430](https://sibom.slyt.gba.gob.ar/bulletins/7430) | ✅ Completado |
-| 458º | 17/08/2022 | 458º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7412](https://sibom.slyt.gba.gob.ar/bulletins/7412) | ✅ Completado |
-| 457º | 12/08/2022 | 457º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7358](https://sibom.slyt.gba.gob.ar/bulletins/7358) | ✅ Completado |
-| 456º | 01/08/2022 | 456º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7355](https://sibom.slyt.gba.gob.ar/bulletins/7355) | ✅ Completado |
-| 455º | 29/07/2022 | 455º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7192](https://sibom.slyt.gba.gob.ar/bulletins/7192) | ✅ Completado |
-| 454º | 22/06/2022 | 454º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7191](https://sibom.slyt.gba.gob.ar/bulletins/7191) | ✅ Completado |
-| 453º | 22/06/2022 | 453º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7133](https://sibom.slyt.gba.gob.ar/bulletins/7133) | ✅ Completado |
-| 452º | 08/06/2022 | 452º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7132](https://sibom.slyt.gba.gob.ar/bulletins/7132) | ✅ Completado |
-| 451º | 07/06/2022 | 451º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7127](https://sibom.slyt.gba.gob.ar/bulletins/7127) | ✅ Completado |
-| 450º | 07/06/2022 | 450º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7007](https://sibom.slyt.gba.gob.ar/bulletins/7007) | ✅ Completado |
-| 449º | 11/05/2022 | 449º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/7005](https://sibom.slyt.gba.gob.ar/bulletins/7005) | ✅ Completado |
-| 448º | 10/05/2022 | 448º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6958](https://sibom.slyt.gba.gob.ar/bulletins/6958) | ✅ Completado |
-| 447º | 29/04/2022 | 447º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6956](https://sibom.slyt.gba.gob.ar/bulletins/6956) | ✅ Completado |
-| 446º | 29/04/2022 | 446º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6911](https://sibom.slyt.gba.gob.ar/bulletins/6911) | ✅ Completado |
-| 445º | 20/04/2022 | 445º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6910](https://sibom.slyt.gba.gob.ar/bulletins/6910) | ✅ Completado |
-| 444º | 20/04/2022 | 444º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6724](https://sibom.slyt.gba.gob.ar/bulletins/6724) | ✅ Completado |
-| 443º | 11/03/2022 | 443º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6722](https://sibom.slyt.gba.gob.ar/bulletins/6722) | ✅ Completado |
-| 442º | 11/03/2022 | 442º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6717](https://sibom.slyt.gba.gob.ar/bulletins/6717) | ✅ Completado |
-| 441º | 10/03/2022 | 441º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6716](https://sibom.slyt.gba.gob.ar/bulletins/6716) | ✅ Completado |
-| 440º | 10/03/2022 | 440º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6711](https://sibom.slyt.gba.gob.ar/bulletins/6711) | ✅ Completado |
-| 439º | 09/03/2022 | 439º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6710](https://sibom.slyt.gba.gob.ar/bulletins/6710) | ✅ Completado |
-| 438º | 09/03/2022 | 438º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6706](https://sibom.slyt.gba.gob.ar/bulletins/6706) | ✅ Completado |
-| 437º | 08/03/2022 | 437º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6607](https://sibom.slyt.gba.gob.ar/bulletins/6607) | ✅ Completado |
-| 436º | 08/02/2022 | 436º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6605](https://sibom.slyt.gba.gob.ar/bulletins/6605) | ✅ Completado |
-| 435º | 07/02/2022 | 435º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6600](https://sibom.slyt.gba.gob.ar/bulletins/6600) | ✅ Completado |
-| 434º | 07/02/2022 | 434º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6497](https://sibom.slyt.gba.gob.ar/bulletins/6497) | ✅ Completado |
-| 433º | 12/01/2022 | 433º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6495](https://sibom.slyt.gba.gob.ar/bulletins/6495) | ✅ Completado |
-| 432º | 12/01/2022 | 432º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6464](https://sibom.slyt.gba.gob.ar/bulletins/6464) | ✅ Completado |
-| 431º | 05/01/2022 | 431º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6463](https://sibom.slyt.gba.gob.ar/bulletins/6463) | ✅ Completado |
-| 430º | 05/01/2022 | 430º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6439](https://sibom.slyt.gba.gob.ar/bulletins/6439) | ✅ Completado |
-| 429º | 03/01/2022 | 429º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6436](https://sibom.slyt.gba.gob.ar/bulletins/6436) | ✅ Completado |
-| 428º | 03/01/2022 | 428º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6408](https://sibom.slyt.gba.gob.ar/bulletins/6408) | ✅ Completado |
-| 427º | 28/12/2021 | 427º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6402](https://sibom.slyt.gba.gob.ar/bulletins/6402) | ✅ Completado |
-| 426º | 27/12/2021 | 426º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6398](https://sibom.slyt.gba.gob.ar/bulletins/6398) | ✅ Completado |
-| 425º | 27/12/2021 | 425º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6319](https://sibom.slyt.gba.gob.ar/bulletins/6319) | ✅ Completado |
-| 424º | 09/12/2021 | 424º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6311](https://sibom.slyt.gba.gob.ar/bulletins/6311) | ✅ Completado |
-| 423º | 07/12/2021 | 423º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6310](https://sibom.slyt.gba.gob.ar/bulletins/6310) | ✅ Completado |
-| 422º | 06/12/2021 | 422º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6307](https://sibom.slyt.gba.gob.ar/bulletins/6307) | ✅ Completado |
-| 421º | 06/12/2021 | 421º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6287](https://sibom.slyt.gba.gob.ar/bulletins/6287) | ✅ Completado |
-| 420º | 02/12/2021 | 420º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6279](https://sibom.slyt.gba.gob.ar/bulletins/6279) | ✅ Completado |
-| 419º | 01/12/2021 | 419º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6247](https://sibom.slyt.gba.gob.ar/bulletins/6247) | ✅ Completado |
-| 418º | 23/11/2021 | 418º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6229](https://sibom.slyt.gba.gob.ar/bulletins/6229) | ✅ Completado |
-| 417º | 19/11/2021 | 417º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6195](https://sibom.slyt.gba.gob.ar/bulletins/6195) | ✅ Completado |
-| 416º | 10/11/2021 | 416º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6164](https://sibom.slyt.gba.gob.ar/bulletins/6164) | ✅ Completado |
-| 415º | 04/11/2021 | 415º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6162](https://sibom.slyt.gba.gob.ar/bulletins/6162) | ✅ Completado |
-| 414º | 03/11/2021 | 414º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6159](https://sibom.slyt.gba.gob.ar/bulletins/6159) | ✅ Completado |
-| 413º | 03/11/2021 | 413º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6097](https://sibom.slyt.gba.gob.ar/bulletins/6097) | ✅ Completado |
-| 412º | 19/10/2021 | 412º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6096](https://sibom.slyt.gba.gob.ar/bulletins/6096) | ✅ Completado |
-| 411º | 18/10/2021 | 411º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6092](https://sibom.slyt.gba.gob.ar/bulletins/6092) | ✅ Completado |
-| 410º | 18/10/2021 | 410º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6081](https://sibom.slyt.gba.gob.ar/bulletins/6081) | ✅ Completado |
-| 409º | 15/10/2021 | 409º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6076](https://sibom.slyt.gba.gob.ar/bulletins/6076) | ✅ Completado |
-| 408º | 15/10/2021 | 408º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6075](https://sibom.slyt.gba.gob.ar/bulletins/6075) | ✅ Completado |
-| 407º | 14/10/2021 | 407º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6066](https://sibom.slyt.gba.gob.ar/bulletins/6066) | ✅ Completado |
-| 406º | 13/10/2021 | 406º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6060](https://sibom.slyt.gba.gob.ar/bulletins/6060) | ✅ Completado |
-| 405º | 12/10/2021 | 405º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6020](https://sibom.slyt.gba.gob.ar/bulletins/6020) | ✅ Completado |
-| 404º | 30/09/2021 | 404º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/6019](https://sibom.slyt.gba.gob.ar/bulletins/6019) | ✅ Completado |
-| 403º | 30/09/2021 | 403º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5942](https://sibom.slyt.gba.gob.ar/bulletins/5942) | ✅ Completado |
-| 402º | 09/09/2021 | 402º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5941](https://sibom.slyt.gba.gob.ar/bulletins/5941) | ✅ Completado |
-| 401º | 08/09/2021 | 401º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5936](https://sibom.slyt.gba.gob.ar/bulletins/5936) | ✅ Completado |
-| 400º | 07/09/2021 | 400º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5917](https://sibom.slyt.gba.gob.ar/bulletins/5917) | ✅ Completado |
-| 399º | 06/09/2021 | 399º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5879](https://sibom.slyt.gba.gob.ar/bulletins/5879) | ✅ Completado |
-| 398º | 27/08/2021 | 398º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5865](https://sibom.slyt.gba.gob.ar/bulletins/5865) | ✅ Completado |
-| 397º | 24/08/2021 | 397º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5860](https://sibom.slyt.gba.gob.ar/bulletins/5860) | ✅ Completado |
-| 396º | 20/08/2021 | 396º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5802](https://sibom.slyt.gba.gob.ar/bulletins/5802) | ✅ Completado |
-| 395º | 11/08/2021 | 395º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5800](https://sibom.slyt.gba.gob.ar/bulletins/5800) | ✅ Completado |
-| 394º | 11/08/2021 | 394º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5767](https://sibom.slyt.gba.gob.ar/bulletins/5767) | ✅ Completado |
-| 393º | 04/08/2021 | 393º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5766](https://sibom.slyt.gba.gob.ar/bulletins/5766) | ✅ Completado |
-| 392º | 04/08/2021 | 392º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5764](https://sibom.slyt.gba.gob.ar/bulletins/5764) | ✅ Completado |
-| 391º | 04/08/2021 | 391º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5736](https://sibom.slyt.gba.gob.ar/bulletins/5736) | ✅ Completado |
-| 390º | 28/07/2021 | 390º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5735](https://sibom.slyt.gba.gob.ar/bulletins/5735) | ✅ Completado |
-| 389º | 28/07/2021 | 389º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5706](https://sibom.slyt.gba.gob.ar/bulletins/5706) | ✅ Completado |
-| 388º | 21/07/2021 | 388º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5705](https://sibom.slyt.gba.gob.ar/bulletins/5705) | ✅ Completado |
-| 387º | 19/07/2021 | 387º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5692](https://sibom.slyt.gba.gob.ar/bulletins/5692) | ✅ Completado |
-| 386º | 19/07/2021 | 386º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5609](https://sibom.slyt.gba.gob.ar/bulletins/5609) | ✅ Completado |
-| 385º | 02/07/2021 | 385º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5608](https://sibom.slyt.gba.gob.ar/bulletins/5608) | ✅ Completado |
-| 384º | 02/07/2021 | 384º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5595](https://sibom.slyt.gba.gob.ar/bulletins/5595) | ✅ Completado |
-| 383º | 01/07/2021 | 383º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5590](https://sibom.slyt.gba.gob.ar/bulletins/5590) | ✅ Completado |
-| 382º | 30/06/2021 | 382º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5589](https://sibom.slyt.gba.gob.ar/bulletins/5589) | ✅ Completado |
-| 381º | 30/06/2021 | 381º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5417](https://sibom.slyt.gba.gob.ar/bulletins/5417) | ✅ Completado |
-| 380º | 26/05/2021 | 380º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5414](https://sibom.slyt.gba.gob.ar/bulletins/5414) | ✅ Completado |
-| 379º | 26/05/2021 | 379º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5411](https://sibom.slyt.gba.gob.ar/bulletins/5411) | ✅ Completado |
-| 378º | 21/05/2021 | 378º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5405](https://sibom.slyt.gba.gob.ar/bulletins/5405) | ✅ Completado |
-| 377º | 21/05/2021 | 377º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5395](https://sibom.slyt.gba.gob.ar/bulletins/5395) | ✅ Completado |
-| 376º | 20/05/2021 | 376º de Quilmes | [https://sibom.slyt.gba.gob.ar/bulletins/5393](https://sibom.slyt.gba.gob.ar/bulletins/5393) | ✅ Completado |
-| 375º | 30/12/2025 | 375º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/14134](https://sibom.slyt.gba.gob.ar/bulletins/14134) | ✅ Completado |
-| 374º | 17/11/2025 | 374º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/13735](https://sibom.slyt.gba.gob.ar/bulletins/13735) | ✅ Completado |
-| 373º | 22/09/2025 | 373º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/13380](https://sibom.slyt.gba.gob.ar/bulletins/13380) | ✅ Completado |
-| 372º | 11/02/2025 | 372º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/12246](https://sibom.slyt.gba.gob.ar/bulletins/12246) | ✅ Completado |
-| 371º | 30/12/2024 | 371º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/11969](https://sibom.slyt.gba.gob.ar/bulletins/11969) | ✅ Completado |
-| 370º | 18/12/2024 | 370º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/11733](https://sibom.slyt.gba.gob.ar/bulletins/11733) | ✅ Completado |
-| 369º | 13/11/2024 | 369º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/11387](https://sibom.slyt.gba.gob.ar/bulletins/11387) | ✅ Completado |
-| 368º | 11/09/2024 | 368º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/11306](https://sibom.slyt.gba.gob.ar/bulletins/11306) | ✅ Completado |
-| 367º | 30/08/2024 | 367º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/11263](https://sibom.slyt.gba.gob.ar/bulletins/11263) | ✅ Completado |
-| 366º | 29/08/2024 | 366º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/11241](https://sibom.slyt.gba.gob.ar/bulletins/11241) | ✅ Completado |
-| 365º | 22/07/2024 | 365º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/11007](https://sibom.slyt.gba.gob.ar/bulletins/11007) | ✅ Completado |
-| 364º | 22/07/2024 | 364º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/11006](https://sibom.slyt.gba.gob.ar/bulletins/11006) | ✅ Completado |
-| 363º | 22/07/2024 | 363º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/11004](https://sibom.slyt.gba.gob.ar/bulletins/11004) | ✅ Completado |
-| 362º | 05/07/2024 | 362º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10925](https://sibom.slyt.gba.gob.ar/bulletins/10925) | ✅ Completado |
-| 361º | 04/07/2024 | 361º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10921](https://sibom.slyt.gba.gob.ar/bulletins/10921) | ✅ Completado |
-| 360º | 04/07/2024 | 360º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10918](https://sibom.slyt.gba.gob.ar/bulletins/10918) | ✅ Completado |
-| 359º | 04/07/2024 | 359º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10916](https://sibom.slyt.gba.gob.ar/bulletins/10916) | ✅ Completado |
-| 358º | 14/06/2024 | 358º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10825](https://sibom.slyt.gba.gob.ar/bulletins/10825) | ✅ Completado |
-| 357º | 14/06/2024 | 357º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10822](https://sibom.slyt.gba.gob.ar/bulletins/10822) | ✅ Completado |
-| 356º | 14/06/2024 | 356º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10821](https://sibom.slyt.gba.gob.ar/bulletins/10821) | ✅ Completado |
-| 355º | 31/05/2024 | 355º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10751](https://sibom.slyt.gba.gob.ar/bulletins/10751) | ✅ Completado |
-| 354º | 17/05/2024 | 354º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10682](https://sibom.slyt.gba.gob.ar/bulletins/10682) | ✅ Completado |
-| 353º | 17/05/2024 | 353º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10680](https://sibom.slyt.gba.gob.ar/bulletins/10680) | ✅ Completado |
-| 352º | 17/05/2024 | 352º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10677](https://sibom.slyt.gba.gob.ar/bulletins/10677) | ✅ Completado |
-| 351º | 13/05/2024 | 351º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10628](https://sibom.slyt.gba.gob.ar/bulletins/10628) | ✅ Completado |
-| 350º | 09/05/2024 | 350º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10609](https://sibom.slyt.gba.gob.ar/bulletins/10609) | ✅ Completado |
-| 349º | 09/05/2024 | 349º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10608](https://sibom.slyt.gba.gob.ar/bulletins/10608) | ✅ Completado |
-| 348º | 09/05/2024 | 348º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10607](https://sibom.slyt.gba.gob.ar/bulletins/10607) | ✅ Completado |
-| 347º | 23/04/2024 | 347º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10500](https://sibom.slyt.gba.gob.ar/bulletins/10500) | ✅ Completado |
-| 346º | 19/04/2024 | 346º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10482](https://sibom.slyt.gba.gob.ar/bulletins/10482) | ✅ Completado |
-| 345º | 18/04/2024 | 345º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10475](https://sibom.slyt.gba.gob.ar/bulletins/10475) | ✅ Completado |
-| 344º | 18/04/2024 | 344º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10474](https://sibom.slyt.gba.gob.ar/bulletins/10474) | ✅ Completado |
-| 343º | 18/04/2024 | 343º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10473](https://sibom.slyt.gba.gob.ar/bulletins/10473) | ✅ Completado |
-| 342º | 18/04/2024 | 342º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10472](https://sibom.slyt.gba.gob.ar/bulletins/10472) | ✅ Completado |
-| 341º | 18/04/2024 | 341º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10468](https://sibom.slyt.gba.gob.ar/bulletins/10468) | ✅ Completado |
-| 340º | 18/04/2024 | 340º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10465](https://sibom.slyt.gba.gob.ar/bulletins/10465) | ✅ Completado |
-| 339º | 11/04/2024 | 339º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10428](https://sibom.slyt.gba.gob.ar/bulletins/10428) | ✅ Completado |
-| 338º | 25/03/2024 | 338º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10353](https://sibom.slyt.gba.gob.ar/bulletins/10353) | ✅ Completado |
-| 337º | 21/03/2024 | 337º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10333](https://sibom.slyt.gba.gob.ar/bulletins/10333) | ✅ Completado |
-| 336º | 21/03/2024 | 336º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10332](https://sibom.slyt.gba.gob.ar/bulletins/10332) | ✅ Completado |
-| 335º | 20/03/2024 | 335º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10328](https://sibom.slyt.gba.gob.ar/bulletins/10328) | ✅ Completado |
-| 334º | 20/03/2024 | 334º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10327](https://sibom.slyt.gba.gob.ar/bulletins/10327) | ✅ Completado |
-| 333º | 20/03/2024 | 333º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10326](https://sibom.slyt.gba.gob.ar/bulletins/10326) | ✅ Completado |
-| 332º | 19/03/2024 | 332º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10323](https://sibom.slyt.gba.gob.ar/bulletins/10323) | ✅ Completado |
-| 331º | 16/02/2024 | 331º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10195](https://sibom.slyt.gba.gob.ar/bulletins/10195) | ✅ Completado |
-| 330º | 14/02/2024 | 330º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10185](https://sibom.slyt.gba.gob.ar/bulletins/10185) | ✅ Completado |
-| 329º | 16/01/2024 | 329º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/10016](https://sibom.slyt.gba.gob.ar/bulletins/10016) | ✅ Completado |
-| 328º | 01/12/2023 | 328º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9819](https://sibom.slyt.gba.gob.ar/bulletins/9819) | ✅ Completado |
-| 327º | 02/11/2023 | 327º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9641](https://sibom.slyt.gba.gob.ar/bulletins/9641) | ✅ Completado |
-| 326º | 31/10/2023 | 326º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9620](https://sibom.slyt.gba.gob.ar/bulletins/9620) | ✅ Completado |
-| 325º | 31/10/2023 | 325º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9610](https://sibom.slyt.gba.gob.ar/bulletins/9610) | ✅ Completado |
-| 324º | 27/10/2023 | 324º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9607](https://sibom.slyt.gba.gob.ar/bulletins/9607) | ✅ Completado |
-| 323º | 19/10/2023 | 323º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9566](https://sibom.slyt.gba.gob.ar/bulletins/9566) | ✅ Completado |
-| 322º | 19/10/2023 | 322º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9557](https://sibom.slyt.gba.gob.ar/bulletins/9557) | ✅ Completado |
-| 321º | 17/10/2023 | 321º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9540](https://sibom.slyt.gba.gob.ar/bulletins/9540) | ✅ Completado |
-| 320º | 11/10/2023 | 320º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9525](https://sibom.slyt.gba.gob.ar/bulletins/9525) | ✅ Completado |
-| 319º | 02/10/2023 | 319º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9494](https://sibom.slyt.gba.gob.ar/bulletins/9494) | ✅ Completado |
-| 318º | 20/09/2023 | 318º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9438](https://sibom.slyt.gba.gob.ar/bulletins/9438) | ✅ Completado |
-| 317º | 15/09/2023 | 317º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9419](https://sibom.slyt.gba.gob.ar/bulletins/9419) | ✅ Completado |
-| 316º | 14/09/2023 | 316º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9408](https://sibom.slyt.gba.gob.ar/bulletins/9408) | ✅ Completado |
-| 315º | 13/09/2023 | 315º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9398](https://sibom.slyt.gba.gob.ar/bulletins/9398) | ✅ Completado |
-| 314º | 01/09/2023 | 314º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9337](https://sibom.slyt.gba.gob.ar/bulletins/9337) | ✅ Completado |
-| 313º | 29/08/2023 | 313º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9307](https://sibom.slyt.gba.gob.ar/bulletins/9307) | ✅ Completado |
-| 312º | 28/08/2023 | 312º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9304](https://sibom.slyt.gba.gob.ar/bulletins/9304) | ✅ Completado |
-| 311º | 18/08/2023 | 311º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9268](https://sibom.slyt.gba.gob.ar/bulletins/9268) | ✅ Completado |
-| 310º | 02/08/2023 | 310º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9178](https://sibom.slyt.gba.gob.ar/bulletins/9178) | ✅ Completado |
-| 309º | 31/07/2023 | 309º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9161](https://sibom.slyt.gba.gob.ar/bulletins/9161) | ✅ Completado |
-| 308º | 27/07/2023 | 308º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9145](https://sibom.slyt.gba.gob.ar/bulletins/9145) | ✅ Completado |
-| 307º | 21/07/2023 | 307º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9124](https://sibom.slyt.gba.gob.ar/bulletins/9124) | ✅ Completado |
-| 306º | 17/07/2023 | 306º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9097](https://sibom.slyt.gba.gob.ar/bulletins/9097) | ✅ Completado |
-| 305º | 11/07/2023 | 305º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9054](https://sibom.slyt.gba.gob.ar/bulletins/9054) | ✅ Completado |
-| 304º | 05/07/2023 | 304º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/9028](https://sibom.slyt.gba.gob.ar/bulletins/9028) | ✅ Completado |
-| 303º | 29/06/2023 | 303º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8982](https://sibom.slyt.gba.gob.ar/bulletins/8982) | ✅ Completado |
-| 302º | 30/05/2023 | 302º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8799](https://sibom.slyt.gba.gob.ar/bulletins/8799) | ✅ Completado |
-| 301º | 29/05/2023 | 301º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8793](https://sibom.slyt.gba.gob.ar/bulletins/8793) | ✅ Completado |
-| 300º | 24/05/2023 | 300º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8781](https://sibom.slyt.gba.gob.ar/bulletins/8781) | ✅ Completado |
-| 299º | 12/05/2023 | 299º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8719](https://sibom.slyt.gba.gob.ar/bulletins/8719) | ✅ Completado |
-| 298º | 04/05/2023 | 298º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8667](https://sibom.slyt.gba.gob.ar/bulletins/8667) | ✅ Completado |
-| 297º | 03/05/2023 | 297º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8659](https://sibom.slyt.gba.gob.ar/bulletins/8659) | ✅ Completado |
-| 296º | 03/05/2023 | 296º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8650](https://sibom.slyt.gba.gob.ar/bulletins/8650) | ✅ Completado |
-| 295º | 28/04/2023 | 295º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8639](https://sibom.slyt.gba.gob.ar/bulletins/8639) | ✅ Completado |
-| 294º | 27/04/2023 | 294º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8631](https://sibom.slyt.gba.gob.ar/bulletins/8631) | ✅ Completado |
-| 293º | 27/04/2023 | 293º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8629](https://sibom.slyt.gba.gob.ar/bulletins/8629) | ✅ Completado |
-| 292º | 27/04/2023 | 292º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8626](https://sibom.slyt.gba.gob.ar/bulletins/8626) | ✅ Completado |
-| 291º | 13/04/2023 | 291º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8545](https://sibom.slyt.gba.gob.ar/bulletins/8545) | ✅ Completado |
-| 290º | 04/04/2023 | 290º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8505](https://sibom.slyt.gba.gob.ar/bulletins/8505) | ✅ Completado |
-| 289º | 21/03/2023 | 289º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8431](https://sibom.slyt.gba.gob.ar/bulletins/8431) | ✅ Completado |
-| 288º | 20/03/2023 | 288º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8408](https://sibom.slyt.gba.gob.ar/bulletins/8408) | ✅ Completado |
-| 287º | 31/01/2023 | 287º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8223](https://sibom.slyt.gba.gob.ar/bulletins/8223) | ✅ Completado |
-| 286º | 30/01/2023 | 286º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8217](https://sibom.slyt.gba.gob.ar/bulletins/8217) | ✅ Completado |
-| 285º | 27/01/2023 | 285º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8213](https://sibom.slyt.gba.gob.ar/bulletins/8213) | ✅ Completado |
-| 284º | 09/01/2023 | 284º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8113](https://sibom.slyt.gba.gob.ar/bulletins/8113) | ✅ Completado |
-| 283º | 29/12/2022 | 283º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8052](https://sibom.slyt.gba.gob.ar/bulletins/8052) | ✅ Completado |
-| 282º | 28/12/2022 | 282º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8035](https://sibom.slyt.gba.gob.ar/bulletins/8035) | ✅ Completado |
-| 281º | 27/12/2022 | 281º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/8022](https://sibom.slyt.gba.gob.ar/bulletins/8022) | ✅ Completado |
-| 280º | 07/12/2022 | 280º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7936](https://sibom.slyt.gba.gob.ar/bulletins/7936) | ✅ Completado |
-| 279º | 05/12/2022 | 279º de Veinticinco de Mayo | [https://sibom.slyt.gba.gob.ar/bulletins/7916](https://sibom.slyt.gba.gob.ar/bulletins/7916) | ✅ Completado |
+| 97º | 21/09/2021 | 97º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/5891](https://sibom.slyt.gba.gob.ar/bulletins/5891) | ✅ Completado |
+| 96º | 31/08/2021 | 96º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/5890](https://sibom.slyt.gba.gob.ar/bulletins/5890) | ✅ Completado |
+| 95º | 25/08/2021 | 95º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/5734](https://sibom.slyt.gba.gob.ar/bulletins/5734) | ✅ Completado |
+| 94º | 28/07/2021 | 94º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/5715](https://sibom.slyt.gba.gob.ar/bulletins/5715) | ✅ Completado |
+| 93º | 21/07/2021 | 93º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/5568](https://sibom.slyt.gba.gob.ar/bulletins/5568) | ✅ Completado |
+| 92º | 22/06/2021 | 92º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/5556](https://sibom.slyt.gba.gob.ar/bulletins/5556) | ✅ Completado |
+| 91º | 22/06/2021 | 91º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/5446](https://sibom.slyt.gba.gob.ar/bulletins/5446) | ✅ Completado |
+| 90º | 31/05/2021 | 90º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/5441](https://sibom.slyt.gba.gob.ar/bulletins/5441) | ✅ Completado |
+| 89º | 28/05/2021 | 89º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/5416](https://sibom.slyt.gba.gob.ar/bulletins/5416) | ✅ Completado |
+| 88º | 26/05/2021 | 88º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/5343](https://sibom.slyt.gba.gob.ar/bulletins/5343) | ✅ Completado |
+| 87º | 11/05/2021 | 87º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/5283](https://sibom.slyt.gba.gob.ar/bulletins/5283) | ✅ Completado |
+| 86º | 03/05/2021 | 86º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/5122](https://sibom.slyt.gba.gob.ar/bulletins/5122) | ✅ Completado |
+| 85º | 31/03/2021 | 85º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/5011](https://sibom.slyt.gba.gob.ar/bulletins/5011) | ✅ Completado |
+| 84º | 03/03/2021 | 84º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/5007](https://sibom.slyt.gba.gob.ar/bulletins/5007) | ✅ Completado |
+| 83º | 02/03/2021 | 83º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/5005](https://sibom.slyt.gba.gob.ar/bulletins/5005) | ✅ Completado |
+| 82º | 26/02/2021 | 82º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/4827](https://sibom.slyt.gba.gob.ar/bulletins/4827) | ✅ Completado |
+| 81º | 20/01/2021 | 81º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/4825](https://sibom.slyt.gba.gob.ar/bulletins/4825) | ✅ Completado |
+| 80º | 20/01/2021 | 80º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/4771](https://sibom.slyt.gba.gob.ar/bulletins/4771) | ✅ Completado |
+| 79º | 11/01/2021 | 79º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/4769](https://sibom.slyt.gba.gob.ar/bulletins/4769) | ✅ Completado |
+| 78º | 11/01/2021 | 78º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/4621](https://sibom.slyt.gba.gob.ar/bulletins/4621) | ✅ Completado |
+| 77º | 27/11/2020 | 77º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/4568](https://sibom.slyt.gba.gob.ar/bulletins/4568) | ✅ Completado |
+| 76º | 27/11/2020 | 76º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/4434](https://sibom.slyt.gba.gob.ar/bulletins/4434) | ✅ Completado |
+| 75º | 28/10/2020 | 75º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/4160](https://sibom.slyt.gba.gob.ar/bulletins/4160) | ✅ Completado |
+| 74º | 31/08/2020 | 74º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/4037](https://sibom.slyt.gba.gob.ar/bulletins/4037) | ✅ Completado |
+| 73º | 10/08/2020 | 73º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3994](https://sibom.slyt.gba.gob.ar/bulletins/3994) | ✅ Completado |
+| 72º | 30/07/2020 | 72º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3989](https://sibom.slyt.gba.gob.ar/bulletins/3989) | ✅ Completado |
+| 71º | 24/07/2020 | 71º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3903](https://sibom.slyt.gba.gob.ar/bulletins/3903) | ✅ Completado |
+| 70º | 14/07/2020 | 70º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3901](https://sibom.slyt.gba.gob.ar/bulletins/3901) | ✅ Completado |
+| 69º | 13/07/2020 | 69º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3829](https://sibom.slyt.gba.gob.ar/bulletins/3829) | ✅ Completado |
+| 68º | 24/06/2020 | 68º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3783](https://sibom.slyt.gba.gob.ar/bulletins/3783) | ✅ Completado |
+| 67º | 12/06/2020 | 67º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3769](https://sibom.slyt.gba.gob.ar/bulletins/3769) | ✅ Completado |
+| 66º | 11/06/2020 | 66º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3767](https://sibom.slyt.gba.gob.ar/bulletins/3767) | ✅ Completado |
+| 65º | 11/06/2020 | 65º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3708](https://sibom.slyt.gba.gob.ar/bulletins/3708) | ✅ Completado |
+| 64º | 28/05/2020 | 64º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3695](https://sibom.slyt.gba.gob.ar/bulletins/3695) | ✅ Completado |
+| 63º | 27/05/2020 | 63º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3689](https://sibom.slyt.gba.gob.ar/bulletins/3689) | ✅ Completado |
+| 62º | 26/05/2020 | 62º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3670](https://sibom.slyt.gba.gob.ar/bulletins/3670) | ✅ Completado |
+| 61º | 21/05/2020 | 61º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3656](https://sibom.slyt.gba.gob.ar/bulletins/3656) | ✅ Completado |
+| 60º | 18/05/2020 | 60º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3648](https://sibom.slyt.gba.gob.ar/bulletins/3648) | ✅ Completado |
+| 59º | 15/05/2020 | 59º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3627](https://sibom.slyt.gba.gob.ar/bulletins/3627) | ✅ Completado |
+| 58º | 12/05/2020 | 58º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3612](https://sibom.slyt.gba.gob.ar/bulletins/3612) | ✅ Completado |
+| 57º | 11/05/2020 | 57º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3585](https://sibom.slyt.gba.gob.ar/bulletins/3585) | ✅ Completado |
+| 56º | 05/05/2020 | 56º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3570](https://sibom.slyt.gba.gob.ar/bulletins/3570) | ✅ Completado |
+| 55º | 01/05/2020 | 55º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3552](https://sibom.slyt.gba.gob.ar/bulletins/3552) | ✅ Completado |
+| 54º | 27/04/2020 | 54º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3543](https://sibom.slyt.gba.gob.ar/bulletins/3543) | ✅ Completado |
+| 53º | 24/04/2020 | 53º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3347](https://sibom.slyt.gba.gob.ar/bulletins/3347) | ✅ Completado |
+| 52º | 12/03/2020 | 52º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3346](https://sibom.slyt.gba.gob.ar/bulletins/3346) | ✅ Completado |
+| 51º | 10/03/2020 | 51º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3312](https://sibom.slyt.gba.gob.ar/bulletins/3312) | ✅ Completado |
+| 50º | 03/03/2020 | 50º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3184](https://sibom.slyt.gba.gob.ar/bulletins/3184) | ✅ Completado |
+| 49º | 21/01/2020 | 49º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3087](https://sibom.slyt.gba.gob.ar/bulletins/3087) | ✅ Completado |
+| 48º | 23/12/2019 | 48º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/3002](https://sibom.slyt.gba.gob.ar/bulletins/3002) | ✅ Completado |
+| 47º | 09/12/2019 | 47º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2890](https://sibom.slyt.gba.gob.ar/bulletins/2890) | ✅ Completado |
+| 46º | 13/11/2019 | 46º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2810](https://sibom.slyt.gba.gob.ar/bulletins/2810) | ✅ Completado |
+| 45º | 22/10/2019 | 45º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2809](https://sibom.slyt.gba.gob.ar/bulletins/2809) | ✅ Completado |
+| 44º | 22/10/2019 | 44º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2787](https://sibom.slyt.gba.gob.ar/bulletins/2787) | ✅ Completado |
+| 43º | 17/10/2019 | 43º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2705](https://sibom.slyt.gba.gob.ar/bulletins/2705) | ✅ Completado |
+| 42º | 24/09/2019 | 42º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2615](https://sibom.slyt.gba.gob.ar/bulletins/2615) | ✅ Completado |
+| 41º | 21/08/2019 | 41º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2614](https://sibom.slyt.gba.gob.ar/bulletins/2614) | ✅ Completado |
+| 40º | 21/08/2019 | 40º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2549](https://sibom.slyt.gba.gob.ar/bulletins/2549) | ✅ Completado |
+| 39º | 05/08/2019 | 39º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2547](https://sibom.slyt.gba.gob.ar/bulletins/2547) | ✅ Completado |
+| 38º | 02/08/2019 | 38º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2540](https://sibom.slyt.gba.gob.ar/bulletins/2540) | ✅ Completado |
+| 37º | 01/08/2019 | 37º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2510](https://sibom.slyt.gba.gob.ar/bulletins/2510) | ✅ Completado |
+| 36º | 23/07/2019 | 36º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2509](https://sibom.slyt.gba.gob.ar/bulletins/2509) | ✅ Completado |
+| 35º | 23/07/2019 | 35º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2493](https://sibom.slyt.gba.gob.ar/bulletins/2493) | ✅ Completado |
+| 34º | 18/07/2019 | 34º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2482](https://sibom.slyt.gba.gob.ar/bulletins/2482) | ✅ Completado |
+| 33º | 16/07/2019 | 33º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2481](https://sibom.slyt.gba.gob.ar/bulletins/2481) | ✅ Completado |
+| 32º | 16/07/2019 | 32º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2452](https://sibom.slyt.gba.gob.ar/bulletins/2452) | ✅ Completado |
+| 31º | 05/07/2019 | 31º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2444](https://sibom.slyt.gba.gob.ar/bulletins/2444) | ✅ Completado |
+| 30º | 03/07/2019 | 30º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2410](https://sibom.slyt.gba.gob.ar/bulletins/2410) | ✅ Completado |
+| 29º | 21/06/2019 | 29º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2400](https://sibom.slyt.gba.gob.ar/bulletins/2400) | ✅ Completado |
+| 28º | 18/06/2019 | 28º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2399](https://sibom.slyt.gba.gob.ar/bulletins/2399) | ✅ Completado |
+| 27º | 18/06/2019 | 27º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2236](https://sibom.slyt.gba.gob.ar/bulletins/2236) | ✅ Completado |
+| 26º | 09/05/2019 | 26º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/2093](https://sibom.slyt.gba.gob.ar/bulletins/2093) | ✅ Completado |
+| 25º | 03/04/2019 | 25º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/1961](https://sibom.slyt.gba.gob.ar/bulletins/1961) | ✅ Completado |
+| 24º | 18/02/2019 | 24º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/1823](https://sibom.slyt.gba.gob.ar/bulletins/1823) | ✅ Completado |
+| 23º | 08/01/2019 | 23º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/1696](https://sibom.slyt.gba.gob.ar/bulletins/1696) | ✅ Completado |
+| 22º | 06/12/2018 | 22º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/1599](https://sibom.slyt.gba.gob.ar/bulletins/1599) | ✅ Completado |
+| 21º | 06/11/2018 | 21º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/1542](https://sibom.slyt.gba.gob.ar/bulletins/1542) | ✅ Completado |
+| 20º | 25/10/2018 | 20º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/1391](https://sibom.slyt.gba.gob.ar/bulletins/1391) | ✅ Completado |
+| 19º | 21/09/2018 | 19º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/1289](https://sibom.slyt.gba.gob.ar/bulletins/1289) | ✅ Completado |
+| 18º | 27/08/2018 | 18º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/1181](https://sibom.slyt.gba.gob.ar/bulletins/1181) | ✅ Completado |
+| 17º | 26/07/2018 | 17º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/1122](https://sibom.slyt.gba.gob.ar/bulletins/1122) | ✅ Completado |
+| 16º | 06/07/2018 | 16º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/1052](https://sibom.slyt.gba.gob.ar/bulletins/1052) | ✅ Completado |
+| 15º | 12/06/2018 | 15º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/960](https://sibom.slyt.gba.gob.ar/bulletins/960) | ✅ Completado |
+| 14º | 15/05/2018 | 14º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/887](https://sibom.slyt.gba.gob.ar/bulletins/887) | ✅ Completado |
+| 13º | 20/04/2018 | 13º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/832](https://sibom.slyt.gba.gob.ar/bulletins/832) | ✅ Completado |
+| 12º | 05/04/2018 | 12º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/830](https://sibom.slyt.gba.gob.ar/bulletins/830) | ✅ Completado |
+| 11º | 05/04/2018 | 11º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/790](https://sibom.slyt.gba.gob.ar/bulletins/790) | ✅ Completado |
+| 10º | 20/03/2018 | 10º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/727](https://sibom.slyt.gba.gob.ar/bulletins/727) | ✅ Completado |
+| 9º | 20/02/2018 | 9º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/666](https://sibom.slyt.gba.gob.ar/bulletins/666) | ✅ Completado |
+| 8º | 22/01/2018 | 8º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/616](https://sibom.slyt.gba.gob.ar/bulletins/616) | ✅ Completado |
+| 7º | 04/01/2018 | 7º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/553](https://sibom.slyt.gba.gob.ar/bulletins/553) | ✅ Completado |
+| 6º | 13/12/2017 | 6º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/509](https://sibom.slyt.gba.gob.ar/bulletins/509) | ✅ Completado |
+| 5º | 21/11/2017 | 5º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/398](https://sibom.slyt.gba.gob.ar/bulletins/398) | ✅ Completado |
+| 4º | 04/10/2017 | 4º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/397](https://sibom.slyt.gba.gob.ar/bulletins/397) | ✅ Completado |
+| 3º | 04/10/2017 | 3º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/359](https://sibom.slyt.gba.gob.ar/bulletins/359) | ✅ Completado |
+| 2º | 15/09/2017 | 2º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/328](https://sibom.slyt.gba.gob.ar/bulletins/328) | ✅ Completado |
+| 1º | 04/09/2017 | 1º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/262](https://sibom.slyt.gba.gob.ar/bulletins/262) | ✅ Completado |
+| 108º | 22/02/2022 | 108º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6569](https://sibom.slyt.gba.gob.ar/bulletins/6569) | ✅ Completado |
+| 107º | 28/01/2022 | 107º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6551](https://sibom.slyt.gba.gob.ar/bulletins/6551) | ✅ Completado |
+| 106º | 25/01/2022 | 106º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6437](https://sibom.slyt.gba.gob.ar/bulletins/6437) | ✅ Completado |
+| 274º | 18/08/2023 | 274º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9238](https://sibom.slyt.gba.gob.ar/bulletins/9238) | ✅ Completado |
+| 273º | 14/08/2023 | 273º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9224](https://sibom.slyt.gba.gob.ar/bulletins/9224) | ✅ Completado |
+| 272º | 10/08/2023 | 272º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9214](https://sibom.slyt.gba.gob.ar/bulletins/9214) | ✅ Completado |
+| 271º | 09/08/2023 | 271º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9204](https://sibom.slyt.gba.gob.ar/bulletins/9204) | ✅ Completado |
+| 270º | 07/08/2023 | 270º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9196](https://sibom.slyt.gba.gob.ar/bulletins/9196) | ✅ Completado |
+| 269º | 04/08/2023 | 269º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9193](https://sibom.slyt.gba.gob.ar/bulletins/9193) | ✅ Completado |
+| 268º | 03/08/2023 | 268º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9177](https://sibom.slyt.gba.gob.ar/bulletins/9177) | ✅ Completado |
+| 267º | 02/08/2023 | 267º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9158](https://sibom.slyt.gba.gob.ar/bulletins/9158) | ✅ Completado |
+| 266º | 31/07/2023 | 266º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9135](https://sibom.slyt.gba.gob.ar/bulletins/9135) | ✅ Completado |
+| 265º | 25/07/2023 | 265º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9112](https://sibom.slyt.gba.gob.ar/bulletins/9112) | ✅ Completado |
+| 264º | 19/07/2023 | 264º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9087](https://sibom.slyt.gba.gob.ar/bulletins/9087) | ✅ Completado |
+| 263º | 14/07/2023 | 263º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9084](https://sibom.slyt.gba.gob.ar/bulletins/9084) | ✅ Completado |
+| 262º | 13/07/2023 | 262º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9066](https://sibom.slyt.gba.gob.ar/bulletins/9066) | ✅ Completado |
+| 261º | 12/07/2023 | 261º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9057](https://sibom.slyt.gba.gob.ar/bulletins/9057) | ✅ Completado |
+| 260º | 11/07/2023 | 260º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9040](https://sibom.slyt.gba.gob.ar/bulletins/9040) | ✅ Completado |
+| 259º | 07/07/2023 | 259º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9032](https://sibom.slyt.gba.gob.ar/bulletins/9032) | ✅ Completado |
+| 258º | 06/07/2023 | 258º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9016](https://sibom.slyt.gba.gob.ar/bulletins/9016) | ✅ Completado |
+| 257º | 04/07/2023 | 257º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9006](https://sibom.slyt.gba.gob.ar/bulletins/9006) | ✅ Completado |
+| 256º | 03/07/2023 | 256º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8990](https://sibom.slyt.gba.gob.ar/bulletins/8990) | ✅ Completado |
+| 255º | 30/06/2023 | 255º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8976](https://sibom.slyt.gba.gob.ar/bulletins/8976) | ✅ Completado |
+| 254º | 29/06/2023 | 254º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8965](https://sibom.slyt.gba.gob.ar/bulletins/8965) | ✅ Completado |
+| 253º | 28/06/2023 | 253º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8927](https://sibom.slyt.gba.gob.ar/bulletins/8927) | ✅ Completado |
+| 252º | 21/06/2023 | 252º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8909](https://sibom.slyt.gba.gob.ar/bulletins/8909) | ✅ Completado |
+| 251º | 16/06/2023 | 251º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8899](https://sibom.slyt.gba.gob.ar/bulletins/8899) | ✅ Completado |
+| 250º | 15/06/2023 | 250º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8891](https://sibom.slyt.gba.gob.ar/bulletins/8891) | ✅ Completado |
+| 249º | 13/06/2023 | 249º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8874](https://sibom.slyt.gba.gob.ar/bulletins/8874) | ✅ Completado |
+| 248º | 09/06/2023 | 248º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8863](https://sibom.slyt.gba.gob.ar/bulletins/8863) | ✅ Completado |
+| 247º | 08/06/2023 | 247º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8854](https://sibom.slyt.gba.gob.ar/bulletins/8854) | ✅ Completado |
+| 246º | 07/06/2023 | 246º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8847](https://sibom.slyt.gba.gob.ar/bulletins/8847) | ✅ Completado |
+| 245º | 06/06/2023 | 245º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8833](https://sibom.slyt.gba.gob.ar/bulletins/8833) | ✅ Completado |
+| 244º | 02/06/2023 | 244º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8823](https://sibom.slyt.gba.gob.ar/bulletins/8823) | ✅ Completado |
+| 243º | 01/06/2023 | 243º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8807](https://sibom.slyt.gba.gob.ar/bulletins/8807) | ✅ Completado |
+| 242º | 31/05/2023 | 242º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8800](https://sibom.slyt.gba.gob.ar/bulletins/8800) | ✅ Completado |
+| 241º | 30/05/2023 | 241º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8796](https://sibom.slyt.gba.gob.ar/bulletins/8796) | ✅ Completado |
+| 240º | 29/05/2023 | 240º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8769](https://sibom.slyt.gba.gob.ar/bulletins/8769) | ✅ Completado |
+| 239º | 22/05/2023 | 239º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8751](https://sibom.slyt.gba.gob.ar/bulletins/8751) | ✅ Completado |
+| 238º | 18/05/2023 | 238º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8738](https://sibom.slyt.gba.gob.ar/bulletins/8738) | ✅ Completado |
+| 237º | 17/05/2023 | 237º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8730](https://sibom.slyt.gba.gob.ar/bulletins/8730) | ✅ Completado |
+| 236º | 16/05/2023 | 236º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8725](https://sibom.slyt.gba.gob.ar/bulletins/8725) | ✅ Completado |
+| 235º | 15/05/2023 | 235º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/8717](https://sibom.slyt.gba.gob.ar/bulletins/8717) | ✅ Completado |
+| 234º | 29/12/2025 | 234º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/14131](https://sibom.slyt.gba.gob.ar/bulletins/14131) | ✅ Completado |
+| 233º | 11/11/2025 | 233º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/13801](https://sibom.slyt.gba.gob.ar/bulletins/13801) | ✅ Completado |
+| 232º | 31/10/2025 | 232º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/13618](https://sibom.slyt.gba.gob.ar/bulletins/13618) | ✅ Completado |
+| 231º | 30/09/2025 | 231º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/13581](https://sibom.slyt.gba.gob.ar/bulletins/13581) | ✅ Completado |
+| 230º | 08/09/2025 | 230º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/13316](https://sibom.slyt.gba.gob.ar/bulletins/13316) | ✅ Completado |
+| 229º | 31/07/2025 | 229º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/13169](https://sibom.slyt.gba.gob.ar/bulletins/13169) | ✅ Completado |
+| 228º | 18/07/2025 | 228º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/13063](https://sibom.slyt.gba.gob.ar/bulletins/13063) | ✅ Completado |
+| 227º | 26/06/2025 | 227º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/13025](https://sibom.slyt.gba.gob.ar/bulletins/13025) | ✅ Completado |
+| 226º | 15/05/2025 | 226º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/12686](https://sibom.slyt.gba.gob.ar/bulletins/12686) | ✅ Completado |
+| 225º | 25/04/2025 | 225º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/12636](https://sibom.slyt.gba.gob.ar/bulletins/12636) | ✅ Completado |
+| 224º | 03/04/2025 | 224º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/12514](https://sibom.slyt.gba.gob.ar/bulletins/12514) | ✅ Completado |
+| 223º | 27/03/2025 | 223º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/12449](https://sibom.slyt.gba.gob.ar/bulletins/12449) | ✅ Completado |
+| 222º | 21/02/2025 | 222º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/12278](https://sibom.slyt.gba.gob.ar/bulletins/12278) | ✅ Completado |
+| 221º | 31/01/2025 | 221º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/12182](https://sibom.slyt.gba.gob.ar/bulletins/12182) | ✅ Completado |
+| 220º | 16/01/2025 | 220º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/12077](https://sibom.slyt.gba.gob.ar/bulletins/12077) | ✅ Completado |
+| 219º | 10/01/2025 | 219º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/12062](https://sibom.slyt.gba.gob.ar/bulletins/12062) | ✅ Completado |
+| 218º | 27/12/2024 | 218º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/11856](https://sibom.slyt.gba.gob.ar/bulletins/11856) | ✅ Completado |
+| 217º | 09/12/2024 | 217º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/11782](https://sibom.slyt.gba.gob.ar/bulletins/11782) | ✅ Completado |
+| 216º | 29/11/2024 | 216º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/11684](https://sibom.slyt.gba.gob.ar/bulletins/11684) | ✅ Completado |
+| 215º | 13/11/2024 | 215º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/11683](https://sibom.slyt.gba.gob.ar/bulletins/11683) | ✅ Completado |
+| 214º | 12/11/2024 | 214º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/11444](https://sibom.slyt.gba.gob.ar/bulletins/11444) | ✅ Completado |
+| 213º | 30/09/2024 | 213º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/11441](https://sibom.slyt.gba.gob.ar/bulletins/11441) | ✅ Completado |
+| 212º | 26/09/2024 | 212º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/11386](https://sibom.slyt.gba.gob.ar/bulletins/11386) | ✅ Completado |
+| 211º | 19/08/2024 | 211º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/11169](https://sibom.slyt.gba.gob.ar/bulletins/11169) | ✅ Completado |
+| 210º | 19/08/2024 | 210º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/11164](https://sibom.slyt.gba.gob.ar/bulletins/11164) | ✅ Completado |
+| 209º | 02/08/2024 | 209º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10966](https://sibom.slyt.gba.gob.ar/bulletins/10966) | ✅ Completado |
+| 208º | 15/07/2024 | 208º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10850](https://sibom.slyt.gba.gob.ar/bulletins/10850) | ✅ Completado |
+| 207º | 11/06/2024 | 207º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10759](https://sibom.slyt.gba.gob.ar/bulletins/10759) | ✅ Completado |
+| 206º | 03/06/2024 | 206º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10694](https://sibom.slyt.gba.gob.ar/bulletins/10694) | ✅ Completado |
+| 205º | 10/05/2024 | 205º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10617](https://sibom.slyt.gba.gob.ar/bulletins/10617) | ✅ Completado |
+| 204º | 10/05/2024 | 204º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10615](https://sibom.slyt.gba.gob.ar/bulletins/10615) | ✅ Completado |
+| 203º | 06/05/2024 | 203º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10566](https://sibom.slyt.gba.gob.ar/bulletins/10566) | ✅ Completado |
+| 202º | 03/05/2024 | 202º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10562](https://sibom.slyt.gba.gob.ar/bulletins/10562) | ✅ Completado |
+| 201º | 03/05/2024 | 201º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10561](https://sibom.slyt.gba.gob.ar/bulletins/10561) | ✅ Completado |
+| 200º | 03/05/2024 | 200º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10536](https://sibom.slyt.gba.gob.ar/bulletins/10536) | ✅ Completado |
+| 199º | 23/04/2024 | 199º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10483](https://sibom.slyt.gba.gob.ar/bulletins/10483) | ✅ Completado |
+| 198º | 19/04/2024 | 198º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10477](https://sibom.slyt.gba.gob.ar/bulletins/10477) | ✅ Completado |
+| 197º | 19/04/2024 | 197º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10476](https://sibom.slyt.gba.gob.ar/bulletins/10476) | ✅ Completado |
+| 196º | 15/04/2024 | 196º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10442](https://sibom.slyt.gba.gob.ar/bulletins/10442) | ✅ Completado |
+| 195º | 04/04/2024 | 195º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10390](https://sibom.slyt.gba.gob.ar/bulletins/10390) | ✅ Completado |
+| 194º | 04/04/2024 | 194º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10342](https://sibom.slyt.gba.gob.ar/bulletins/10342) | ✅ Completado |
+| 193º | 13/03/2024 | 193º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10274](https://sibom.slyt.gba.gob.ar/bulletins/10274) | ✅ Completado |
+| 192º | 11/03/2024 | 192º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10271](https://sibom.slyt.gba.gob.ar/bulletins/10271) | ✅ Completado |
+| 191º | 06/03/2024 | 191º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10261](https://sibom.slyt.gba.gob.ar/bulletins/10261) | ✅ Completado |
+| 190º | 09/02/2024 | 190º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10094](https://sibom.slyt.gba.gob.ar/bulletins/10094) | ✅ Completado |
+| 189º | 19/01/2024 | 189º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10093](https://sibom.slyt.gba.gob.ar/bulletins/10093) | ✅ Completado |
+| 188º | 19/01/2024 | 188º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10081](https://sibom.slyt.gba.gob.ar/bulletins/10081) | ✅ Completado |
+| 187º | 17/01/2024 | 187º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/10002](https://sibom.slyt.gba.gob.ar/bulletins/10002) | ✅ Completado |
+| 186º | 02/01/2024 | 186º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/9933](https://sibom.slyt.gba.gob.ar/bulletins/9933) | ✅ Completado |
+| 185º | 21/12/2023 | 185º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/9870](https://sibom.slyt.gba.gob.ar/bulletins/9870) | ✅ Completado |
+| 184º | 11/12/2023 | 184º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/9826](https://sibom.slyt.gba.gob.ar/bulletins/9826) | ✅ Completado |
+| 183º | 01/12/2023 | 183º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/9672](https://sibom.slyt.gba.gob.ar/bulletins/9672) | ✅ Completado |
+| 182º | 07/11/2023 | 182º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/9517](https://sibom.slyt.gba.gob.ar/bulletins/9517) | ✅ Completado |
+| 181º | 06/10/2023 | 181º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/9516](https://sibom.slyt.gba.gob.ar/bulletins/9516) | ✅ Completado |
+| 180º | 06/10/2023 | 180º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/9506](https://sibom.slyt.gba.gob.ar/bulletins/9506) | ✅ Completado |
+| 179º | 25/09/2023 | 179º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/9462](https://sibom.slyt.gba.gob.ar/bulletins/9462) | ✅ Completado |
+| 178º | 22/09/2023 | 178º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/9454](https://sibom.slyt.gba.gob.ar/bulletins/9454) | ✅ Completado |
+| 177º | 22/09/2023 | 177º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/9417](https://sibom.slyt.gba.gob.ar/bulletins/9417) | ✅ Completado |
+| 176º | 14/09/2023 | 176º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/9377](https://sibom.slyt.gba.gob.ar/bulletins/9377) | ✅ Completado |
+| 175º | 07/09/2023 | 175º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/9365](https://sibom.slyt.gba.gob.ar/bulletins/9365) | ✅ Completado |
+| 174º | 05/09/2023 | 174º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/9301](https://sibom.slyt.gba.gob.ar/bulletins/9301) | ✅ Completado |
+| 173º | 25/08/2023 | 173º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/9108](https://sibom.slyt.gba.gob.ar/bulletins/9108) | ✅ Completado |
+| 172º | 18/07/2023 | 172º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/9107](https://sibom.slyt.gba.gob.ar/bulletins/9107) | ✅ Completado |
+| 171º | 18/07/2023 | 171º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8983](https://sibom.slyt.gba.gob.ar/bulletins/8983) | ✅ Completado |
+| 170º | 28/06/2023 | 170º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8972](https://sibom.slyt.gba.gob.ar/bulletins/8972) | ✅ Completado |
+| 169º | 28/06/2023 | 169º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8921](https://sibom.slyt.gba.gob.ar/bulletins/8921) | ✅ Completado |
+| 168º | 16/06/2023 | 168º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8920](https://sibom.slyt.gba.gob.ar/bulletins/8920) | ✅ Completado |
+| 167º | 16/06/2023 | 167º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8919](https://sibom.slyt.gba.gob.ar/bulletins/8919) | ✅ Completado |
+| 166º | 16/06/2023 | 166º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8918](https://sibom.slyt.gba.gob.ar/bulletins/8918) | ✅ Completado |
+| 165º | 16/06/2023 | 165º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8916](https://sibom.slyt.gba.gob.ar/bulletins/8916) | ✅ Completado |
+| 164º | 15/06/2023 | 164º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8882](https://sibom.slyt.gba.gob.ar/bulletins/8882) | ✅ Completado |
+| 163º | 06/06/2023 | 163º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8851](https://sibom.slyt.gba.gob.ar/bulletins/8851) | ✅ Completado |
+| 162º | 05/06/2023 | 162º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8840](https://sibom.slyt.gba.gob.ar/bulletins/8840) | ✅ Completado |
+| 161º | 02/06/2023 | 161º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8831](https://sibom.slyt.gba.gob.ar/bulletins/8831) | ✅ Completado |
+| 160º | 30/05/2023 | 160º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8804](https://sibom.slyt.gba.gob.ar/bulletins/8804) | ✅ Completado |
+| 159º | 24/05/2023 | 159º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8748](https://sibom.slyt.gba.gob.ar/bulletins/8748) | ✅ Completado |
+| 158º | 15/05/2023 | 158º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8729](https://sibom.slyt.gba.gob.ar/bulletins/8729) | ✅ Completado |
+| 157º | 15/05/2023 | 157º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8728](https://sibom.slyt.gba.gob.ar/bulletins/8728) | ✅ Completado |
+| 156º | 10/05/2023 | 156º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8707](https://sibom.slyt.gba.gob.ar/bulletins/8707) | ✅ Completado |
+| 155º | 09/05/2023 | 155º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8665](https://sibom.slyt.gba.gob.ar/bulletins/8665) | ✅ Completado |
+| 154º | 28/04/2023 | 154º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8637](https://sibom.slyt.gba.gob.ar/bulletins/8637) | ✅ Completado |
+| 153º | 27/04/2023 | 153º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8633](https://sibom.slyt.gba.gob.ar/bulletins/8633) | ✅ Completado |
+| 152º | 27/04/2023 | 152º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8618](https://sibom.slyt.gba.gob.ar/bulletins/8618) | ✅ Completado |
+| 151º | 20/04/2023 | 151º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8452](https://sibom.slyt.gba.gob.ar/bulletins/8452) | ✅ Completado |
+| 150º | 17/03/2023 | 150º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8422](https://sibom.slyt.gba.gob.ar/bulletins/8422) | ✅ Completado |
+| 149º | 14/03/2023 | 149º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8385](https://sibom.slyt.gba.gob.ar/bulletins/8385) | ✅ Completado |
+| 148º | 06/03/2023 | 148º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8348](https://sibom.slyt.gba.gob.ar/bulletins/8348) | ✅ Completado |
+| 147º | 24/02/2023 | 147º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8250](https://sibom.slyt.gba.gob.ar/bulletins/8250) | ✅ Completado |
+| 146º | 06/02/2023 | 146º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8249](https://sibom.slyt.gba.gob.ar/bulletins/8249) | ✅ Completado |
+| 145º | 24/01/2023 | 145º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8180](https://sibom.slyt.gba.gob.ar/bulletins/8180) | ✅ Completado |
+| 144º | 19/01/2023 | 144º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8112](https://sibom.slyt.gba.gob.ar/bulletins/8112) | ✅ Completado |
+| 143º | 09/01/2023 | 143º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8108](https://sibom.slyt.gba.gob.ar/bulletins/8108) | ✅ Completado |
+| 142º | 05/01/2023 | 142º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8099](https://sibom.slyt.gba.gob.ar/bulletins/8099) | ✅ Completado |
+| 141º | 04/01/2023 | 141º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8083](https://sibom.slyt.gba.gob.ar/bulletins/8083) | ✅ Completado |
+| 140º | 03/01/2023 | 140º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8073](https://sibom.slyt.gba.gob.ar/bulletins/8073) | ✅ Completado |
+| 139º | 29/12/2022 | 139º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8038](https://sibom.slyt.gba.gob.ar/bulletins/8038) | ✅ Completado |
+| 138º | 27/12/2022 | 138º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8025](https://sibom.slyt.gba.gob.ar/bulletins/8025) | ✅ Completado |
+| 137º | 21/12/2022 | 137º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7971](https://sibom.slyt.gba.gob.ar/bulletins/7971) | ✅ Completado |
+| 136º | 15/12/2022 | 136º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7969](https://sibom.slyt.gba.gob.ar/bulletins/7969) | ✅ Completado |
+| 135º | 15/12/2022 | 135º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7939](https://sibom.slyt.gba.gob.ar/bulletins/7939) | ✅ Completado |
+| 134º | 04/11/2022 | 134º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7690](https://sibom.slyt.gba.gob.ar/bulletins/7690) | ✅ Completado |
+| 133º | 03/10/2022 | 133º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7644](https://sibom.slyt.gba.gob.ar/bulletins/7644) | ✅ Completado |
+| 132º | 29/09/2022 | 132º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7634](https://sibom.slyt.gba.gob.ar/bulletins/7634) | ✅ Completado |
+| 131º | 29/09/2022 | 131º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7626](https://sibom.slyt.gba.gob.ar/bulletins/7626) | ✅ Completado |
+| 130º | 27/09/2022 | 130º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7249](https://sibom.slyt.gba.gob.ar/bulletins/7249) | ✅ Completado |
+| 129º | 05/07/2022 | 129º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7220](https://sibom.slyt.gba.gob.ar/bulletins/7220) | ✅ Completado |
+| 128º | 28/06/2022 | 128º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7150](https://sibom.slyt.gba.gob.ar/bulletins/7150) | ✅ Completado |
+| 127º | 10/06/2022 | 127º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7147](https://sibom.slyt.gba.gob.ar/bulletins/7147) | ✅ Completado |
+| 126º | 09/06/2022 | 126º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7144](https://sibom.slyt.gba.gob.ar/bulletins/7144) | ✅ Completado |
+| 125º | 09/06/2022 | 125º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7113](https://sibom.slyt.gba.gob.ar/bulletins/7113) | ✅ Completado |
+| 124º | 03/06/2022 | 124º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7098](https://sibom.slyt.gba.gob.ar/bulletins/7098) | ✅ Completado |
+| 123º | 01/06/2022 | 123º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7096](https://sibom.slyt.gba.gob.ar/bulletins/7096) | ✅ Completado |
+| 122º | 30/05/2022 | 122º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7067](https://sibom.slyt.gba.gob.ar/bulletins/7067) | ✅ Completado |
+| 121º | 26/05/2022 | 121º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6962](https://sibom.slyt.gba.gob.ar/bulletins/6962) | ✅ Completado |
+| 120º | 18/04/2022 | 120º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6896](https://sibom.slyt.gba.gob.ar/bulletins/6896) | ✅ Completado |
+| 119º | 18/04/2022 | 119º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6868](https://sibom.slyt.gba.gob.ar/bulletins/6868) | ✅ Completado |
+| 118º | 07/04/2022 | 118º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6833](https://sibom.slyt.gba.gob.ar/bulletins/6833) | ✅ Completado |
+| 117º | 04/04/2022 | 117º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6825](https://sibom.slyt.gba.gob.ar/bulletins/6825) | ✅ Completado |
+| 116º | 29/03/2022 | 116º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6797](https://sibom.slyt.gba.gob.ar/bulletins/6797) | ✅ Completado |
+| 115º | 28/03/2022 | 115º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6796](https://sibom.slyt.gba.gob.ar/bulletins/6796) | ✅ Completado |
+| 114º | 28/03/2022 | 114º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6792](https://sibom.slyt.gba.gob.ar/bulletins/6792) | ✅ Completado |
+| 113º | 25/03/2022 | 113º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6772](https://sibom.slyt.gba.gob.ar/bulletins/6772) | ✅ Completado |
+| 112º | 21/03/2022 | 112º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6756](https://sibom.slyt.gba.gob.ar/bulletins/6756) | ✅ Completado |
+| 111º | 17/03/2022 | 111º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6742](https://sibom.slyt.gba.gob.ar/bulletins/6742) | ✅ Completado |
+| 110º | 15/03/2022 | 110º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6666](https://sibom.slyt.gba.gob.ar/bulletins/6666) | ✅ Completado |
+| 109º | 24/02/2022 | 109º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6654](https://sibom.slyt.gba.gob.ar/bulletins/6654) | ✅ Completado |
+| 278º | 01/09/2023 | 278º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9314](https://sibom.slyt.gba.gob.ar/bulletins/9314) | ✅ Completado |
+| 277º | 30/08/2023 | 277º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9297](https://sibom.slyt.gba.gob.ar/bulletins/9297) | ✅ Completado |
+| 276º | 25/08/2023 | 276º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9289](https://sibom.slyt.gba.gob.ar/bulletins/9289) | ✅ Completado |
+| 275º | 24/08/2023 | 275º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9270](https://sibom.slyt.gba.gob.ar/bulletins/9270) | ✅ Completado |
+| 473º | 22/12/2025 | 473º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/14073](https://sibom.slyt.gba.gob.ar/bulletins/14073) | ✅ Completado |
+| 472º | 15/12/2025 | 472º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/14008](https://sibom.slyt.gba.gob.ar/bulletins/14008) | ✅ Completado |
+| 471º | 03/12/2025 | 471º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/13931](https://sibom.slyt.gba.gob.ar/bulletins/13931) | ✅ Completado |
+| 470º | 20/11/2025 | 470º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/13839](https://sibom.slyt.gba.gob.ar/bulletins/13839) | ✅ Completado |
+| 469º | 07/11/2025 | 469º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/13800](https://sibom.slyt.gba.gob.ar/bulletins/13800) | ✅ Completado |
+| 468º | 31/10/2025 | 468º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/13751](https://sibom.slyt.gba.gob.ar/bulletins/13751) | ✅ Completado |
+| 467º | 23/10/2025 | 467º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/13689](https://sibom.slyt.gba.gob.ar/bulletins/13689) | ✅ Completado |
+| 466º | 13/10/2025 | 466º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/13591](https://sibom.slyt.gba.gob.ar/bulletins/13591) | ✅ Completado |
+| 465º | 26/09/2025 | 465º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/13501](https://sibom.slyt.gba.gob.ar/bulletins/13501) | ✅ Completado |
+| 464º | 06/01/2026 | 464º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/14230](https://sibom.slyt.gba.gob.ar/bulletins/14230) | ✅ Completado |
+| 463º | 06/01/2026 | 463º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/14136](https://sibom.slyt.gba.gob.ar/bulletins/14136) | ✅ Completado |
+| 462º | 22/12/2025 | 462º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/14085](https://sibom.slyt.gba.gob.ar/bulletins/14085) | ✅ Completado |
+| 461º | 16/12/2025 | 461º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/14069](https://sibom.slyt.gba.gob.ar/bulletins/14069) | ✅ Completado |
+| 460º | 15/12/2025 | 460º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/14066](https://sibom.slyt.gba.gob.ar/bulletins/14066) | ✅ Completado |
+| 459º | 15/12/2025 | 459º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/14051](https://sibom.slyt.gba.gob.ar/bulletins/14051) | ✅ Completado |
+| 458º | 11/12/2025 | 458º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/14004](https://sibom.slyt.gba.gob.ar/bulletins/14004) | ✅ Completado |
+| 457º | 02/12/2025 | 457º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13982](https://sibom.slyt.gba.gob.ar/bulletins/13982) | ✅ Completado |
+| 456º | 28/11/2025 | 456º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13954](https://sibom.slyt.gba.gob.ar/bulletins/13954) | ✅ Completado |
+| 455º | 26/11/2025 | 455º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13937](https://sibom.slyt.gba.gob.ar/bulletins/13937) | ✅ Completado |
+| 454º | 20/11/2025 | 454º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13901](https://sibom.slyt.gba.gob.ar/bulletins/13901) | ✅ Completado |
+| 453º | 13/11/2025 | 453º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13837](https://sibom.slyt.gba.gob.ar/bulletins/13837) | ✅ Completado |
+| 452º | 07/11/2025 | 452º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13815](https://sibom.slyt.gba.gob.ar/bulletins/13815) | ✅ Completado |
+| 451º | 03/11/2025 | 451º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13794](https://sibom.slyt.gba.gob.ar/bulletins/13794) | ✅ Completado |
+| 450º | 30/10/2025 | 450º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13687](https://sibom.slyt.gba.gob.ar/bulletins/13687) | ✅ Completado |
+| 449º | 07/10/2025 | 449º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13660](https://sibom.slyt.gba.gob.ar/bulletins/13660) | ✅ Completado |
+| 448º | 07/10/2025 | 448º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13658](https://sibom.slyt.gba.gob.ar/bulletins/13658) | ✅ Completado |
+| 447º | 07/10/2025 | 447º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13645](https://sibom.slyt.gba.gob.ar/bulletins/13645) | ✅ Completado |
+| 446º | 03/10/2025 | 446º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13634](https://sibom.slyt.gba.gob.ar/bulletins/13634) | ✅ Completado |
+| 445º | 02/09/2025 | 445º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13392](https://sibom.slyt.gba.gob.ar/bulletins/13392) | ✅ Completado |
+| 444º | 22/08/2025 | 444º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13378](https://sibom.slyt.gba.gob.ar/bulletins/13378) | ✅ Completado |
+| 443º | 22/08/2025 | 443º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13366](https://sibom.slyt.gba.gob.ar/bulletins/13366) | ✅ Completado |
+| 442º | 21/08/2025 | 442º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13360](https://sibom.slyt.gba.gob.ar/bulletins/13360) | ✅ Completado |
+| 441º | 12/08/2025 | 441º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13291](https://sibom.slyt.gba.gob.ar/bulletins/13291) | ✅ Completado |
+| 440º | 30/07/2025 | 440º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13190](https://sibom.slyt.gba.gob.ar/bulletins/13190) | ✅ Completado |
+| 439º | 17/07/2025 | 439º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13153](https://sibom.slyt.gba.gob.ar/bulletins/13153) | ✅ Completado |
+| 438º | 03/07/2025 | 438º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13073](https://sibom.slyt.gba.gob.ar/bulletins/13073) | ✅ Completado |
+| 437º | 30/06/2025 | 437º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13038](https://sibom.slyt.gba.gob.ar/bulletins/13038) | ✅ Completado |
+| 436º | 23/06/2025 | 436º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13018](https://sibom.slyt.gba.gob.ar/bulletins/13018) | ✅ Completado |
+| 435º | 18/06/2025 | 435º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/13000](https://sibom.slyt.gba.gob.ar/bulletins/13000) | ✅ Completado |
+| 434º | 12/06/2025 | 434º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12965](https://sibom.slyt.gba.gob.ar/bulletins/12965) | ✅ Completado |
+| 433º | 10/06/2025 | 433º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12885](https://sibom.slyt.gba.gob.ar/bulletins/12885) | ✅ Completado |
+| 432º | 29/05/2025 | 432º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12881](https://sibom.slyt.gba.gob.ar/bulletins/12881) | ✅ Completado |
+| 431º | 29/05/2025 | 431º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12869](https://sibom.slyt.gba.gob.ar/bulletins/12869) | ✅ Completado |
+| 430º | 28/05/2025 | 430º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12854](https://sibom.slyt.gba.gob.ar/bulletins/12854) | ✅ Completado |
+| 429º | 26/05/2025 | 429º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12815](https://sibom.slyt.gba.gob.ar/bulletins/12815) | ✅ Completado |
+| 428º | 19/05/2025 | 428º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12762](https://sibom.slyt.gba.gob.ar/bulletins/12762) | ✅ Completado |
+| 427º | 12/05/2025 | 427º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12760](https://sibom.slyt.gba.gob.ar/bulletins/12760) | ✅ Completado |
+| 426º | 30/04/2025 | 426º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12695](https://sibom.slyt.gba.gob.ar/bulletins/12695) | ✅ Completado |
+| 425º | 30/04/2025 | 425º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12685](https://sibom.slyt.gba.gob.ar/bulletins/12685) | ✅ Completado |
+| 424º | 29/04/2025 | 424º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12681](https://sibom.slyt.gba.gob.ar/bulletins/12681) | ✅ Completado |
+| 423º | 28/04/2025 | 423º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12674](https://sibom.slyt.gba.gob.ar/bulletins/12674) | ✅ Completado |
+| 422º | 28/04/2025 | 422º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12672](https://sibom.slyt.gba.gob.ar/bulletins/12672) | ✅ Completado |
+| 421º | 28/04/2025 | 421º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12668](https://sibom.slyt.gba.gob.ar/bulletins/12668) | ✅ Completado |
+| 420º | 25/04/2025 | 420º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12654](https://sibom.slyt.gba.gob.ar/bulletins/12654) | ✅ Completado |
+| 419º | 23/04/2025 | 419º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12609](https://sibom.slyt.gba.gob.ar/bulletins/12609) | ✅ Completado |
+| 418º | 28/03/2025 | 418º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12479](https://sibom.slyt.gba.gob.ar/bulletins/12479) | ✅ Completado |
+| 417º | 20/03/2025 | 417º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12421](https://sibom.slyt.gba.gob.ar/bulletins/12421) | ✅ Completado |
+| 416º | 25/02/2025 | 416º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12302](https://sibom.slyt.gba.gob.ar/bulletins/12302) | ✅ Completado |
+| 415º | 21/02/2025 | 415º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12282](https://sibom.slyt.gba.gob.ar/bulletins/12282) | ✅ Completado |
+| 414º | 13/02/2025 | 414º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12259](https://sibom.slyt.gba.gob.ar/bulletins/12259) | ✅ Completado |
+| 413º | 10/02/2025 | 413º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12243](https://sibom.slyt.gba.gob.ar/bulletins/12243) | ✅ Completado |
+| 412º | 10/02/2025 | 412º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12236](https://sibom.slyt.gba.gob.ar/bulletins/12236) | ✅ Completado |
+| 411º | 30/01/2025 | 411º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12165](https://sibom.slyt.gba.gob.ar/bulletins/12165) | ✅ Completado |
+| 410º | 17/01/2025 | 410º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12095](https://sibom.slyt.gba.gob.ar/bulletins/12095) | ✅ Completado |
+| 409º | 17/01/2025 | 409º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12093](https://sibom.slyt.gba.gob.ar/bulletins/12093) | ✅ Completado |
+| 408º | 16/01/2025 | 408º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12069](https://sibom.slyt.gba.gob.ar/bulletins/12069) | ✅ Completado |
+| 407º | 10/01/2025 | 407º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12059](https://sibom.slyt.gba.gob.ar/bulletins/12059) | ✅ Completado |
+| 406º | 10/01/2025 | 406º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12013](https://sibom.slyt.gba.gob.ar/bulletins/12013) | ✅ Completado |
+| 405º | 30/12/2024 | 405º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11973](https://sibom.slyt.gba.gob.ar/bulletins/11973) | ✅ Completado |
+| 404º | 30/12/2024 | 404º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11952](https://sibom.slyt.gba.gob.ar/bulletins/11952) | ✅ Completado |
+| 403º | 26/12/2024 | 403º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11939](https://sibom.slyt.gba.gob.ar/bulletins/11939) | ✅ Completado |
+| 402º | 16/12/2024 | 402º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11863](https://sibom.slyt.gba.gob.ar/bulletins/11863) | ✅ Completado |
+| 401º | 11/12/2024 | 401º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11848](https://sibom.slyt.gba.gob.ar/bulletins/11848) | ✅ Completado |
+| 400º | 11/12/2024 | 400º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11819](https://sibom.slyt.gba.gob.ar/bulletins/11819) | ✅ Completado |
+| 399º | 05/12/2024 | 399º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11812](https://sibom.slyt.gba.gob.ar/bulletins/11812) | ✅ Completado |
+| 398º | 05/12/2024 | 398º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11804](https://sibom.slyt.gba.gob.ar/bulletins/11804) | ✅ Completado |
+| 397º | 04/12/2024 | 397º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11762](https://sibom.slyt.gba.gob.ar/bulletins/11762) | ✅ Completado |
+| 396º | 27/11/2024 | 396º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11741](https://sibom.slyt.gba.gob.ar/bulletins/11741) | ✅ Completado |
+| 395º | 21/11/2024 | 395º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11718](https://sibom.slyt.gba.gob.ar/bulletins/11718) | ✅ Completado |
+| 394º | 11/11/2024 | 394º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11664](https://sibom.slyt.gba.gob.ar/bulletins/11664) | ✅ Completado |
+| 393º | 05/11/2024 | 393º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11643](https://sibom.slyt.gba.gob.ar/bulletins/11643) | ✅ Completado |
+| 392º | 04/11/2024 | 392º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11632](https://sibom.slyt.gba.gob.ar/bulletins/11632) | ✅ Completado |
+| 391º | 01/11/2024 | 391º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11624](https://sibom.slyt.gba.gob.ar/bulletins/11624) | ✅ Completado |
+| 390º | 31/10/2024 | 390º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11622](https://sibom.slyt.gba.gob.ar/bulletins/11622) | ✅ Completado |
+| 389º | 31/10/2024 | 389º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11567](https://sibom.slyt.gba.gob.ar/bulletins/11567) | ✅ Completado |
+| 388º | 22/10/2024 | 388º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11563](https://sibom.slyt.gba.gob.ar/bulletins/11563) | ✅ Completado |
+| 387º | 21/10/2024 | 387º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11558](https://sibom.slyt.gba.gob.ar/bulletins/11558) | ✅ Completado |
+| 386º | 14/10/2024 | 386º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11509](https://sibom.slyt.gba.gob.ar/bulletins/11509) | ✅ Completado |
+| 385º | 10/10/2024 | 385º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11492](https://sibom.slyt.gba.gob.ar/bulletins/11492) | ✅ Completado |
+| 384º | 03/10/2024 | 384º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11456](https://sibom.slyt.gba.gob.ar/bulletins/11456) | ✅ Completado |
+| 383º | 30/09/2024 | 383º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11442](https://sibom.slyt.gba.gob.ar/bulletins/11442) | ✅ Completado |
+| 382º | 23/09/2024 | 382º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11404](https://sibom.slyt.gba.gob.ar/bulletins/11404) | ✅ Completado |
+| 381º | 18/09/2024 | 381º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11378](https://sibom.slyt.gba.gob.ar/bulletins/11378) | ✅ Completado |
+| 380º | 17/09/2024 | 380º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11375](https://sibom.slyt.gba.gob.ar/bulletins/11375) | ✅ Completado |
+| 379º | 16/09/2024 | 379º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11367](https://sibom.slyt.gba.gob.ar/bulletins/11367) | ✅ Completado |
+| 378º | 13/09/2024 | 378º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11359](https://sibom.slyt.gba.gob.ar/bulletins/11359) | ✅ Completado |
+| 377º | 12/09/2024 | 377º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11355](https://sibom.slyt.gba.gob.ar/bulletins/11355) | ✅ Completado |
+| 376º | 11/09/2024 | 376º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11341](https://sibom.slyt.gba.gob.ar/bulletins/11341) | ✅ Completado |
+| 375º | 11/09/2024 | 375º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11336](https://sibom.slyt.gba.gob.ar/bulletins/11336) | ✅ Completado |
+| 374º | 03/09/2024 | 374º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11281](https://sibom.slyt.gba.gob.ar/bulletins/11281) | ✅ Completado |
+| 373º | 02/09/2024 | 373º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11267](https://sibom.slyt.gba.gob.ar/bulletins/11267) | ✅ Completado |
+| 372º | 30/08/2024 | 372º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11257](https://sibom.slyt.gba.gob.ar/bulletins/11257) | ✅ Completado |
+| 371º | 28/08/2024 | 371º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11239](https://sibom.slyt.gba.gob.ar/bulletins/11239) | ✅ Completado |
+| 370º | 27/08/2024 | 370º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11229](https://sibom.slyt.gba.gob.ar/bulletins/11229) | ✅ Completado |
+| 369º | 21/10/2024 | 369º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11537](https://sibom.slyt.gba.gob.ar/bulletins/11537) | ✅ Completado |
+| 368º | 17/10/2024 | 368º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11524](https://sibom.slyt.gba.gob.ar/bulletins/11524) | ✅ Completado |
+| 367º | 15/10/2024 | 367º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11510](https://sibom.slyt.gba.gob.ar/bulletins/11510) | ✅ Completado |
+| 366º | 14/10/2024 | 366º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11498](https://sibom.slyt.gba.gob.ar/bulletins/11498) | ✅ Completado |
+| 365º | 09/10/2024 | 365º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11479](https://sibom.slyt.gba.gob.ar/bulletins/11479) | ✅ Completado |
+| 364º | 04/10/2024 | 364º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11459](https://sibom.slyt.gba.gob.ar/bulletins/11459) | ✅ Completado |
+| 363º | 02/10/2024 | 363º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11433](https://sibom.slyt.gba.gob.ar/bulletins/11433) | ✅ Completado |
+| 362º | 27/09/2024 | 362º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11426](https://sibom.slyt.gba.gob.ar/bulletins/11426) | ✅ Completado |
+| 361º | 26/09/2024 | 361º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11400](https://sibom.slyt.gba.gob.ar/bulletins/11400) | ✅ Completado |
+| 360º | 23/09/2024 | 360º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11392](https://sibom.slyt.gba.gob.ar/bulletins/11392) | ✅ Completado |
+| 359º | 19/09/2024 | 359º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11376](https://sibom.slyt.gba.gob.ar/bulletins/11376) | ✅ Completado |
+| 358º | 17/09/2024 | 358º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11358](https://sibom.slyt.gba.gob.ar/bulletins/11358) | ✅ Completado |
+| 357º | 13/09/2024 | 357º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11344](https://sibom.slyt.gba.gob.ar/bulletins/11344) | ✅ Completado |
+| 356º | 11/09/2024 | 356º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11322](https://sibom.slyt.gba.gob.ar/bulletins/11322) | ✅ Completado |
+| 355º | 09/09/2024 | 355º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11305](https://sibom.slyt.gba.gob.ar/bulletins/11305) | ✅ Completado |
+| 354º | 05/09/2024 | 354º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11296](https://sibom.slyt.gba.gob.ar/bulletins/11296) | ✅ Completado |
+| 353º | 04/09/2024 | 353º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11280](https://sibom.slyt.gba.gob.ar/bulletins/11280) | ✅ Completado |
+| 352º | 03/09/2024 | 352º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11258](https://sibom.slyt.gba.gob.ar/bulletins/11258) | ✅ Completado |
+| 351º | 30/08/2024 | 351º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11208](https://sibom.slyt.gba.gob.ar/bulletins/11208) | ✅ Completado |
+| 350º | 23/08/2024 | 350º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11162](https://sibom.slyt.gba.gob.ar/bulletins/11162) | ✅ Completado |
+| 349º | 19/08/2024 | 349º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11156](https://sibom.slyt.gba.gob.ar/bulletins/11156) | ✅ Completado |
+| 348º | 16/08/2024 | 348º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11144](https://sibom.slyt.gba.gob.ar/bulletins/11144) | ✅ Completado |
+| 347º | 14/08/2024 | 347º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11124](https://sibom.slyt.gba.gob.ar/bulletins/11124) | ✅ Completado |
+| 346º | 09/08/2024 | 346º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11107](https://sibom.slyt.gba.gob.ar/bulletins/11107) | ✅ Completado |
+| 345º | 06/08/2024 | 345º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11084](https://sibom.slyt.gba.gob.ar/bulletins/11084) | ✅ Completado |
+| 344º | 05/08/2024 | 344º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11052](https://sibom.slyt.gba.gob.ar/bulletins/11052) | ✅ Completado |
+| 343º | 29/07/2024 | 343º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/11008](https://sibom.slyt.gba.gob.ar/bulletins/11008) | ✅ Completado |
+| 342º | 22/07/2024 | 342º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10952](https://sibom.slyt.gba.gob.ar/bulletins/10952) | ✅ Completado |
+| 341º | 12/07/2024 | 341º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10923](https://sibom.slyt.gba.gob.ar/bulletins/10923) | ✅ Completado |
+| 340º | 05/07/2024 | 340º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10885](https://sibom.slyt.gba.gob.ar/bulletins/10885) | ✅ Completado |
+| 339º | 02/07/2024 | 339º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10828](https://sibom.slyt.gba.gob.ar/bulletins/10828) | ✅ Completado |
+| 338º | 18/06/2024 | 338º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10787](https://sibom.slyt.gba.gob.ar/bulletins/10787) | ✅ Completado |
+| 337º | 10/06/2024 | 337º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10758](https://sibom.slyt.gba.gob.ar/bulletins/10758) | ✅ Completado |
+| 336º | 03/06/2024 | 336º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10711](https://sibom.slyt.gba.gob.ar/bulletins/10711) | ✅ Completado |
+| 335º | 23/05/2024 | 335º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10664](https://sibom.slyt.gba.gob.ar/bulletins/10664) | ✅ Completado |
+| 334º | 16/05/2024 | 334º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10612](https://sibom.slyt.gba.gob.ar/bulletins/10612) | ✅ Completado |
+| 333º | 10/05/2024 | 333º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10569](https://sibom.slyt.gba.gob.ar/bulletins/10569) | ✅ Completado |
+| 332º | 06/05/2024 | 332º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10537](https://sibom.slyt.gba.gob.ar/bulletins/10537) | ✅ Completado |
+| 331º | 30/04/2024 | 331º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10488](https://sibom.slyt.gba.gob.ar/bulletins/10488) | ✅ Completado |
+| 330º | 22/04/2024 | 330º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10452](https://sibom.slyt.gba.gob.ar/bulletins/10452) | ✅ Completado |
+| 329º | 17/04/2024 | 329º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10409](https://sibom.slyt.gba.gob.ar/bulletins/10409) | ✅ Completado |
+| 328º | 09/04/2024 | 328º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10386](https://sibom.slyt.gba.gob.ar/bulletins/10386) | ✅ Completado |
+| 327º | 04/04/2024 | 327º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10371](https://sibom.slyt.gba.gob.ar/bulletins/10371) | ✅ Completado |
+| 326º | 27/03/2024 | 326º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10335](https://sibom.slyt.gba.gob.ar/bulletins/10335) | ✅ Completado |
+| 325º | 21/03/2024 | 325º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10309](https://sibom.slyt.gba.gob.ar/bulletins/10309) | ✅ Completado |
+| 324º | 18/03/2024 | 324º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10285](https://sibom.slyt.gba.gob.ar/bulletins/10285) | ✅ Completado |
+| 323º | 13/03/2024 | 323º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10275](https://sibom.slyt.gba.gob.ar/bulletins/10275) | ✅ Completado |
+| 322º | 11/03/2024 | 322º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10248](https://sibom.slyt.gba.gob.ar/bulletins/10248) | ✅ Completado |
+| 321º | 04/03/2024 | 321º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10233](https://sibom.slyt.gba.gob.ar/bulletins/10233) | ✅ Completado |
+| 320º | 29/02/2024 | 320º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10222](https://sibom.slyt.gba.gob.ar/bulletins/10222) | ✅ Completado |
+| 319º | 26/02/2024 | 319º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10202](https://sibom.slyt.gba.gob.ar/bulletins/10202) | ✅ Completado |
+| 318º | 21/02/2024 | 318º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10191](https://sibom.slyt.gba.gob.ar/bulletins/10191) | ✅ Completado |
+| 317º | 16/02/2024 | 317º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10183](https://sibom.slyt.gba.gob.ar/bulletins/10183) | ✅ Completado |
+| 316º | 09/02/2024 | 316º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10179](https://sibom.slyt.gba.gob.ar/bulletins/10179) | ✅ Completado |
+| 315º | 09/02/2024 | 315º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10133](https://sibom.slyt.gba.gob.ar/bulletins/10133) | ✅ Completado |
+| 314º | 30/01/2024 | 314º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10070](https://sibom.slyt.gba.gob.ar/bulletins/10070) | ✅ Completado |
+| 313º | 12/01/2024 | 313º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10063](https://sibom.slyt.gba.gob.ar/bulletins/10063) | ✅ Completado |
+| 312º | 12/01/2024 | 312º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10059](https://sibom.slyt.gba.gob.ar/bulletins/10059) | ✅ Completado |
+| 311º | 11/01/2024 | 311º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10054](https://sibom.slyt.gba.gob.ar/bulletins/10054) | ✅ Completado |
+| 310º | 10/01/2024 | 310º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/10025](https://sibom.slyt.gba.gob.ar/bulletins/10025) | ✅ Completado |
+| 309º | 05/01/2024 | 309º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9982](https://sibom.slyt.gba.gob.ar/bulletins/9982) | ✅ Completado |
+| 308º | 02/01/2024 | 308º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9976](https://sibom.slyt.gba.gob.ar/bulletins/9976) | ✅ Completado |
+| 307º | 29/12/2023 | 307º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9966](https://sibom.slyt.gba.gob.ar/bulletins/9966) | ✅ Completado |
+| 306º | 28/12/2023 | 306º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9928](https://sibom.slyt.gba.gob.ar/bulletins/9928) | ✅ Completado |
+| 305º | 21/12/2023 | 305º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9898](https://sibom.slyt.gba.gob.ar/bulletins/9898) | ✅ Completado |
+| 304º | 15/12/2023 | 304º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9883](https://sibom.slyt.gba.gob.ar/bulletins/9883) | ✅ Completado |
+| 303º | 12/12/2023 | 303º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9877](https://sibom.slyt.gba.gob.ar/bulletins/9877) | ✅ Completado |
+| 302º | 12/12/2023 | 302º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9866](https://sibom.slyt.gba.gob.ar/bulletins/9866) | ✅ Completado |
+| 301º | 11/12/2023 | 301º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9833](https://sibom.slyt.gba.gob.ar/bulletins/9833) | ✅ Completado |
+| 300º | 04/12/2023 | 300º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9783](https://sibom.slyt.gba.gob.ar/bulletins/9783) | ✅ Completado |
+| 299º | 27/11/2023 | 299º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9742](https://sibom.slyt.gba.gob.ar/bulletins/9742) | ✅ Completado |
+| 298º | 21/11/2023 | 298º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9716](https://sibom.slyt.gba.gob.ar/bulletins/9716) | ✅ Completado |
+| 297º | 14/11/2023 | 297º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9678](https://sibom.slyt.gba.gob.ar/bulletins/9678) | ✅ Completado |
+| 296º | 08/11/2023 | 296º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9648](https://sibom.slyt.gba.gob.ar/bulletins/9648) | ✅ Completado |
+| 295º | 03/11/2023 | 295º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9631](https://sibom.slyt.gba.gob.ar/bulletins/9631) | ✅ Completado |
+| 294º | 01/11/2023 | 294º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9612](https://sibom.slyt.gba.gob.ar/bulletins/9612) | ✅ Completado |
+| 293º | 30/10/2023 | 293º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9602](https://sibom.slyt.gba.gob.ar/bulletins/9602) | ✅ Completado |
+| 292º | 27/10/2023 | 292º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9585](https://sibom.slyt.gba.gob.ar/bulletins/9585) | ✅ Completado |
+| 291º | 24/10/2023 | 291º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9574](https://sibom.slyt.gba.gob.ar/bulletins/9574) | ✅ Completado |
+| 290º | 20/10/2023 | 290º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9563](https://sibom.slyt.gba.gob.ar/bulletins/9563) | ✅ Completado |
+| 289º | 18/10/2023 | 289º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9560](https://sibom.slyt.gba.gob.ar/bulletins/9560) | ✅ Completado |
+| 288º | 18/10/2023 | 288º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9483](https://sibom.slyt.gba.gob.ar/bulletins/9483) | ✅ Completado |
+| 287º | 29/09/2023 | 287º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9478](https://sibom.slyt.gba.gob.ar/bulletins/9478) | ✅ Completado |
+| 286º | 28/09/2023 | 286º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9460](https://sibom.slyt.gba.gob.ar/bulletins/9460) | ✅ Completado |
+| 285º | 25/09/2023 | 285º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9423](https://sibom.slyt.gba.gob.ar/bulletins/9423) | ✅ Completado |
+| 284º | 18/09/2023 | 284º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9415](https://sibom.slyt.gba.gob.ar/bulletins/9415) | ✅ Completado |
+| 283º | 15/09/2023 | 283º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9407](https://sibom.slyt.gba.gob.ar/bulletins/9407) | ✅ Completado |
+| 282º | 14/09/2023 | 282º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9400](https://sibom.slyt.gba.gob.ar/bulletins/9400) | ✅ Completado |
+| 281º | 13/09/2023 | 281º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9373](https://sibom.slyt.gba.gob.ar/bulletins/9373) | ✅ Completado |
+| 280º | 07/09/2023 | 280º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9352](https://sibom.slyt.gba.gob.ar/bulletins/9352) | ✅ Completado |
+| 279º | 05/09/2023 | 279º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/9330](https://sibom.slyt.gba.gob.ar/bulletins/9330) | ✅ Completado |
 | 872º | 30/12/2025 | 872º de General Pueyrredon | [https://sibom.slyt.gba.gob.ar/bulletins/14174](https://sibom.slyt.gba.gob.ar/bulletins/14174) | ✅ Completado |
 | 871º | 29/12/2025 | 871º de General Pueyrredon | [https://sibom.slyt.gba.gob.ar/bulletins/14152](https://sibom.slyt.gba.gob.ar/bulletins/14152) | ✅ Completado |
 | 870º | 23/12/2025 | 870º de General Pueyrredon | [https://sibom.slyt.gba.gob.ar/bulletins/14144](https://sibom.slyt.gba.gob.ar/bulletins/14144) | ✅ Completado |

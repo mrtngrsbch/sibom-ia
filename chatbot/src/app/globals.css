@@ -12,16 +12,14 @@
   --border: 226 232 240;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: 15 23 42;
-    --foreground: 248 250 252;
-    --primary: 56 189 248;
-    --primary-foreground: 15 23 42;
-    --muted: 30 41 59;
-    --muted-foreground: 148 163 184;
-    --border: 51 65 85;
-  }
+.dark {
+  --background: 15 23 42;
+  --foreground: 248 250 252;
+  --primary: 56 189 248;
+  --primary-foreground: 15 23 42;
+  --muted: 30 41 59;
+  --muted-foreground: 148 163 184;
+  --border: 51 65 85;
 }
 
 body {
@@ -37,17 +35,29 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgb(var(--muted));
+  background: rgb(255 255 255);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgb(var(--muted-foreground) / 0.3);
+  background: rgb(203 213 225);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgb(var(--muted-foreground) / 0.5);
+  background: rgb(148 163 184);
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: rgb(15 23 42);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgb(51 65 85);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgb(71 85 105);
 }
 
 /* Animaciones suaves */
@@ -57,13 +67,31 @@ body {
 }
 
 @keyframes slideUp {
-  from { 
+  from {
     opacity: 0;
     transform: translateY(10px);
   }
-  to { 
+  to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
   }
 }
 
@@ -73,6 +101,45 @@ body {
 
 .animate-slide-up {
   animation: slideUp 0.4s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out;
+}
+
+/* Weather animations */
+@keyframes rain {
+  0% {
+    transform: translateY(-100%);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh);
+    opacity: 0.3;
+  }
+}
+
+@keyframes snow {
+  0% {
+    transform: translateY(-100%) translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) translateX(20px);
+    opacity: 0.3;
+  }
+}
+
+.animate-rain {
+  animation: rain linear infinite;
+}
+
+.animate-snow {
+  animation: snow linear infinite;
 }
 
 /* Markdown styles */

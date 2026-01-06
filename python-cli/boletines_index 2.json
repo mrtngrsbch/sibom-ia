@@ -1,0 +1,492 @@
+[
+  {
+    "id": "Carlos_Tejedor_82",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "82º",
+    "title": "82º de Carlos Tejedor",
+    "date": "18/02/2025",
+    "url": "/bulletins/12116",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_82.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_94",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "94º",
+    "title": "94º de Carlos Tejedor",
+    "date": "08/08/2025",
+    "url": "/bulletins/13276",
+    "status": "modificada",
+    "filename": "Carlos_Tejedor_94.json",
+    "documentTypes": [
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_98",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "98º",
+    "title": "98º de Carlos Tejedor",
+    "date": "13/10/2025",
+    "url": "/bulletins/13556",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_98.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza",
+      "resolucion"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_77",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "77º",
+    "title": "77º de Carlos Tejedor",
+    "date": "05/12/2024",
+    "url": "/bulletins/11580",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_77.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_99",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "99º",
+    "title": "99º de Carlos Tejedor",
+    "date": "14/10/2025",
+    "url": "/bulletins/13695",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_99.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_76",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "76º",
+    "title": "76º de Carlos Tejedor",
+    "date": "02/10/2024",
+    "url": "/bulletins/11465",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_76.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza",
+      "resolucion"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_95",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "95º",
+    "title": "95º de Carlos Tejedor",
+    "date": "12/09/2025",
+    "url": "/bulletins/13342",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_95.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_83",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "83º",
+    "title": "83º de Carlos Tejedor",
+    "date": "21/03/2025",
+    "url": "/bulletins/12439",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_83.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_88",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "88º",
+    "title": "88º de Carlos Tejedor",
+    "date": "20/05/2025",
+    "url": "/bulletins/12816",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_88.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_100",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "100º",
+    "title": "100º de Carlos Tejedor",
+    "date": "14/10/2025",
+    "url": "/bulletins/13696",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_100.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza",
+      "resolucion"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_84",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "84º",
+    "title": "84º de Carlos Tejedor",
+    "date": "07/05/2025",
+    "url": "/bulletins/12719",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_84.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_92",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "92º",
+    "title": "92º de Carlos Tejedor",
+    "date": "16/07/2025",
+    "url": "/bulletins/13117",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_92.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza",
+      "resolucion"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_93",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "93º",
+    "title": "93º de Carlos Tejedor",
+    "date": "08/08/2025",
+    "url": "/bulletins/13196",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_93.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_85",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "85º",
+    "title": "85º de Carlos Tejedor",
+    "date": "07/05/2025",
+    "url": "/bulletins/12731",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_85.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_101",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "101º",
+    "title": "101º de Carlos Tejedor",
+    "date": "15/10/2025",
+    "url": "/bulletins/13699",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_101.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_89",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "89º",
+    "title": "89º de Carlos Tejedor",
+    "date": "12/06/2025",
+    "url": "/bulletins/12899",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_89.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza",
+      "resolucion"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_90",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "90º",
+    "title": "90º de Carlos Tejedor",
+    "date": "12/06/2025",
+    "url": "/bulletins/12968",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_90.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_86",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "86º",
+    "title": "86º de Carlos Tejedor",
+    "date": "07/05/2025",
+    "url": "/bulletins/12732",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_86.json",
+    "documentTypes": [
+      "resolucion"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_102",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "102º",
+    "title": "102º de Carlos Tejedor",
+    "date": "12/11/2025",
+    "url": "/bulletins/13864",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_102.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza",
+      "resolucion"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_103",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "103º",
+    "title": "103º de Carlos Tejedor",
+    "date": "14/11/2025",
+    "url": "/bulletins/13865",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_103.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_87",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "87º",
+    "title": "87º de Carlos Tejedor",
+    "date": "20/05/2025",
+    "url": "/bulletins/12772",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_87.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza",
+      "resolucion"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_91",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "91º",
+    "title": "91º de Carlos Tejedor",
+    "date": "08/07/2025",
+    "url": "/bulletins/13086",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_91.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_79",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "79º",
+    "title": "79º de Carlos Tejedor",
+    "date": "05/12/2024",
+    "url": "/bulletins/11816",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_79.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_96",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "96º",
+    "title": "96º de Carlos Tejedor",
+    "date": "12/09/2025",
+    "url": "/bulletins/13511",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_96.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_80",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "80º",
+    "title": "80º de Carlos Tejedor",
+    "date": "23/12/2024",
+    "url": "/bulletins/11847",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_80.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza",
+      "resolucion"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_104",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "104º",
+    "title": "104º de Carlos Tejedor",
+    "date": "11/12/2025",
+    "url": "/bulletins/14045",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_104.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_75",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "75º",
+    "title": "75º de Carlos Tejedor",
+    "date": "17/09/2024",
+    "url": "/bulletins/11317",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_75.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_74",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "74º",
+    "title": "74º de Carlos Tejedor",
+    "date": "05/09/2024",
+    "url": "/bulletins/11304",
+    "status": "modificada",
+    "filename": "Carlos_Tejedor_74.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza",
+      "resolucion"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_105",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "105º",
+    "title": "105º de Carlos Tejedor",
+    "date": "23/12/2025",
+    "url": "/bulletins/14046",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_105.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza",
+      "resolucion"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_81",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "81º",
+    "title": "81º de Carlos Tejedor",
+    "date": "20/01/2025",
+    "url": "/bulletins/12106",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_81.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_78",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "78º",
+    "title": "78º de Carlos Tejedor",
+    "date": "05/12/2024",
+    "url": "/bulletins/11815",
+    "status": "vigente",
+    "filename": "Carlos_Tejedor_78.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza",
+      "resolucion"
+    ]
+  },
+  {
+    "id": "Carlos_Tejedor_97",
+    "municipality": "Carlos Tejedor",
+    "type": "boletin",
+    "number": "97º",
+    "title": "97º de Carlos Tejedor",
+    "date": "16/09/2025",
+    "url": "/bulletins/13516",
+    "status": "modificada",
+    "filename": "Carlos_Tejedor_97.json",
+    "documentTypes": [
+      "decreto",
+      "ordenanza",
+      "resolucion"
+    ]
+  }
+]

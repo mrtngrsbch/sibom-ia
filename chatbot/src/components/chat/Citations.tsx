@@ -16,7 +16,7 @@
 
 'use client';
 
-import { ExternalLink, FileText } from 'lucide-react';
+import { ExternalLink, FileText } from '@/lib/icons';
 import { clsx } from 'clsx';
 
 interface Source {

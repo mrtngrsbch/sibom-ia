@@ -244,7 +244,7 @@ class SIBOMScraper:
 IMPORTANTE: Busca el número, la fecha, una breve descripción y el enlace (href).
 Devuelve SOLO un JSON válido (sin texto adicional) con el formato: {{"bulletins": [{{"number": string, "date": string, "description": string, "link": string}}]}}
 
-HTML: {html[:50000]}"""
+HTML: {html[:200000]}"""
 
             response = self._make_llm_call(prompt, use_json_mode=True)
             cleaned = self._extract_json(response)
@@ -340,7 +340,7 @@ Suelen tener la clase "content-link" o estar dentro de una lista de sumario.
 Extrae exclusivamente los atributos 'href'.
 Devuelve SOLO un JSON válido (sin texto adicional) con el formato: {{"links": ["url1", "url2", ...]}}
 
-HTML: {html[:80000]}"""
+HTML: {html[:300000]}"""
 
             try:
                 response = self._make_llm_call(prompt, use_json_mode=True)
@@ -380,42 +380,73 @@ HTML: {html[:80000]}"""
             return links
 
     def parse_final_content(self, html: str) -> str:
-        """Nivel 3: Extrae texto completo del documento usando BeautifulSoup (con fallback a LLM)"""
+        """Nivel 3: Extrae texto completo del documento usando BeautifulSoup mejorado (sin LLM)"""
         console.print("[cyan]📄 Nivel 3: Extrayendo contenido textual...[/cyan]")
 
-        try:
-            # Intentar con BeautifulSoup primero (95% de casos)
-            soup = BeautifulSoup(html, 'lxml')
+        # Validación inicial del HTML
+        if not html or len(html) < 100:
+            raise ValueError(f"HTML inválido o demasiado corto ({len(html) if html else 0} caracteres)")
 
-            # Buscar el contenedor principal con id="frontend-container"
-            container = soup.find('div', id='frontend-container')
+        html_size = len(html)
+        console.print(f"[dim]  → HTML recibido: {html_size:,} caracteres[/dim]")
 
-            if container:
-                # Extraer texto limpio, preservando saltos de línea
-                text = container.get_text(separator='\n', strip=True)
+        soup = BeautifulSoup(html, 'lxml')
 
-                # Limpiar múltiples saltos de línea consecutivos
-                text = re.sub(r'\n{3,}', '\n\n', text)
+        # Estrategia 1: Buscar contenedor principal por ID
+        container = soup.find('div', id='frontend-container')
+        strategy_used = "ID #frontend-container"
 
-                console.print(f"[green]✓ Texto extraído: {len(text)} caracteres (BeautifulSoup)[/green]")
-                return text
-            else:
-                raise ValueError("No se encontró el contenedor principal")
+        if not container:
+            # Estrategia 2: Buscar contenedor por clase que contenga 'content'
+            container = soup.find('div', class_=lambda x: x and 'content' in str(x).lower())
+            strategy_used = "clase con 'content'"
 
-        except Exception as e:
-            # Fallback a LLM si BeautifulSoup falla
-            console.print(f"[yellow]⚠ BeautifulSoup falló ({str(e)[:50]}), usando LLM como fallback[/yellow]")
+        if not container:
+            # Estrategia 3: Buscar elementos semánticos main o article
+            container = soup.find('main') or soup.find('article')
+            strategy_used = "elemento <main> o <article>"
 
-            prompt = f"""Extrae el contenido textual íntegro de este documento legal.
-Céntrate en lo que está dentro de id="frontend-container" o la sección principal de texto.
-Mantén el formato de los artículos y el rigor legal. Omite cabeceras de navegación y pies de página.
+        if not container:
+            # Estrategia 4: Usar body pero excluir elementos no deseados
+            body = soup.find('body')
+            if body:
+                # Remover elementos no deseados
+                for unwanted in body.find_all(['script', 'style', 'nav', 'footer', 'header', 'noscript']):
+                    unwanted.decompose()
+                container = body
+                strategy_used = "<body> limpio"
 
-HTML: {html[:100000]}"""
+        if not container:
+            raise ValueError("No se pudo encontrar contenido válido en el HTML con ninguna estrategia")
 
-            response = self._make_llm_call(prompt, use_json_mode=False)
+        console.print(f"[dim]  → Estrategia utilizada: {strategy_used}[/dim]")
 
-            console.print(f"[green]✓ Texto extraído: {len(response)} caracteres (LLM fallback)[/green]")
-            return response
+        # Extracción mejorada de texto: recorrer todos los nodos de texto
+        text_parts = []
+        for element in container.descendants:
+            if isinstance(element, str) and element.strip():
+                text_parts.append(element.strip())
+
+        text = '\n'.join(text_parts)
+
+        # Limpiar múltiples saltos de línea consecutivos
+        text = re.sub(r'\n{3,}', '\n\n', text)
+
+        # Validaciones de calidad
+        if len(text) < 100:
+            raise ValueError(f"Texto extraído demasiado corto ({len(text)} caracteres)")
+
+        # Calcular y mostrar métricas
+        text_size = len(text)
+        ratio = text_size / html_size if html_size > 0 else 0
+
+        console.print(f"[green]✓ Texto extraído: {text_size:,} caracteres ({ratio:.1%}% del HTML)[/green]")
+
+        # Alerta si el ratio es sospechosamente bajo
+        if ratio < 0.05:
+            console.print(f"[yellow]⚠ Alerta: Ratio texto/HTML muy bajo ({ratio:.1%}), posible contenido HTML denso[/yellow]")
+
+        return text
 
     def process_bulletin(self, bulletin: Dict, base_url: str, output_dir: Path, skip_existing: bool = False) -> Dict:
         """Procesa un boletín completo (niveles 2 y 3) y guarda archivo individual"""
@@ -509,6 +540,13 @@ HTML: {html[:100000]}"""
                 doc_url = link if link.startswith('http') else f"{base_url}{link}"
                 doc_html = self.fetch_html(doc_url)
                 doc_text = self.parse_final_content(doc_html)
+
+                # Validación de longitud mínima del documento
+                if len(doc_text) < 500:
+                    console.print(f"[red]⚠ Documento {i} inusualmente corto ({len(doc_text)} caracteres)[/red]")
+                    console.print(f"[red]  URL: {doc_url}[/red]")
+                    console.print(f"[red]  Posible error de extracción. Revisar manualmente.[/red]")
+
                 full_text += f"\n[DOC {i}]\n{doc_text}\n"
 
             result = {**bulletin, "status": "completed", "fullText": full_text}

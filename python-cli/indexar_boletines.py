@@ -15,9 +15,8 @@ def extract_municipality(filename):
     return 'Desconocido'
 
 def detect_type(content):
-    lower = content.lower()
-    if 'ordenanza' in lower: return 'ordenanza'
-    if 'decreto' in lower: return 'decreto'
+    # TODOS los archivos son boletines
+    # El contenido (ordenanzas, decretos, etc.) se extrae con enrich_index_with_types.py
     return 'boletin'
 
 def detect_status(content):

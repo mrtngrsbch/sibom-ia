@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "vercel": {
+      "command": "npx",
+      "args": [
+        "vercel-mcp",
+        "VERCEL_API_KEY=QXM0Qg6DQxb0gy4hrYvcULLV"
+      ]
+    }
+  }
+}

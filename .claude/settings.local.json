@@ -14,7 +14,32 @@
       "Bash(while ps aux)",
       "Bash(do sleep 5)",
       "Bash(xargs cat:*)",
-      "Bash(tree:*)"
-    ]
-  }
+      "Bash(tree:*)",
+      "Bash(jq:*)",
+      "mcp__desktop-commander__list_directory",
+      "mcp__desktop-commander__read_file",
+      "mcp__github__get_pull_request",
+      "mcp__github__list_commits",
+      "mcp__vercel__list_deployments",
+      "mcp__vercel__get_project",
+      "Bash(claude mcp)",
+      "Bash(claude mcp list:*)",
+      "Bash(claude mcp add-from-claude-desktop:*)",
+      "Bash(timeout 15 pnpm dev:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(npx shadcn@latest init:*)",
+      "Bash(xargs -I {} sh -c 'echo \"\"=== {} ===\"\" && cat {} | jq -r \"\".sections[].items[].type\"\" 2>/dev/null | head -5')",
+      "Bash(bash actualizar_index.sh:*)",
+      "Bash(kill:*)",
+      "Bash(xargs ls:*)",
+      "Bash(OPENAI_API_KEY=test python:*)"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "vercel"
+  ],
+  "outputStyle": "default"
 }

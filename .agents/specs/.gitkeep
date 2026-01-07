@@ -1,0 +1,23 @@
+# Specs
+
+Esta carpeta contiene especificaciones funcionales del proyecto.
+
+## Archivos de especificación
+
+- `01-proyecto-overview.md` - Visión general del ecosistema
+- `02-backend-architecture.md` - Arquitectura del scraper Python
+- `03-frontend-architecture.md` - Arquitectura del chatbot Next.js
+- `04-data-pipeline.md` - Flujo completo de datos
+- `05-integracion.md` - Integración backend-frontend
+
+## Estándar
+
+Cada spec debe responder:
+- **QUÉ**: Qué hace/funciona
+- **POR QUÉ**: Por qué existe esta decisión
+- **CÓMO**: Cómo se implementa (a alto nivel)
+
+NO incluir:
+- Snippets de código detallados
+- Rutas exactas de archivos
+- Configuraciones específicas

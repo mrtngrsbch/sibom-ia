@@ -12,7 +12,7 @@
  *   - Open-Meteo API (libre, sin API key)
  */
 
-import { getMunicipalityCoords } from '@/lib/data/municipalities-coords';
+import { getMunicipalityCoords, getAllMunicipalityNames } from '@/lib/data/municipalities-coords';
 
 /**
  * Cache de clima (30 minutos de TTL)
@@ -125,9 +125,32 @@ export async function GET(req: Request) {
       );
     }
 
+    // Normalizar el nombre del municipio (case-insensitive, sin tildes)
+    const normalizeName = (name: string) => {
+      return name.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // Eliminar tildes
+        .trim();
+    };
+
     // Obtener coordenadas desde tabla local (evitar geocoding)
-    const coords = getMunicipalityCoords(municipalityName);
+    let coords = getMunicipalityCoords(municipalityName);
+
+    // Si no encuentra, intentar coincidencia fuzzy (case-insensitive, sin tildes)
     if (!coords) {
+      const allNames = getAllMunicipalityNames();
+      const normalizedInput = normalizeName(municipalityName);
+
+      for (const name of allNames) {
+        if (normalizeName(name) === normalizedInput) {
+          console.log(`[Weather] Coincidencia fuzzy: "${municipalityName}" → "${name}"`);
+          coords = getMunicipalityCoords(name);
+          break;
+        }
+      }
+    }
+
+    if (!coords) {
+      console.log(`[Weather] Municipio NO encontrado: "${municipalityName}"`);
       return new Response(
         JSON.stringify({
           error: 'Municipio no encontrado en la base de datos',

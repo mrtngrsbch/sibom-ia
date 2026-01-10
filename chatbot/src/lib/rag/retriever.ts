@@ -22,29 +22,36 @@ import fs from 'fs/promises';
 import path from 'path';
 import { promisify } from 'util';
 import { gunzip } from 'zlib';
+import { parse, isAfter, isBefore, isValid, startOfDay, endOfDay } from 'date-fns';
 import { buildBulletinUrl } from '@/lib/config';
-import { calculateContentLimit } from '@/lib/query-classifier';
+import { calculateContentLimit, isComputationalQuery } from '@/lib/query-classifier';
 import { BM25Index, tokenize } from './bm25';
+import { formatTablesForLLM, filterRelevantTables } from './table-formatter';
+import type { StructuredTable } from '@/lib/types';
 
 const gunzipAsync = promisify(gunzip);
 
 /**
  * Tipos de documentos
  */
+export type DocumentType = 'ordenanza' | 'decreto' | 'boletin' | 'resolucion' | 'disposicion' | 'convenio' | 'licitacion';
+
 export interface Document {
   id: string;
   municipality: string;
-  type: 'ordenanza' | 'decreto' | 'boletin';
+  type: DocumentType;
   number: string;
   title: string;
   content: string;
   date: string;
   url: string;
   status: string;
+  filename?: string; // Nombre del archivo JSON (opcional, para datos tabulares)
+  documentTypes?: DocumentType[]; // Tipos de documentos en el boletín (opcional)
 }
 
 /**
- * Metadatos del índice
+ * Metadatos del índice (formato antiguo - boletines)
  */
 export interface IndexEntry {
   id: string;
@@ -56,7 +63,23 @@ export interface IndexEntry {
   url: string;
   status: string;
   filename: string;
-  documentTypes?: Array<'ordenanza' | 'decreto' | 'boletin' | 'resolucion' | 'disposicion' | 'convenio' | 'licitacion'>; // Nuevo: tipos de documentos dentro del boletín
+  documentTypes?: Array<'ordenanza' | 'decreto' | 'boletin' | 'resolucion' | 'disposicion' | 'convenio' | 'licitacion'>;
+}
+
+/**
+ * Entrada del índice de normativas (formato nuevo - individual)
+ * Campos abreviados para optimizar tamaño
+ */
+export interface NormativaIndexEntry {
+  id: string;         // ID único
+  m: string;          // municipality
+  t: DocumentType;    // type
+  n: string;          // number
+  y: string;          // year
+  d: string;          // date (DD/MM/YYYY)
+  ti: string;         // title (truncado a 100 chars)
+  sb: string;         // source_bulletin (filename del boletín)
+  url: string;        // URL del boletín en SIBOM
 }
 
 /**
@@ -68,6 +91,9 @@ export interface SearchOptions {
   dateFrom?: string;
   dateTo?: string;
   limit?: number;
+  // Indica si el filtro de tipo viene de la selección manual del usuario (true)
+  // o de la detección automática desde la query (false)
+  isManualTypeFilter?: boolean;
 }
 
 /**
@@ -94,26 +120,32 @@ export interface SearchResult {
 // CONFIGURACIÓN DE CACHE MULTI-NIVEL
 // ============================================================================
 
-// Cache del índice (configurable via env var)
+// Cache del índice de boletines (legacy)
 let indexCache: IndexEntry[] = [];
 let cacheTimestamp: number = 0;
 let lastFileModTime: number = 0;
+
+// Cache del índice de normativas (nuevo)
+let normativasCache: NormativaIndexEntry[] = [];
+let normativasCacheTimestamp: number = 0;
+let normativasLastFileModTime: number = 0;
+
 // Default: 5 minutos para detectar cambios más rápido
 // Con webhook de GitHub, usar 1 hora (3600000)
 const CACHE_DURATION = parseInt(process.env.INDEX_CACHE_DURATION || '300000'); // 5 min default
 
+// Flag para usar nuevo índice de normativas (activar cuando esté listo)
+const USE_NORMATIVAS_INDEX = process.env.USE_NORMATIVAS_INDEX !== 'false'; // true por defecto
+
 /**
- * Parsea una fecha en formato DD/MM/YYYY a objeto Date
+ * Parsea una fecha en formato DD/MM/YYYY a objeto Date usando date-fns
  * @param dateStr - Fecha en formato DD/MM/YYYY
  * @returns Date object o null si el formato es inválido
  */
 function parseDate(dateStr: string): Date | null {
   if (!dateStr || typeof dateStr !== 'string') return null;
-  const parts = dateStr.split('/');
-  if (parts.length !== 3) return null;
-  const [day, month, year] = parts.map(p => parseInt(p, 10));
-  if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
-  return new Date(year, month - 1, day);
+  const parsed = parse(dateStr, 'dd/MM/yyyy', new Date());
+  return isValid(parsed) ? parsed : null;
 }
 
 // Cache de archivos JSON completos (30 min - ahorro masivo de bandwidth)
@@ -129,18 +161,30 @@ const FILE_CACHE_DURATION = 30 * 60 * 1000; // 30 minutos
 // ============================================================================
 
 /**
- * Determina si se debe usar GitHub Raw o archivos locales
+ * Determina si se debe usar fuente remota (GitHub/R2/S3) o archivos locales
  */
 function useGitHub(): boolean {
   return !!process.env.GITHUB_DATA_REPO;
 }
 
 /**
- * Obtiene la URL base de GitHub Raw
+ * Obtiene la URL base de datos remotos
+ * Soporta:
+ * - GitHub Raw: GITHUB_DATA_REPO="usuario/repo"
+ * - Cloudflare R2: GITHUB_DATA_REPO="pub-xxxxx.r2.dev/bucket"
+ * - S3/Custom: GITHUB_DATA_REPO="custom-domain.com/path"
  */
 function getGitHubRawBase(): string {
-  const repo = process.env.GITHUB_DATA_REPO; // Formato: "usuario/repo"
+  const repo = process.env.GITHUB_DATA_REPO || '';
   const branch = process.env.GITHUB_DATA_BRANCH || 'main';
+
+  // Si es URL directa (R2, S3, custom domain)
+  if (repo.includes('.') && !repo.includes('github')) {
+    // R2 y otros servicios: usar URL directa
+    return `https://${repo}`;
+  }
+
+  // GitHub Raw: construir URL estándar
   return `https://raw.githubusercontent.com/${repo}/${branch}`;
 }
 
@@ -227,6 +271,126 @@ async function readLocalIndex(): Promise<IndexEntry[]> {
   } catch (error) {
     console.error('[RAG] ❌ Error leyendo índice local:', error);
     throw error;
+  }
+}
+
+// ============================================================================
+// FUNCIONES DE LECTURA - ÍNDICE DE NORMATIVAS (NUEVO)
+// ============================================================================
+
+/**
+ * Lee el índice de normativas desde GitHub Raw
+ */
+async function fetchGitHubNormativasIndex(): Promise<NormativaIndexEntry[]> {
+  const baseUrl = getGitHubRawBase();
+  const useGzip = process.env.GITHUB_USE_GZIP === 'true';
+  const url = useGzip
+    ? `${baseUrl}/normativas_index_minimal.json.gz`
+    : `${baseUrl}/normativas_index_minimal.json`;
+
+  console.log(`[RAG] 📥 Descargando índice de normativas desde GitHub: ${url}`);
+
+  try {
+    const response = await fetch(url, {
+      cache: 'force-cache',
+      next: { revalidate: 3600 }
+    });
+
+    if (!response.ok) {
+      throw new Error(`GitHub respondió con status ${response.status}`);
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const content = await decompressIfNeeded(arrayBuffer, useGzip);
+    const data = JSON.parse(content);
+
+    console.log(`[RAG] ✅ Índice de normativas descargado: ${data.length} normativas`);
+    return data;
+  } catch (error) {
+    console.error('[RAG] ❌ Error descargando índice de normativas de GitHub:', error);
+    throw error;
+  }
+}
+
+/**
+ * Lee el índice de normativas desde archivos locales
+ */
+async function readLocalNormativasIndex(): Promise<NormativaIndexEntry[]> {
+  const basePath = getDataBasePath();
+  const indexPath = path.join(basePath, 'normativas_index_minimal.json');
+
+  try {
+    const content = await fs.readFile(indexPath, 'utf-8');
+    const data = JSON.parse(content);
+    return data;
+  } catch (error) {
+    console.error('[RAG] ❌ Error leyendo índice de normativas local:', error);
+    throw error;
+  }
+}
+
+/**
+ * Verifica si el archivo de índice de normativas ha cambiado
+ */
+async function hasNormativasIndexFileChanged(): Promise<boolean> {
+  if (useGitHub()) return false;
+
+  const basePath = getDataBasePath();
+  const indexPath = path.join(basePath, 'normativas_index_minimal.json');
+
+  try {
+    const stats = await fs.stat(indexPath);
+    const fileModTime = stats.mtimeMs;
+
+    if (normativasLastFileModTime === 0 || fileModTime > normativasLastFileModTime) {
+      normativasLastFileModTime = fileModTime;
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('[RAG] Error verificando cambios en índice de normativas:', error);
+    return false;
+  }
+}
+
+/**
+ * Carga el índice de normativas con cache
+ */
+async function loadNormativasIndex(): Promise<NormativaIndexEntry[]> {
+  const now = Date.now();
+
+  if (useGitHub()) {
+    if (normativasCache.length > 0 && now - normativasCacheTimestamp < CACHE_DURATION) {
+      console.log('[RAG] ♻️ Usando índice de normativas cacheado (GitHub)');
+      return normativasCache;
+    }
+  } else {
+    const fileChanged = await hasNormativasIndexFileChanged();
+    if (normativasCache.length > 0 && !fileChanged && now - normativasCacheTimestamp < CACHE_DURATION) {
+      return normativasCache;
+    }
+    if (fileChanged && normativasCache.length > 0) {
+      console.log(`[RAG] 🔄 Detectado cambio en índice de normativas - Recargando...`);
+    }
+  }
+
+  try {
+    const data = useGitHub()
+      ? await fetchGitHubNormativasIndex()
+      : await readLocalNormativasIndex();
+
+    normativasCache = data;
+    normativasCacheTimestamp = now;
+
+    console.log(`[RAG] ✅ Índice de normativas cargado: ${normativasCache.length} normativas (fuente: ${useGitHub() ? 'GitHub' : 'local'})`);
+    return normativasCache;
+  } catch (error) {
+    console.error('[RAG] ❌ Error cargando índice de normativas:', error);
+    if (normativasCache.length > 0) {
+      console.warn('[RAG] ⚠️ Usando cache de normativas antiguo como fallback');
+      return normativasCache;
+    }
+    return [];
   }
 }
 
@@ -439,9 +603,210 @@ function calculateMetadataRelevance(entry: IndexEntry, query: string): number {
 }
 
 /**
- * Recupera contexto relevante para una consulta
+ * Recupera contexto usando el NUEVO índice de normativas (más eficiente)
+ *
+ * Ventajas:
+ * - 216K normativas indexadas individualmente vs 1738 boletines
+ * - Búsqueda directa por tipo (decreto, ordenanza, etc.)
+ * - No necesita cargar archivos para BM25 (usa metadatos)
+ * - Contenido se carga bajo demanda solo para resultados top-k
  */
-export async function retrieveContext(
+async function retrieveContextFromNormativas(
+  query: string,
+  options: SearchOptions = {}
+): Promise<SearchResult> {
+  const startTime = Date.now();
+
+  // 1. Cargar índice de normativas
+  const normativas = await loadNormativasIndex();
+
+  if (normativas.length === 0) {
+    console.log('[RAG] ⚠️ Índice de normativas vacío, intentando fallback a boletines');
+    return retrieveContextFromBoletines(query, options);
+  }
+
+  console.log(`[RAG] 🔍 INICIO - Índice de normativas: ${normativas.length} registros`);
+
+  // 2. Filtrar por municipio, tipo y fecha
+  let filtered = normativas;
+
+  // Filtrar por municipio
+  if (options.municipality) {
+    const mSearch = options.municipality.toLowerCase();
+    filtered = filtered.filter(n => n.m.toLowerCase().includes(mSearch));
+    console.log(`[RAG] 🏘️ Filtro municipio "${options.municipality}": ${filtered.length} normativas`);
+  }
+
+  // Filtrar por tipo (ahora funciona directamente porque cada normativa tiene su tipo)
+  if (options.type && options.type !== 'all') {
+    const typeFilter = options.type.toLowerCase();
+    filtered = filtered.filter(n => n.t === typeFilter);
+    console.log(`[RAG] 📋 Filtro tipo "${typeFilter}": ${filtered.length} normativas`);
+  }
+
+  // Filtrar por rango de fechas
+  if (options.dateFrom || options.dateTo) {
+    const beforeSize = filtered.length;
+    filtered = filtered.filter(n => {
+      if (!n.d) return false;
+      const docDate = parseDate(n.d);
+      if (!docDate) return false;
+
+      if (options.dateFrom) {
+        const fromDate = parse(options.dateFrom, 'yyyy-MM-dd', new Date());
+        if (isBefore(docDate, startOfDay(fromDate))) return false;
+      }
+
+      if (options.dateTo) {
+        const toDate = parse(options.dateTo, 'yyyy-MM-dd', new Date());
+        if (isAfter(docDate, endOfDay(toDate))) return false;
+      }
+
+      return true;
+    });
+    console.log(`[RAG] 📅 Filtro fecha: ${beforeSize} → ${filtered.length} normativas`);
+  }
+
+  console.log(`[RAG] ✅ Después de filtros: ${filtered.length} normativas`);
+
+  // 3. Construir índice BM25 sobre metadatos (título + tipo + número + año)
+  // NO necesitamos cargar archivos - usamos los datos del índice
+  const tokenizedDocs = filtered.map(n => {
+    const titleTokens = tokenize(n.ti);
+    const typeTokens = tokenize(n.t);
+    const numberTokens = tokenize(n.n);
+    const yearTokens = n.y ? tokenize(n.y) : [];
+    const municipalityTokens = tokenize(n.m);
+
+    // Peso: título (3x) + municipio (2x) + tipo + número + año
+    return [
+      ...titleTokens, ...titleTokens, ...titleTokens,
+      ...municipalityTokens, ...municipalityTokens,
+      ...typeTokens,
+      ...numberTokens,
+      ...yearTokens
+    ];
+  });
+
+  const bm25 = new BM25Index(tokenizedDocs, 1.5, 0.75);
+  console.log(`[RAG] Índice BM25 construido con ${tokenizedDocs.length} normativas`);
+
+  // 4. Buscar con BM25
+  const limit = options.limit || 10; // Aumentado porque las normativas son más pequeñas
+  const bm25Results = bm25.search(query, limit);
+
+  console.log(`[RAG] BM25 top ${limit} resultados:`, bm25Results.map(r => ({
+    id: filtered[r.index].id,
+    type: filtered[r.index].t,
+    number: filtered[r.index].n,
+    score: r.score.toFixed(2)
+  })));
+
+  // 5. Cargar contenido de los resultados top-k (bajo demanda)
+  // Agrupamos por boletín para optimizar la carga
+  const resultNormativas = bm25Results.map(r => filtered[r.index]);
+
+  // Agrupar por source_bulletin para cargar cada archivo una sola vez
+  const bulletinGroups = new Map<string, NormativaIndexEntry[]>();
+  for (const n of resultNormativas) {
+    const group = bulletinGroups.get(n.sb) || [];
+    group.push(n);
+    bulletinGroups.set(n.sb, group);
+  }
+
+  // Cargar contenido de cada boletín necesario
+  const bulletinContents = new Map<string, string>();
+  for (const [bulletinName] of bulletinGroups) {
+    try {
+      const data = await readFileContent(`${bulletinName}.json`);
+      bulletinContents.set(bulletinName, data.fullText || '');
+    } catch (err) {
+      console.warn(`[RAG] Error cargando ${bulletinName}:`, err);
+      bulletinContents.set(bulletinName, '');
+    }
+  }
+
+  // 6. Construir contexto
+  const contentLimit = calculateContentLimit(query);
+  const isMetadataOnly = contentLimit <= 200;
+
+  let context: string;
+  if (isMetadataOnly) {
+    // Modo listado: solo metadatos (eficiente para queries de conteo)
+    context = resultNormativas
+      .map(n => `[${n.m}] ${n.t.toUpperCase()} N° ${n.n}/${n.y} - ${n.d} - ${n.ti}`)
+      .join('\n');
+  } else {
+    // Modo detallado: incluir extracto de contenido
+    context = resultNormativas
+      .map(n => {
+        const fullContent = bulletinContents.get(n.sb) || '';
+        // Buscar el documento específico dentro del boletín
+        const docMarker = `[DOC `;
+        const contentChunk = extractNormativaContent(fullContent, n.n, n.t, contentLimit);
+
+        return `[${n.m}] ${n.t.toUpperCase()} N° ${n.n}/${n.y}
+Título: ${n.ti}
+Fecha: ${n.d}
+Estado: vigente
+Fuente: ${n.sb}
+Contenido: ${contentChunk}...`;
+      })
+      .join('\n\n---\n\n');
+  }
+
+  // 7. Construir fuentes
+  const sources = resultNormativas.map(n => ({
+    title: `${n.t} ${n.n}/${n.y} - ${n.m}`,
+    url: buildBulletinUrl(n.url),
+    municipality: n.m,
+    type: n.t,
+    status: 'vigente',
+  }));
+
+  const duration = Date.now() - startTime;
+  console.log(`[RAG] ✅ Query completada en ${duration}ms - ${resultNormativas.length} normativas`);
+
+  return {
+    context: context || `No se encontró información específica para: "${query}"`,
+    sources,
+  };
+}
+
+/**
+ * Extrae el contenido específico de una normativa dentro del texto del boletín
+ */
+function extractNormativaContent(
+  fullText: string,
+  numero: string,
+  tipo: string,
+  maxLength: number
+): string {
+  // Buscar patrón de la normativa (ej: "Decreto N° 293" o "Ordenanza N° 2929")
+  const patterns = [
+    new RegExp(`${tipo}\\s*N[º°]?\\s*${numero}[^\\d]`, 'i'),
+    new RegExp(`\\[DOC \\d+\\][\\s\\S]*?${tipo}\\s*N[º°]?\\s*${numero}`, 'i'),
+  ];
+
+  for (const pattern of patterns) {
+    const match = fullText.match(pattern);
+    if (match && match.index !== undefined) {
+      // Extraer desde la posición encontrada
+      const start = Math.max(0, match.index - 100); // Un poco de contexto previo
+      const chunk = fullText.slice(start, start + maxLength);
+      return chunk;
+    }
+  }
+
+  // Fallback: devolver el inicio del documento
+  return fullText.slice(0, maxLength);
+}
+
+/**
+ * Versión legacy: recupera contexto usando el índice de boletines
+ * (mantener para compatibilidad y fallback)
+ */
+async function retrieveContextFromBoletines(
   query: string,
   options: SearchOptions = {}
 ): Promise<SearchResult> {
@@ -454,54 +819,64 @@ export async function retrieveContext(
     return { context: '', sources: [] };
   }
 
+  // 1.5. Detectar si es query computacional
+  const isComputational = isComputationalQuery(query);
+  if (isComputational) {
+    console.log('[RAG] 🧮 Query computacional detectada - incluyendo datos tabulares');
+  }
+
   // 2. Filtrar por municipio y tipo (Filtro duro)
   let filteredIndex = index;
+  console.log(`[RAG] 🔍 INICIO (legacy) - Índice total: ${index.length} documentos`);
+
   if (options.municipality) {
     const mSearch = options.municipality.toLowerCase();
     filteredIndex = filteredIndex.filter(
       d => d.municipality.toLowerCase().includes(mSearch)
     );
+    console.log(`[RAG] 🏘️ Filtro municipio "${options.municipality}": ${filteredIndex.length} docs restantes`);
   }
 
-  if (options.type) {
+  // Filtrado por tipo: SOLO si es filtro manual del usuario (dropdown UI)
+  if (options.type && options.type !== 'all' && options.isManualTypeFilter === true) {
     const typeFilter = options.type;
     filteredIndex = filteredIndex.filter(d => {
-      // Nuevo: usar documentTypes (array) en lugar de type (string único)
       if (d.documentTypes && Array.isArray(d.documentTypes)) {
         return d.documentTypes.includes(typeFilter as any);
       }
-      // Fallback: compatibilidad con índice antiguo
       return d.type === typeFilter;
     });
-    console.log(`[RAG] Filtrado por tipo "${typeFilter}": ${filteredIndex.length} docs`);
+    console.log(`[RAG] 📋 Filtro tipo MANUAL "${typeFilter}": ${filteredIndex.length} docs restantes`);
+  } else if (options.type && options.type !== 'all' && options.isManualTypeFilter !== true) {
+    console.log(`[RAG] 📋 Tipo "${options.type}" detectado en query - buscando en contenido de boletines`);
   }
 
   // Filtrar por rango de fechas
   if (options.dateFrom || options.dateTo) {
+    const beforeSize = filteredIndex.length;
     filteredIndex = filteredIndex.filter(d => {
       if (!d.date) return false;
       const docDate = parseDate(d.date);
       if (!docDate) return false;
 
       if (options.dateFrom) {
-        const fromDate = new Date(options.dateFrom);
-        if (docDate < fromDate) return false;
+        const fromDate = parse(options.dateFrom, 'yyyy-MM-dd', new Date());
+        if (isBefore(docDate, startOfDay(fromDate))) return false;
       }
 
       if (options.dateTo) {
-        const toDate = new Date(options.dateTo);
-        if (docDate > toDate) return false;
+        const toDate = parse(options.dateTo, 'yyyy-MM-dd', new Date());
+        if (isAfter(docDate, endOfDay(toDate))) return false;
       }
 
       return true;
     });
-    console.log(`[RAG] Filtrado por fecha (${options.dateFrom || '...'} - ${options.dateTo || '...'}): ${filteredIndex.length} docs`);
+    console.log(`[RAG] 📅 Filtro fecha: ${beforeSize} → ${filteredIndex.length} docs`);
   }
 
-  console.log(`[RAG] Después de filtros: ${filteredIndex.length} documentos`);
+  console.log(`[RAG] ✅ FINAL - Después de todos los filtros: ${filteredIndex.length} documentos`);
 
   // 3. Cargar contenido de TODOS los documentos filtrados para indexar con BM25
-  // NOTA: Esto puede ser costoso la primera vez, pero se cachea
   const docsWithContent: Array<{ entry: IndexEntry; content: string }> = [];
 
   await Promise.all(filteredIndex.map(async (entry) => {
@@ -522,57 +897,60 @@ export async function retrieveContext(
 
   // 4. Construir índice BM25 sobre el contenido
   const tokenizedDocs = docsWithContent.map(d => {
-    // Tokenizar: título + contenido (priorizando título con repetición)
     const titleTokens = tokenize(d.entry.title);
-    const contentTokens = tokenize(d.content.slice(0, 2000)); // Solo primeros 2000 chars para performance
-
-    // Repetir tokens del título 3 veces para dar más peso
+    const contentTokens = tokenize(d.content.slice(0, 50000));
     return [...titleTokens, ...titleTokens, ...titleTokens, ...contentTokens];
   });
 
-  const bm25 = new BM25Index(
-    tokenizedDocs,
-    1.5,  // k1: saturación de término (1.2-2.0, mayor = más peso a TF)
-    0.75  // b: normalización por longitud (0-1, mayor = más penalización a docs largos)
-  );
-
+  const bm25 = new BM25Index(tokenizedDocs, 1.5, 0.75);
   console.log(`[RAG] Índice BM25 construido con ${tokenizedDocs.length} docs`);
 
-  // 5. Buscar con BM25 y obtener top-k resultados
+  // 5. Buscar con BM25
   const limit = options.limit || 5;
-  console.log(`[RAG] 🎯 LÍMITE SOLICITADO: ${limit} documentos`);
   const bm25Results = bm25.search(query, limit);
 
   console.log(`[RAG] BM25 top ${limit} resultados:`, bm25Results.map(r => ({
     title: docsWithContent[r.index].entry.title,
     score: r.score.toFixed(2)
   })));
-  console.log(`[RAG] ✅ Devolviendo ${bm25Results.length} documentos al LLM`);
 
-  // 6. Construir documentos finales con los resultados rankeados
+  // 6. Construir documentos finales
   const documents: Document[] = bm25Results.map(result => {
     const { entry, content } = docsWithContent[result.index];
-    return {
-      ...entry,
-      content,
-    };
+    return { ...entry, content };
   });
 
-  // 7. Construir contexto con truncamiento dinámico
+  // 6.5. Si es query computacional, cargar datos tabulares
+  let allTables: StructuredTable[] = [];
+  if (isComputational) {
+    for (const doc of documents) {
+      try {
+        if (!doc.filename) continue;
+        const data = await readFileContent(doc.filename);
+        if (data.tables && Array.isArray(data.tables) && data.tables.length > 0) {
+          allTables.push(...data.tables);
+        }
+      } catch (error) {
+        console.warn(`[RAG] ⚠️ Error cargando tablas de ${doc.filename}:`, error);
+      }
+    }
+    if (allTables.length > 0) {
+      const relevantTables = filterRelevantTables(allTables, query);
+      allTables = relevantTables;
+    }
+  }
+
+  // 7. Construir contexto
   const contentLimit = calculateContentLimit(query);
-  const context = documents
+  let context = documents
     .map((doc) => {
       const contentChunk = doc.content.slice(0, contentLimit);
-
-      // Si es metadata-only (limit 200), NO incluir contenido
       if (contentLimit <= 200) {
         return `[${doc.municipality}] ${doc.type.toUpperCase()} ${doc.number}
 Título: ${doc.title}
 Fecha: ${doc.date}
 Estado: ${doc.status || 'vigente'}`;
       }
-
-      // Incluir extracto de contenido
       return `[${doc.municipality}] ${doc.type.toUpperCase()} ${doc.number}
 Título: ${doc.title}
 Fecha: ${doc.date}
@@ -581,27 +959,50 @@ Contenido: ${contentChunk}...`;
     })
     .join('\n\n---\n\n');
 
-  // 7. Extraer fuentes (usando URL completa de SIBOM)
+  if (isComputational && allTables.length > 0) {
+    const tablesContext = formatTablesForLLM(allTables);
+    context = `${context}\n\n---\n\n${tablesContext}`;
+  }
+
+  // 8. Extraer fuentes
   const sources = documents.map((doc) => ({
     title: `${doc.type} ${doc.number} - ${doc.municipality}`,
     url: buildBulletinUrl(doc.url),
     municipality: doc.municipality,
     type: doc.type,
     status: doc.status || 'vigente',
-    documentTypes: doc.documentTypes, // ✅ Incluir tipos de documentos dentro del boletín
+    documentTypes: doc.documentTypes,
   }));
 
-  if (process.env.NODE_ENV !== 'production') {
-    const duration = Date.now() - startTime;
-    console.log(`[RAG] Query "${query.slice(0, 30)}..." completada en ${duration}ms`);
-    console.log(`[RAG] Recuperados ${documents.length} documentos relevantes`);
-    console.log(`[RAG] Cache: ${fileCache.size} archivos en memoria`);
-  }
+  const duration = Date.now() - startTime;
+  console.log(`[RAG] Query "${query.slice(0, 30)}..." completada en ${duration}ms`);
 
   return {
     context: context || `No se encontró información específica para: "${query}"`,
     sources,
   };
+}
+
+/**
+ * Recupera contexto relevante para una consulta
+ * Elige automáticamente entre índice de normativas (nuevo) o boletines (legacy)
+ */
+export async function retrieveContext(
+  query: string,
+  options: SearchOptions = {}
+): Promise<SearchResult> {
+  // Usar índice de normativas si está habilitado y disponible
+  if (USE_NORMATIVAS_INDEX) {
+    try {
+      return await retrieveContextFromNormativas(query, options);
+    } catch (error) {
+      console.error('[RAG] ❌ Error con índice de normativas, usando fallback:', error);
+      return await retrieveContextFromBoletines(query, options);
+    }
+  }
+
+  // Fallback: usar índice de boletines (legacy)
+  return await retrieveContextFromBoletines(query, options);
 }
 
 /**
@@ -641,9 +1042,18 @@ export async function getDatabaseStats() {
  * Fuerza la recarga del cache en la próxima consulta
  */
 export function invalidateCache() {
+  // Cache de boletines (legacy)
   indexCache = [];
   cacheTimestamp = 0;
   lastFileModTime = 0;
-  fileCache.clear(); // Limpiar también cache de archivos
+
+  // Cache de normativas (nuevo)
+  normativasCache = [];
+  normativasCacheTimestamp = 0;
+  normativasLastFileModTime = 0;
+
+  // Cache de archivos
+  fileCache.clear();
+
   console.log('[RAG] 🔄 Cache invalidado completamente - se recargará en la próxima consulta');
 }

@@ -32,7 +32,18 @@
       "Bash(bash actualizar_index.sh:*)",
       "Bash(kill:*)",
       "Bash(xargs ls:*)",
-      "Bash(OPENAI_API_KEY=test python:*)"
+      "Bash(OPENAI_API_KEY=test python:*)",
+      "Bash(python:*)",
+      "Bash(xargs:*)",
+      "Bash(timeout:*)",
+      "Bash(pnpm test)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm vitest:*)",
+      "Bash(pnpm tsc:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(du -sh boletines/ normativas_index*.json boletines_index.json montos_index.json)",
+      "Bash(do basename \"$f\")",
+      "Bash(gzip:*)"
     ],
     "deny": [],
     "ask": []

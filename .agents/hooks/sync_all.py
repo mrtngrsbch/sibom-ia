@@ -14,6 +14,7 @@ from pathlib import Path
 from datetime import datetime
 import subprocess
 import sys
+import os
 
 def run_script(script_path, script_name):
     """Ejecuta un script Python y maneja errores"""
@@ -75,8 +76,16 @@ def main():
     print("=" * 60)
     print(f"📅 Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
-    root = Path.cwd()
-    agents_hooks = root / '.agents/hooks'
+    # Obtener el directorio raíz del proyecto (donde está .git)
+    current = Path(__file__).resolve()
+    root = current.parent.parent.parent  # .agents/hooks/sync_all.py -> raíz
+    
+    # Cambiar al directorio raíz
+    import os
+    os.chdir(root)
+    print(f"📂 Directorio de trabajo: {root}")
+
+    agents_hooks = root / '.agents' / 'hooks'
 
     # Scripts a ejecutar
     scripts = [

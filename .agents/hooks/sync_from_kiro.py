@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
 """
-Sincroniza .kiro/ → .agents/
+Sincroniza .kiro/specs/ → .agents/specs/
 
-Genera .agents/specs/ como referencias a la documentación técnica completa.
-Copia steering/ de .kiro/ a .agents/ (como base editable).
+Genera .agents/specs/ como REFERENCIAS CONCISAS al análisis técnico de .kiro/.
+
+FUENTES DE VERDAD:
+- .kiro/specs/ es fuente de verdad para ANÁLISIS TÉCNICO (generado por Kiro)
+- .agents/steering/ es fuente de verdad para REGLAS DE AGENTES (editado por humanos)
+
+Este script:
+1. Lee análisis técnico de .kiro/specs/
+2. Genera referencias concisas en .agents/specs/
+3. Copia steering/ de .kiro/ como base editable en .agents/
 
 Uso:
     python .agents/hooks/sync_from_kiro.py
@@ -14,13 +22,27 @@ from pathlib import Path
 from datetime import datetime
 
 class KiroToAgentsSync:
-    """Sincroniza documentación de Kiro hacia .agents/"""
+    """
+    Sincroniza documentación técnica de Kiro hacia .agents/
+    
+    IMPORTANTE:
+    - .kiro/specs/ → .agents/specs/ (referencias concisas)
+    - .kiro/steering/ → .agents/steering/ (base editable)
+    
+    .kiro/ es fuente de verdad para ANÁLISIS TÉCNICO
+    .agents/ es fuente de verdad para REGLAS DE AGENTES
+    """
 
     def __init__(self):
-        self.root = Path.cwd()
+        # Obtener el directorio raíz del proyecto (donde está .git)
+        current = Path(__file__).resolve()
+        self.root = current.parent.parent.parent  # .agents/hooks/sync_from_kiro.py -> raíz
         self.kiro_dir = self.root / '.kiro'
         self.agents_dir = self.root / '.agents'
         self.valid = False
+
+        print(f"📂 Directorio raíz: {self.root}")
+        print(f"📂 Buscando .kiro/ en: {self.kiro_dir}")
 
         # Verificar que .kiro/ existe
         if not self.kiro_dir.exists():
@@ -28,6 +50,7 @@ class KiroToAgentsSync:
             print("   Ejecuta Kiro primero para generar análisis")
             self.valid = False
         else:
+            print(f"✅ .kiro/ encontrado")
             self.valid = True
 
     def sync_specs(self):

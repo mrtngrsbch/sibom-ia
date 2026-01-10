@@ -8,6 +8,49 @@
 import { DocumentType } from './constants';
 
 /**
+ * Schema de una tabla estructurada
+ */
+export interface TableSchema {
+  columns: string[];
+  types: Array<'string' | 'number' | 'date'>;
+}
+
+/**
+ * Estadísticas numéricas de una columna
+ */
+export interface ColumnStats {
+  sum: number;
+  max: number;
+  min: number;
+  avg: number;
+  count: number;
+}
+
+/**
+ * Estadísticas de una tabla
+ */
+export interface TableStats {
+  row_count: number;
+  numeric_stats: Record<string, ColumnStats>;
+}
+
+/**
+ * Tabla estructurada extraída de un boletín
+ */
+export interface StructuredTable {
+  id: string;
+  title: string;
+  context: string;
+  description: string;
+  position: number;
+  schema: TableSchema;
+  data: Array<Record<string, any>>;
+  stats: TableStats;
+  markdown: string;
+  extraction_errors: string[];
+}
+
+/**
  * Filtros de búsqueda aplicables desde UI o query
  */
 export interface SearchFilters {
@@ -78,6 +121,8 @@ export interface Document {
   url: string;
   status: string;
   documentTypes?: DocumentType[];
+  tables?: StructuredTable[]; // Tablas estructuradas extraídas del boletín
+  text_content?: string; // Texto con placeholders [TABLA_N]
 }
 
 /**

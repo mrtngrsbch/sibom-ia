@@ -12,7 +12,7 @@ import json
 import time
 import re
 import argparse
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
@@ -25,6 +25,13 @@ from rich.table import Table
 from rich.panel import Panel
 from rich import print as rprint
 from bs4 import BeautifulSoup
+
+# Importar módulo de extracción de tablas
+from table_extractor import TableExtractor
+# Importar módulo de extracción de montos
+from monto_extractor import MontoExtractor
+# Importar módulo de extracción de normativas
+from normativas_extractor import extract_normativas_from_bulletin, save_index, save_minimal_index, Normativa
 
 # Cargar variables de entorno
 load_dotenv()
@@ -40,6 +47,42 @@ class SIBOMScraper:
         self.model = model
         self.rate_limit_delay = 3  # segundos entre llamadas
         self.last_call_time = 0
+        
+        # Inicializar extractor de tablas
+        self.table_extractor = TableExtractor()
+        # Inicializar extractor de montos
+        self.monto_extractor = MontoExtractor()
+        # Almacén de montos extraídos durante el scraping
+        self.montos_acumulados = []
+        # Almacén de normativas extraídas durante el scraping
+        self.normativas_acumuladas: List[Normativa] = []
+
+    def _detect_document_types(self, text: str) -> List[str]:
+        """
+        Detecta tipos de documentos presentes en el texto de un boletín.
+        Busca patrones como "ORDENANZA Nº", "DECRETO Nº", etc.
+        """
+        if not text:
+            return []
+
+        types_found = []
+        patterns = {
+            'ordenanza': r'\bORDENANZA\s+N[º°]\s*\d+',
+            'decreto': r'\bDECRETO\s+N[º°]\s*\d+',
+            'resolucion': r'\bRESOLUCI[ÓO]N\s+N[º°]\s*\d+',
+            'disposicion': r'\bDISPOSICI[ÓO]N\s+N[º°]\s*\d+',
+            'convenio': r'\bCONVENIO\s+(?:INTERINSTITUCIONAL|DE\s+(?:ADHESI[ÓO]N|COLABORACI[ÓO]N))',
+            'licitacion': r'\bLICITACI[ÓO]N\s+(?:P[ÚU]BLICA|PRIVADA)',
+            'edicto': r'\bEDITO\s+N[º°]\s*\d+',
+        }
+
+        text_upper = text.upper()
+        for doc_type, pattern in patterns.items():
+            if re.search(pattern, text_upper):
+                if doc_type not in types_found:
+                    types_found.append(doc_type)
+
+        return types_found
 
     def _wait_for_rate_limit(self):
         """Espera según rate limiting"""
@@ -58,6 +101,30 @@ class SIBOMScraper:
         if cleaned.endswith('```'):
             cleaned = cleaned[:-3]
         return cleaned.strip()
+
+    def _extract_municipality_name(self, description: str) -> str:
+        """
+        Extrae el nombre del municipio de la descripción del boletín.
+        Ejemplo: "105º de Carlos Tejedor" -> "Carlos Tejedor"
+        Ejemplo: "Boletín Oficial Municipal de Carlos Tejedor..." -> "Carlos Tejedor"
+        """
+        # Buscar patrón "de [Ciudad]" o "Municipal de [Ciudad]" o "Municipalidad de [Ciudad]"
+        patterns = [
+            r'(?:de\s+la\s+Municipalidad\s+de\s+)([A-ZÁÉÍÓÚa-záéíóúñÑ][a-zA-ZÁÉÍÓÚáéíóúñÑ\s]+?)(?:\s+que|\s*$|,)',
+            r'(?:Municipal\s+de\s+)([A-ZÁÉÍÓÚa-záéíóúñÑ][a-zA-ZÁÉÍÓÚáéíóúñÑ\s]+?)(?:\s+que|\s*$|,)',
+            r'(?:de\s+)([A-ZÁÉÍÓÚa-záéíóúñÑ][a-zA-ZÁÉÍÓÚáéíóúñÑ\s]+?)(?:\s*$)',
+            r'\d+º?\s+de\s+([A-ZÁÉÍÓÚa-záéíóúñÑ][a-zA-ZÁÉÍÓÚáéíóúñÑ\s]+?)(?:\s*$)',
+        ]
+
+        for pattern in patterns:
+            match = re.search(pattern, description, re.IGNORECASE)
+            if match:
+                return match.group(1).strip()
+
+        # Fallback: usar la descripción limpia
+        cleaned = re.sub(r'^\d+º?\s*', '', description)
+        cleaned = re.sub(r'^de\s+', '', cleaned, flags=re.IGNORECASE)
+        return cleaned.strip() or 'Desconocido'
 
     def _sanitize_filename(self, description: str, number: str = None) -> str:
         """
@@ -448,6 +515,64 @@ HTML: {html[:300000]}"""
 
         return text
 
+    def parse_final_content_structured(self, html: str) -> Dict[str, Any]:
+        """
+        Nivel 3 mejorado: Extrae contenido preservando estructura tabular.
+        
+        Usa TableExtractor para extraer tablas como datos estructurados,
+        reemplazándolas con placeholders [TABLA_N] en el texto.
+        
+        Args:
+            html: Contenido HTML del documento
+            
+        Returns:
+            Dict con:
+                - text_content: Texto con placeholders [TABLA_N]
+                - tables: Lista de tablas estructuradas
+                - metadata: Información sobre tablas extraídas
+        """
+        console.print("[cyan]📄 Nivel 3: Extrayendo contenido estructurado...[/cyan]")
+        
+        # Validación inicial del HTML
+        if not html or len(html) < 100:
+            raise ValueError(f"HTML inválido o demasiado corto ({len(html) if html else 0} caracteres)")
+        
+        html_size = len(html)
+        console.print(f"[dim]  → HTML recibido: {html_size:,} caracteres[/dim]")
+        
+        # Extraer tablas estructuradas
+        text_content, tables = self.table_extractor.extract_tables(html)
+        
+        # Validaciones de calidad
+        if len(text_content) < 50:
+            # Fallback al método original si la extracción estructurada falla
+            console.print(f"[yellow]⚠ Extracción estructurada produjo poco texto, usando método tradicional[/yellow]")
+            text_content = self.parse_final_content(html)
+            tables = []
+        
+        # Calcular métricas
+        text_size = len(text_content)
+        ratio = text_size / html_size if html_size > 0 else 0
+        table_count = len(tables)
+        
+        console.print(f"[green]✓ Texto extraído: {text_size:,} caracteres ({ratio:.1%}% del HTML)[/green]")
+        
+        if table_count > 0:
+            console.print(f"[green]✓ Tablas estructuradas: {table_count}[/green]")
+            for t in tables:
+                console.print(f"[dim]    → {t.id}: {t.title[:50]}... ({t.stats.row_count} filas)[/dim]")
+        
+        # Construir resultado
+        return {
+            "text_content": text_content,
+            "tables": [t.to_dict() for t in tables],
+            "metadata": {
+                "has_tables": table_count > 0,
+                "table_count": table_count,
+                "extraction_method": "structured"
+            }
+        }
+
     def process_bulletin(self, bulletin: Dict, base_url: str, output_dir: Path, skip_existing: bool = False) -> Dict:
         """Procesa un boletín completo (niveles 2 y 3) y guarda archivo individual"""
         try:
@@ -533,13 +658,36 @@ HTML: {html[:300000]}"""
 
                 return no_content_result
 
-            # Nivel 3: Extraer texto de cada documento
+            # Nivel 3: Extraer texto de cada documento (con extracción estructurada de tablas)
             full_text = ""
+            all_tables = []
+            
             for i, link in enumerate(content_links, 1):
                 console.print(f"[dim]  → Documento {i}/{len(content_links)}[/dim]")
                 doc_url = link if link.startswith('http') else f"{base_url}{link}"
                 doc_html = self.fetch_html(doc_url)
-                doc_text = self.parse_final_content(doc_html)
+                
+                # Usar extracción estructurada
+                try:
+                    structured = self.parse_final_content_structured(doc_html)
+                    doc_text = structured["text_content"]
+                    doc_tables = structured["tables"]
+                    
+                    # Ajustar IDs de tablas para evitar colisiones entre documentos
+                    for table in doc_tables:
+                        original_id = table["id"]
+                        new_id = f"DOC{i}_{original_id}"
+                        table["id"] = new_id
+                        table["source_document"] = i
+                        # Actualizar placeholder en el texto
+                        doc_text = doc_text.replace(f"[{original_id}]", f"[{new_id}]")
+                    
+                    all_tables.extend(doc_tables)
+                    
+                except Exception as e:
+                    console.print(f"[yellow]⚠ Error en extracción estructurada, usando método tradicional: {e}[/yellow]")
+                    doc_text = self.parse_final_content(doc_html)
+                    doc_tables = []
 
                 # Validación de longitud mínima del documento
                 if len(doc_text) < 500:
@@ -549,7 +697,23 @@ HTML: {html[:300000]}"""
 
                 full_text += f"\n[DOC {i}]\n{doc_text}\n"
 
-            result = {**bulletin, "status": "completed", "fullText": full_text}
+            # Detectar tipos de documentos presentes en el boletín
+            document_types = self._detect_document_types(full_text)
+
+            # Construir resultado con nuevo formato estructurado
+            result = {
+                **bulletin,
+                "status": "completed",
+                "text_content": full_text,  # Nuevo campo con placeholders
+                "tables": all_tables,        # Tablas estructuradas
+                "fullText": full_text,       # Mantener para compatibilidad (deprecated)
+                "documentTypes": document_types,  # Tipos de documentos detectados
+                "metadata": {
+                    "has_tables": len(all_tables) > 0,
+                    "table_count": len(all_tables),
+                    "document_count": len(content_links)
+                }
+            }
 
             # Guardar archivo individual
             filename = self._sanitize_filename(bulletin.get('description', bulletin['number']))
@@ -557,6 +721,26 @@ HTML: {html[:300000]}"""
 
             with filepath.open('w', encoding='utf-8') as f:
                 json.dump(result, f, indent=2, ensure_ascii=False)
+
+            # Extraer montos monetarios del boletín
+            montos = self.monto_extractor.extract_from_boletin(result)
+            if montos:
+                self.montos_acumulados.extend([m.to_dict() for m in montos])
+                console.print(f"[dim]    → {len(montos)} montos extraídos[/dim]")
+
+            # Extraer normativas del boletín (tiempo real)
+            bulletin_url = result.get('link', '')
+            if bulletin_url and not bulletin_url.startswith('http'):
+                bulletin_url = f"https://sibom.slyt.gba.gob.ar{bulletin_url}"
+            normativas = extract_normativas_from_bulletin(
+                bulletin_data=result,
+                municipality=self._extract_municipality_name(bulletin.get('description', filename)),
+                bulletin_id=filename,
+                bulletin_url=bulletin_url
+            )
+            if normativas:
+                self.normativas_acumuladas.extend(normativas)
+                console.print(f"[dim]    → {len(normativas)} normativas extraídas[/dim]")
 
             # Actualizar índice markdown
             self._update_index_md(result, output_dir, base_url)
@@ -834,6 +1018,30 @@ Ejemplos de uso:
         console.print(table)
         console.print(f"\n[bold green]✓ Boletines individuales guardados en: boletines/[/bold green]")
         console.print(f"[bold green]✓ Resumen consolidado guardado en: {output_path}[/bold green]")
+
+        # Guardar índice de montos extraídos
+        if scraper.montos_acumulados:
+            montos_path = Path("montos_index.json")
+            scraper.monto_extractor._save_index(scraper.montos_acumulados, montos_path)
+            console.print(f"[bold green]✓ Índice de montos guardado: {len(scraper.montos_acumulados):,} registros[/bold green]")
+
+        # Guardar índice de normativas extraídas
+        if scraper.normativas_acumuladas:
+            normativas_path = Path("normativas_index.json")
+            normativas_compact_path = Path("normativas_index_compact.json")
+            normativas_minimal_path = Path("normativas_index_minimal.json")
+
+            # Guardar índice completo
+            save_index(scraper.normativas_acumuladas, normativas_path, compact=False)
+            console.print(f"[bold green]✓ Índice de normativas (completo): {len(scraper.normativas_acumuladas):,} registros[/bold green]")
+
+            # Guardar índice compacto (sin contenido)
+            save_index(scraper.normativas_acumuladas, normativas_compact_path, compact=True)
+            console.print(f"[bold green]✓ Índice de normativas (compacto): {normativas_compact_path}[/bold green]")
+
+            # Guardar índice minimalista (para frontend)
+            save_minimal_index(scraper.normativas_acumuladas, normativas_minimal_path)
+            console.print(f"[bold green]✓ Índice de normativas (minimal): {normativas_minimal_path}[/bold green]")
 
     except KeyboardInterrupt:
         console.print("\n[yellow]Proceso interrumpido por el usuario[/yellow]")

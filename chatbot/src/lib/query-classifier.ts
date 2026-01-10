@@ -3,7 +3,52 @@
  *
  * Clasifica queries para determinar si necesitan búsqueda RAG o pueden responderse directamente.
  * Optimiza tokens al evitar búsquedas innecesarias en documentos.
+ * Incluye detección de queries computacionales que requieren datos tabulares estructurados.
  */
+
+/**
+ * Detecta si la query requiere operaciones computacionales sobre datos tabulares
+ * @param query - Consulta del usuario
+ * @returns true si necesita acceso a datos estructurados de tablas
+ *
+ * @example
+ * isComputationalQuery("cuál es el monto máximo de tasas") // true
+ * isComputationalQuery("suma de todas las tasas") // true
+ * isComputationalQuery("qué dice la ordenanza de tránsito") // false
+ *
+ * NOTA: Esta función es un wrapper simple. Para análisis completo de queries
+ * computacionales, usar el módulo @/lib/computation que incluye parsing
+ * y ejecución de operaciones.
+ */
+export function isComputationalQuery(query: string): boolean {
+  const computationalPatterns = [
+    // Operaciones de agregación
+    /suma|sumar|total|totalizar/i,
+    /promedio|media|average/i,
+
+    // Operaciones de comparación
+    /cu[aá]l.*m[aá]s.*alto|mayor|m[aá]ximo/i,
+    /cu[aá]l.*m[aá]s.*bajo|menor|m[ií]nimo/i,
+    /comparar|diferencia|vs|versus/i,
+    /entre.*y/i, // "diferencia entre X y Y"
+
+    // Operaciones de conteo
+    /cu[aá]ntos|cu[aá]ntas|cantidad|n[uú]mero de/i,
+
+    // Búsqueda de valores específicos en tablas
+    /monto|valor|precio|tasa|tarifa/i,
+    /categor[ií]a|tipo.*de/i,
+
+    // Operaciones de ordenamiento
+    /ordenar|listar.*por|ranking/i,
+
+    // Operaciones de filtrado sobre datos numéricos
+    /mayor.*que|menor.*que|igual.*a/i,
+    /entre.*\d+.*y.*\d+/i, // "entre 1000 y 5000"
+  ];
+
+  return computationalPatterns.some(pattern => pattern.test(query));
+}
 
 /**
  * Detecta si es una pregunta FAQ válida del sistema
@@ -13,7 +58,7 @@
 export function isFAQQuestion(query: string): boolean {
   const faqPatterns = [
     // Municipios disponibles
-    /qué.*municipios.*disponibles|cuáles.*municipios|municipios.*hay/i,
+    /qué.*municipios.*disponibles|cuáles.*municipios|municipios.*(hay|disponibles)/i,
 
     // Cómo buscar/consultar (FAQ clave que estaba fallando)
     /cómo.*busco|cómo.*buscar|cómo.*consulto|cómo.*consultar/i,
@@ -79,7 +124,8 @@ export function needsRAGSearch(query: string): boolean {
   const ordinanceKeywords = [
     /ordenanza/i,
     /decreto/i,
-    /boletin|boletín/i,
+    // Patrones flexibles para "boletín" (incluyendo errores comunes de tipeo)
+    /bolet[ií]n|botet[ií]n|boletin|botetin/i,
     /resolución/i,
     /normativa/i,
     /ley.*municipal/i,
@@ -97,7 +143,12 @@ export function needsRAGSearch(query: string): boolean {
     /sesión.*concejo/i,
     /concejal/i,
     /intendente/i,
-    /municipal/i
+    /municipal/i,
+    // Términos relacionados con pagos y finanzas municipales
+    /pago/i,
+    /pagos/i,
+    /finanzas/i,
+    /presupuesto/i,
   ];
 
   // Si menciona términos de ordenanzas → SÍ necesita RAG
@@ -185,9 +236,25 @@ export function getOffTopicResponse(query: string): string | null {
 export function calculateContentLimit(query: string): number {
   const lowerQuery = query.toLowerCase();
 
+  // Preguntas de listado de normativas específicas (necesitan MUCHO contenido)
+  const listingTypesPattern = /(ordenanzas?|decretos?|resoluciones?|disposiciones?|convenios?|licitaciones?).*(de|del|en|para)/i;
+  const hasListingType = listingTypesPattern.test(query);
+  const hasYear = /\b(202[0-9]|201[5-9])\b/.test(query);
+  const hasMunicipality = /municipio|carlos|tejedor|adolfo|alsina|alberti|arrecifes|avellaneda|bahia|balcarce|baradero|benito|bolivar|bragado|brandsen|campana|capitán|carmen|castelli|chacabuco|chascomús|chivilcoy|coronel|daireaux|dolores|exaltación|florentino/i.test(lowerQuery);
+
+  // Si pide un tipo específico + municipio/año → necesita contenido COMPLETO
+  // Los boletines pueden tener 130k+ palabras, necesitamos pasar todo el contenido
+  if (hasListingType && (hasYear || hasMunicipality)) {
+    return 200000;  // Contenido completo para extraer TODAS las normativas
+  }
+
+  // Preguntas "cuántas" con tipo específico también necesitan contenido completo
+  if (/cuántas?.+(ordenanzas?|decretos?|resoluciones?)/i.test(query)) {
+    return 200000;  // Necesita leer todo para contar
+  }
+
   // Preguntas metadata-only (NO necesitan contenido completo)
   const metadataOnlyPatterns = [
-    /cuántas/i,
     /cuál.*última/i,
     /cuál.*más.*reciente/i,
     /listar/i,
@@ -204,7 +271,7 @@ export function calculateContentLimit(query: string): number {
 
   // Preguntas específicas sobre contenido
   if (/qué.*dice|contenido|texto|artículo|establece|dispone/i.test(query)) {
-    return 1000;  // Extracto mediano
+    return 5000;  // Extracto mediano
   }
 
   // Default: extracto corto

@@ -4,7 +4,7 @@
  */
 
 import { extractFiltersFromQuery } from './src/lib/query-filter-extractor';
-import { retrieveContext, getDatabaseStats } from './src/lib/rag/retriever';
+import { retrieveContext, getDatabaseStats, type SearchOptions } from './src/lib/rag/retriever';
 import { needsRAGSearch, calculateOptimalLimit } from './src/lib/query-classifier';
 
 async function simulateAPIRequest() {
@@ -36,11 +36,11 @@ async function simulateAPIRequest() {
   console.log(`\n[2] Estadísticas cargadas: ${stats.municipalities} municipios, ${stats.totalDocuments} docs`);
 
   // 3. Construir filtros UI
-  const uiFilters = {
-    municipality: filters.municipality,
+  const uiFilters: Partial<SearchOptions> = {
+    municipality: filters.municipality || undefined,
     type: filters.ordinanceType !== 'all' ? filters.ordinanceType : undefined,
-    dateFrom: filters.dateFrom,
-    dateTo: filters.dateTo
+    dateFrom: filters.dateFrom || undefined,
+    dateTo: filters.dateTo || undefined
   };
 
   console.log(`\n[3] Filtros UI preparados: ${JSON.stringify(uiFilters)}`);

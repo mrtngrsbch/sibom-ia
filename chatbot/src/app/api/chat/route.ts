@@ -18,10 +18,16 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { streamText, convertToCoreMessages, StreamData } from 'ai';
 import { retrieveContext, getDatabaseStats } from '@/lib/rag/retriever';
-import { needsRAGSearch, calculateOptimalLimit, getOffTopicResponse, isFAQQuestion } from '@/lib/query-classifier';
+import { retrieveWithComputation, type ComputationalSearchResult } from '@/lib/rag/computational-retriever';
+import { needsRAGSearch, calculateOptimalLimit, getOffTopicResponse, isFAQQuestion, isComputationalQuery } from '@/lib/query-classifier';
 import { extractFiltersFromQuery } from '@/lib/query-filter-extractor';
 import fs from 'fs/promises';
 import path from 'path';
+
+// Type guard para verificar si es un resultado computacional
+function isComputationalResult(result: any): result is ComputationalSearchResult {
+  return result && typeof result === 'object' && 'computationResult' in result;
+}
 
 export const maxDuration = 60;
 
@@ -112,19 +118,49 @@ export async function POST(req: Request) {
     const hasFilters = !!(enhancedFilters.municipality || enhancedFilters.type || enhancedFilters.dateFrom || enhancedFilters.dateTo);
     const optimalLimit = calculateOptimalLimit(query, hasFilters);
 
+    // Determinar si el filtro de tipo es MANUAL (UI) o AUTOMÁTICO (detectado de query)
+    // isManualTypeFilter = true solo cuando el usuario seleccionó explícitamente en el dropdown
+    const isManualTypeFilter = uiFilters.type !== undefined && uiFilters.type === enhancedFilters.type;
+
     const searchOptions = {
       ...enhancedFilters,
-      limit: optimalLimit
+      limit: optimalLimit,
+      isManualTypeFilter
     };
 
     console.log(`[ChatAPI] Filtros UI: ${JSON.stringify(uiFilters)}`);
     console.log(`[ChatAPI] Filtros extraídos de query: ${JSON.stringify(enhancedFilters)}`);
+    console.log(`[ChatAPI] Tipo manual: ${isManualTypeFilter}`);
     console.log(`[ChatAPI] Límite dinámico: ${optimalLimit} docs (filtros: ${hasFilters})`);
 
+    // Detectar si es query computacional que requiere comparación entre municipios
+    const isComp = isComputationalQuery(query);
+    const requiresCrossMunicipalityComparison = isComp &&
+      !enhancedFilters.municipality &&
+      /municipio|comparar|entre|menor|mayor|m[ií]nimo|m[aá]ximo/i.test(query);
+
+    console.log(`[ChatAPI] Query computacional: ${isComp}, Requiere comparación multi-municipio: ${requiresCrossMunicipalityComparison}`);
+
     // Recuperar contexto con los filtros mejorados
-    const retrievedContext = shouldSearch
-      ? await retrieveContext(query, searchOptions)
-      : { context: '', sources: [] }; // ✅ 0 tokens si no necesita RAG
+    // Para queries computacionales comparativas, usar retrieveWithComputation
+    let retrievedContext;
+    if (shouldSearch && requiresCrossMunicipalityComparison) {
+      console.log('[ChatAPI] 🧮 Usando retrieveWithComputation para query comparativa');
+      retrievedContext = await retrieveWithComputation(query, searchOptions);
+
+      // Log del resultado computacional
+      if (retrievedContext.computationResult) {
+        console.log(`[ChatAPI] Resultado computacional: success=${retrievedContext.computationResult.success}`);
+        if (retrievedContext.computationResult.answer) {
+          console.log(`[ChatAPI] Respuesta computacional: ${retrievedContext.computationResult.answer.slice(0, 100)}...`);
+        }
+      }
+    } else if (shouldSearch) {
+      console.log('[ChatAPI] 📄 Usando retrieveContext normal');
+      retrievedContext = await retrieveContext(query, searchOptions);
+    } else {
+      retrievedContext = { context: '', sources: [] };
+    }
 
     // Determinar tipo de respuesta según el contexto
     let systemPromptTemplate = '';
@@ -221,9 +257,21 @@ NOTA CRÍTICA: Los municipios listados arriba son los ÚNICOS que tienen informa
         ? `\n\nFILTROS APLICADOS EN ESTA BÚSQUEDA:\n${filters.municipality ? `- Municipio: ${filters.municipality}\n` : ''}${filters.ordinanceType && filters.ordinanceType !== 'all' ? `- Tipo de norma: ${filters.ordinanceType}\n` : ''}${filters.dateFrom ? `- Desde: ${filters.dateFrom}\n` : ''}${filters.dateTo ? `- Hasta: ${filters.dateTo}\n` : ''}`
         : '';
 
+      // Para queries computacionales, agregar el resultado al contexto
+      let contextToUse = retrievedContext.context || 'No se encontró información específica.';
+      if (isComputationalResult(retrievedContext) && retrievedContext.computationResult?.success) {
+        const compResult = retrievedContext.computationResult;
+        let computationContext = `\n\n## 🔢 RESULTADO COMPUTACIONAL\n\n${compResult.answer}\n`;
+        if (compResult.markdown) {
+          computationContext += `\n${compResult.markdown}\n`;
+        }
+        contextToUse = contextToUse + computationContext;
+        console.log('[ChatAPI] ✅ Resultado computacional agregado al contexto');
+      }
+
       systemPrompt = systemPromptTemplate
         .replace('{{stats}}', statsText)
-        .replace('{{context}}', retrievedContext.context || 'No se encontró información específica.')
+        .replace('{{context}}', contextToUse)
         .replace('{{sources}}', sourcesText) + filtersApplied;
     }
     // Para off-topic, systemPrompt ya está completo (no necesita contexto RAG)

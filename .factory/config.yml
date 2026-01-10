@@ -1,0 +1,57 @@
+# Configuración Droid - SIBOM Scraper Assistant
+# Este archivo configura cómo los droids deben trabajar en este proyecto
+
+# Contexto principal para agentes
+agents_context:
+  # LEER PRIMERO (reglas obligatorias)
+  read_first:
+    - .agents/specs/
+    - .agents/steering/
+  
+  # Consultar para detalles técnicos profundos
+  reference_for_details:
+    - .kiro/specs/
+  
+  # Restricciones DURAS (no negociables)
+  hard_constraints:
+    - .agents/steering/python-patterns.md
+    - .agents/steering/typescript-patterns.md
+    - .agents/steering/error-handling.md
+    - .agents/steering/testing-patterns.md
+    - .agents/steering/performance-optimization.md
+
+# Comandos comunes del proyecto
+project_commands:
+  chatbot:
+    install: "cd chatbot && pnpm install"
+    dev: "cd chatbot && pnpm run dev"
+    build: "cd chatbot && pnpm run build"
+    test: "cd chatbot && pnpm test"
+  
+  scraper:
+    setup: "cd python-cli && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt"
+    run: "cd python-cli && python3 sibom_scraper.py --limit 5"
+    test: "cd python-cli && pytest"
+
+# Especialistas disponibles
+droids:
+  - unit-test-and-code-review-specialist
+
+# Flujo de trabajo
+workflow:
+  before_coding:
+    - "Leer .agents/specs/ para entender arquitectura"
+    - "Revisar .agents/steering/ para reglas obligatorias"
+    - "Consultar .kiro/specs/ si necesitas detalles técnicos"
+  
+  before_commit:
+    - "Verificar que se siguieron patrones de .agents/steering/"
+    - "Ejecutar tests relevantes"
+    - "Revisar que no se rompieron reglas obligatorias"
+
+# Notas importantes
+notes: |
+  - .agents/ es la FUENTE DE VERDAD para reglas de agentes AI
+  - .kiro/ es la REFERENCIA TÉCNICA para análisis profundo
+  - Siempre leer .agents/ ANTES de modificar código
+  - Consultar .kiro/ solo cuando necesites detalles de implementación

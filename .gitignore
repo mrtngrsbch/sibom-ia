@@ -53,6 +53,16 @@ python-cli/boletines/*.json
 python-cli/boletines/csv/*.csv
 python-cli/sibom_results.json
 
+# Large data files (go to Cloudflare R2, not GitHub)
+python-cli/normativas_index.json
+python-cli/normativas_index_compact.json
+python-cli/normativas_index_minimal.json
+python-cli/normativas_carlos_tejedor.json
+python-cli/normativas_carlos_tejedor_compact.json
+python-cli/montos_index.json
+python-cli/.wrangler/
+python-cli/dist/
+
 # Temporary files
 *.tmp
 *.bak

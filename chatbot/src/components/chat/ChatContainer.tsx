@@ -4,12 +4,15 @@ import { useRef, useEffect, useState, useMemo } from 'react';
 import { useChat } from 'ai/react';
 import { Send, Bot, User, Sparkles, Loader2 } from '@/lib/icons';
 import { clsx } from 'clsx';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+// @ts-ignore - CommonJS require para compatibilidad con Next.js 15 + React 19
+const ReactMarkdown = require('react-markdown').default;
+// @ts-ignore - CommonJS require
+const remarkGfm = require('remark-gfm').default;
 import { Citations } from './Citations';
 import type { ChatFilters } from '@/lib/types';
 import { TokenUsage } from './TokenUsage';
 import { extractFiltersFromQuery } from '@/lib/query-filter-extractor';
+import type { SearchOptions } from '@/lib/rag/retriever';
 
 /**
  * Función de debounce para reducir frecuencia de ejecución
@@ -175,11 +178,11 @@ export function ChatContainer({ filters, municipalities, onClearHistory, onFilte
     }
 
     // ✅ ESTRATEGIA A: Extraer filtros automáticamente de la query
-    const uiFilters = {
-      municipality: filters.municipality,
+    const uiFilters: Partial<SearchOptions> = {
+      municipality: filters.municipality || undefined,
       type: filters.ordinanceType === 'all' ? undefined : filters.ordinanceType,
-      dateFrom: filters.dateFrom,
-      dateTo: filters.dateTo
+      dateFrom: filters.dateFrom || undefined,
+      dateTo: filters.dateTo || undefined
     };
 
     const extractedFilters = extractFiltersFromQuery(input, municipalities, uiFilters);
@@ -304,7 +307,7 @@ export function ChatContainer({ filters, municipalities, onClearHistory, onFilte
                     )}
                   </div>
 
-                  {/* Mostrar Citations y TokenUsage si es el mensaje del asistente y es el último mensaje */}
+                  {/* Mostrar Citations y TokenUsage para mensajes del asistente */}
                   {(() => {
                     const sourcesData = Array.isArray(data)
                       ? (data as any[])
@@ -318,22 +321,23 @@ export function ChatContainer({ filters, municipalities, onClearHistory, onFilte
                           .pop()?.usage
                       : undefined;
 
-                    const isLastAssistantMessage = message.role === 'assistant' &&
-                      message.id === messages[messages.length - 1]?.id;
-
-                    return isLastAssistantMessage && (
-                      <>
-                        {sourcesData.length > 0 && (
-                          <Citations sources={sourcesData} />
-                        )}
-                        <TokenUsage
-                          promptTokens={usageData?.promptTokens}
-                          completionTokens={usageData?.completionTokens}
-                          totalTokens={usageData?.totalTokens}
-                          model={usageData?.model}
-                        />
-                      </>
-                    );
+                    // Solo mostrar en mensajes del asistente que tienen contenido
+                    if (message.role === 'assistant' && message.content) {
+                      return (
+                        <>
+                          {sourcesData.length > 0 && (
+                            <Citations sources={sourcesData} />
+                          )}
+                          <TokenUsage
+                            promptTokens={usageData?.promptTokens}
+                            completionTokens={usageData?.completionTokens}
+                            totalTokens={usageData?.totalTokens}
+                            model={usageData?.model}
+                          />
+                        </>
+                      );
+                    }
+                    return null;
                   })()}
                 </div>
 

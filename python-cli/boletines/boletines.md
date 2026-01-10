@@ -15,12 +15,12 @@ JSON2Markdown Converter = https://memochou1993.github.io/json2markdown-converter
 | 98º | 13/10/2025 | 98º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13556](https://sibom.slyt.gba.gob.ar/bulletins/13556) | ✅ Completado |
 | 97º | 16/09/2025 | 97º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13516](https://sibom.slyt.gba.gob.ar/bulletins/13516) | ✅ Completado |
 | 96º | 12/09/2025 | 96º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13511](https://sibom.slyt.gba.gob.ar/bulletins/13511) | ✅ Completado |
-| 95º | 08/01/2024 | 95º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10036](https://sibom.slyt.gba.gob.ar/bulletins/10036) | ✅ Completado |
-| 94º | 05/01/2024 | 94º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10017](https://sibom.slyt.gba.gob.ar/bulletins/10017) | ✅ Completado |
-| 93º | 29/12/2023 | 93º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/9965](https://sibom.slyt.gba.gob.ar/bulletins/9965) | ✅ Completado |
-| 92º | 27/12/2023 | 92º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/9923](https://sibom.slyt.gba.gob.ar/bulletins/9923) | ✅ Completado |
-| 91º | 12/12/2023 | 91º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/9660](https://sibom.slyt.gba.gob.ar/bulletins/9660) | ✅ Completado |
-| 90º | 03/11/2023 | 90º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/9579](https://sibom.slyt.gba.gob.ar/bulletins/9579) | ✅ Completado |
+| 95º | 12/09/2025 | 95º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13342](https://sibom.slyt.gba.gob.ar/bulletins/13342) | ✅ Completado |
+| 94º | 08/08/2025 | 94º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13276](https://sibom.slyt.gba.gob.ar/bulletins/13276) | ✅ Completado |
+| 93º | 08/08/2025 | 93º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13196](https://sibom.slyt.gba.gob.ar/bulletins/13196) | ✅ Completado |
+| 92º | 16/07/2025 | 92º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13117](https://sibom.slyt.gba.gob.ar/bulletins/13117) | ✅ Completado |
+| 91º | 08/07/2025 | 91º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13086](https://sibom.slyt.gba.gob.ar/bulletins/13086) | ✅ Completado |
+| 90º | 12/06/2025 | 90º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12968](https://sibom.slyt.gba.gob.ar/bulletins/12968) | ✅ Completado |
 | 89º | 28/09/2023 | 89º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/9425](https://sibom.slyt.gba.gob.ar/bulletins/9425) | ✅ Completado |
 | 88º | 07/09/2023 | 88º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/9316](https://sibom.slyt.gba.gob.ar/bulletins/9316) | ✅ Completado |
 | 87º | 07/08/2023 | 87º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/9033](https://sibom.slyt.gba.gob.ar/bulletins/9033) | ✅ Completado |

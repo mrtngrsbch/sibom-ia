@@ -1030,6 +1030,42 @@ export async function retrieveContext(
  * Obtiene estadísticas de la base de datos
  */
 export async function getDatabaseStats() {
+  // Intentar usar índice de normativas primero
+  if (USE_NORMATIVAS_INDEX) {
+    try {
+      const normativas = await loadNormativasIndex();
+      if (normativas.length > 0) {
+        const municipalities = new Set(normativas.map(n => n.m));
+        
+        // Obtener fecha de última actualización
+        let lastUpdated: string | null = null;
+        try {
+          if (useGitHub()) {
+            lastUpdated = normativasCacheTimestamp > 0 ? new Date(normativasCacheTimestamp).toISOString() : null;
+          } else {
+            const basePath = getDataBasePath();
+            const indexPath = path.join(basePath, 'normativas_index_minimal.json');
+            const stats = await fs.stat(indexPath);
+            lastUpdated = stats.mtime.toISOString();
+          }
+        } catch (err) {
+          console.warn('[RAG] No se pudo obtener fecha de actualización del índice de normativas');
+        }
+        
+        return {
+          totalDocuments: normativas.length,
+          municipalities: municipalities.size,
+          municipalityList: Array.from(municipalities).sort(),
+          lastUpdated,
+          source: useGitHub() ? 'GitHub' : 'Local',
+        };
+      }
+    } catch (error) {
+      console.error('[RAG] Error cargando índice de normativas para stats, usando fallback:', error);
+    }
+  }
+  
+  // Fallback: usar índice de boletines (legacy)
   const rawIndex = await loadIndex();
   const validDocuments = filterValidDocuments(rawIndex);
   

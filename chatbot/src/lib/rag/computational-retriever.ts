@@ -76,6 +76,24 @@ async function readJSONFile(filename: string): Promise<any> {
 }
 
 /**
+ * Filtra documentos válidos excluyendo archivos especiales
+ */
+function filterValidDocuments(documents: any[]): any[] {
+  return documents.filter(d => {
+    // Excluir archivos de progreso (.progress_*.json)
+    if (d.filename && d.filename.startsWith('.progress_')) return false;
+    
+    // Excluir archivos de test (Test_*.json)
+    if (d.filename && d.filename.startsWith('Test_')) return false;
+    
+    // Excluir municipios vacíos o inválidos
+    if (!d.municipality || d.municipality.trim() === '') return false;
+    
+    return true;
+  });
+}
+
+/**
  * Lee el índice de boletines
  */
 async function loadIndex(): Promise<any[]> {
@@ -149,7 +167,8 @@ export async function retrieveWithComputation(
   console.log('[CompRetriever] 🧮 Query computacional detectada, cargando tablas...');
 
   // 3. Cargar índice y extraer tablas de documentos relevantes
-  const index = await loadIndex();
+  const rawIndex = await loadIndex();
+  const index = filterValidDocuments(rawIndex);
   let filteredIndex = index;
 
   // Aplicar filtros

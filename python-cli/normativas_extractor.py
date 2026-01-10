@@ -74,6 +74,7 @@ class Normativa:
     content: str
     source_bulletin: str
     source_bulletin_url: str
+    norma_url: str  # URL individual de la norma (nuevo formato V2)
     doc_index: int
     status: str
     extracted_at: str
@@ -306,6 +307,7 @@ def extract_normativas_from_bulletin(
             content=cleaned_content,
             source_bulletin=bulletin_id,
             source_bulletin_url=bulletin_url,
+            norma_url=bulletin_url,  # Para V1, usar URL del boletín (no hay URLs individuales)
             doc_index=doc_index,
             status='vigente',  # Por defecto
             extracted_at=extracted_at
@@ -422,7 +424,7 @@ def save_minimal_index(normativas: List[Normativa], output_path: Path):
     Guarda un índice MINIMALISTA para búsqueda rápida en frontend.
     Solo incluye campos esenciales para búsqueda y enlaces.
 
-    Campos: id, municipality, type, number, year, date, title, source_bulletin, source_bulletin_url
+    Campos: id, municipality, type, number, year, date, title, source_bulletin, norma_url
     """
     data = []
     for n in normativas:
@@ -435,7 +437,7 @@ def save_minimal_index(normativas: List[Normativa], output_path: Path):
             'd': n.date,
             'ti': n.title[:100] if len(n.title) > 100 else n.title,  # Truncar título
             'sb': n.source_bulletin,
-            'url': n.source_bulletin_url,
+            'url': n.norma_url if hasattr(n, 'norma_url') and n.norma_url else n.source_bulletin_url,  # Usar URL individual si existe (V2), fallback a boletín (V1)
         })
 
     with open(output_path, 'w', encoding='utf-8') as f:

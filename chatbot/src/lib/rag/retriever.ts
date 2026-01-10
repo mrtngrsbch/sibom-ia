@@ -161,6 +161,26 @@ const FILE_CACHE_DURATION = 30 * 60 * 1000; // 30 minutos
 // ============================================================================
 
 /**
+ * Filtra documentos válidos excluyendo archivos especiales
+ * @param documents - Array de documentos del índice
+ * @returns Array filtrado sin archivos de progreso, test, etc.
+ */
+function filterValidDocuments(documents: IndexEntry[]): IndexEntry[] {
+  return documents.filter(d => {
+    // Excluir archivos de progreso (.progress_*.json)
+    if (d.filename && d.filename.startsWith('.progress_')) return false;
+    
+    // Excluir archivos de test (Test_*.json)
+    if (d.filename && d.filename.startsWith('Test_')) return false;
+    
+    // Excluir municipios vacíos o inválidos
+    if (!d.municipality || d.municipality.trim() === '') return false;
+    
+    return true;
+  });
+}
+
+/**
  * Determina si se debe usar fuente remota (GitHub/R2/S3) o archivos locales
  */
 function useGitHub(): boolean {
@@ -813,7 +833,8 @@ async function retrieveContextFromBoletines(
   const startTime = Date.now();
 
   // 1. Cargar índice
-  const index = await loadIndex();
+  const rawIndex = await loadIndex();
+  const index = filterValidDocuments(rawIndex);
 
   if (index.length === 0) {
     return { context: '', sources: [] };
@@ -1009,8 +1030,10 @@ export async function retrieveContext(
  * Obtiene estadísticas de la base de datos
  */
 export async function getDatabaseStats() {
-  const index = await loadIndex();
-  const municipalities = new Set(index.map(d => d.municipality));
+  const rawIndex = await loadIndex();
+  const validDocuments = filterValidDocuments(rawIndex);
+  
+  const municipalities = new Set(validDocuments.map(d => d.municipality));
 
   // Obtener fecha de última actualización
   let lastUpdated: string | null = null;
@@ -1030,7 +1053,7 @@ export async function getDatabaseStats() {
   }
 
   return {
-    totalDocuments: index.length,
+    totalDocuments: validDocuments.length,
     municipalities: municipalities.size,
     municipalityList: Array.from(municipalities).sort(),
     lastUpdated,

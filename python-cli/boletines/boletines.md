@@ -5,16 +5,16 @@ JSON2Markdown Converter = https://memochou1993.github.io/json2markdown-converter
 
 | Number | Date | Description | Link | Status |
 |--------|------|-------------|------|--------|
-| 105º | 08/04/2024 | 105º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10382](https://sibom.slyt.gba.gob.ar/bulletins/10382) | ✅ Completado |
-| 104º | 27/03/2024 | 104º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10370](https://sibom.slyt.gba.gob.ar/bulletins/10370) | ✅ Completado |
-| 103º | 27/03/2024 | 103º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10351](https://sibom.slyt.gba.gob.ar/bulletins/10351) | ✅ Completado |
-| 102º | 06/03/2024 | 102º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10251](https://sibom.slyt.gba.gob.ar/bulletins/10251) | ✅ Completado |
-| 101º | 04/03/2024 | 101º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10245](https://sibom.slyt.gba.gob.ar/bulletins/10245) | ✅ Completado |
-| 100º | 02/02/2024 | 100º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10109](https://sibom.slyt.gba.gob.ar/bulletins/10109) | ✅ Completado |
-| 99º | 22/01/2024 | 99º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10103](https://sibom.slyt.gba.gob.ar/bulletins/10103) | ✅ Completado |
-| 98º | 22/01/2024 | 98º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10098](https://sibom.slyt.gba.gob.ar/bulletins/10098) | ✅ Completado |
-| 97º | 19/01/2024 | 97º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10095](https://sibom.slyt.gba.gob.ar/bulletins/10095) | ✅ Completado |
-| 96º | 19/01/2024 | 96º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10072](https://sibom.slyt.gba.gob.ar/bulletins/10072) | ✅ Completado |
+| 105º | 23/12/2025 | 105º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/14046](https://sibom.slyt.gba.gob.ar/bulletins/14046) | ✅ Completado |
+| 104º | 11/12/2025 | 104º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/14045](https://sibom.slyt.gba.gob.ar/bulletins/14045) | ✅ Completado |
+| 103º | 14/11/2025 | 103º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13865](https://sibom.slyt.gba.gob.ar/bulletins/13865) | ✅ Completado |
+| 102º | 12/11/2025 | 102º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13864](https://sibom.slyt.gba.gob.ar/bulletins/13864) | ✅ Completado |
+| 101º | 15/10/2025 | 101º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13699](https://sibom.slyt.gba.gob.ar/bulletins/13699) | ✅ Completado |
+| 100º | 14/10/2025 | 100º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13696](https://sibom.slyt.gba.gob.ar/bulletins/13696) | ✅ Completado |
+| 99º | 14/10/2025 | 99º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13695](https://sibom.slyt.gba.gob.ar/bulletins/13695) | ✅ Completado |
+| 98º | 13/10/2025 | 98º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13556](https://sibom.slyt.gba.gob.ar/bulletins/13556) | ✅ Completado |
+| 97º | 16/09/2025 | 97º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13516](https://sibom.slyt.gba.gob.ar/bulletins/13516) | ✅ Completado |
+| 96º | 12/09/2025 | 96º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13511](https://sibom.slyt.gba.gob.ar/bulletins/13511) | ✅ Completado |
 | 95º | 08/01/2024 | 95º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10036](https://sibom.slyt.gba.gob.ar/bulletins/10036) | ✅ Completado |
 | 94º | 05/01/2024 | 94º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10017](https://sibom.slyt.gba.gob.ar/bulletins/10017) | ✅ Completado |
 | 93º | 29/12/2023 | 93º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/9965](https://sibom.slyt.gba.gob.ar/bulletins/9965) | ✅ Completado |
@@ -258,3 +258,4 @@ JSON2Markdown Converter = https://memochou1993.github.io/json2markdown-converter
 | 212º | 01/05/2025 | 212º de Pilar | [https://sibom.slyt.gba.gob.ar/bulletins/12687](https://sibom.slyt.gba.gob.ar/bulletins/12687) | ✅ Completado |
 | 211º | 25/04/2025 | 211º de Pilar | [https://sibom.slyt.gba.gob.ar/bulletins/12656](https://sibom.slyt.gba.gob.ar/bulletins/12656) | ✅ Completado |
 | 210º | 09/04/2025 | 210º de Pilar | [https://sibom.slyt.gba.gob.ar/bulletins/12560](https://sibom.slyt.gba.gob.ar/bulletins/12560) | ✅ Completado |
+| N/A | N/A | N/A | [N/A](N/A) | 🤖 Creado |

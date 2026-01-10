@@ -12,6 +12,10 @@ import json
 import time
 import re
 import argparse
+import random
+import platform
+import subprocess
+from datetime import datetime
 from typing import List, Dict, Optional, Any
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -39,15 +43,40 @@ load_dotenv()
 console = Console()
 
 class SIBOMScraper:
+    # Mapeo de IDs de ciudades a nombres
+    CITY_MAP = {
+        '22': 'Merlo',
+        '23': 'Carlos Tejedor',
+        '24': 'La Plata',
+        '25': 'San Isidro',
+        '26': 'Vicente López',
+        '27': 'Tigre',
+        '28': 'San Fernando',
+        '29': 'Morón',
+        '30': 'Tres de Febrero',
+        # Agregar más ciudades según sea necesario
+    }
+    
     def __init__(self, api_key: str, model: str = "z-ai/glm-4.5-air:free"):
         self.client = OpenAI(
             api_key=api_key,
             base_url="https://openrouter.ai/api/v1"
         )
         self.model = model
-        self.rate_limit_delay = 3  # segundos entre llamadas
+        self.rate_limit_delay = 3  # segundos entre llamadas (base)
+        self.jitter_range = 1.0  # +/- 1 segundo de variación aleatoria
         self.last_call_time = 0
-        
+
+        # User-Agent para simular navegador real
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+            'Accept-Language': 'es-AR,es;q=0.9,en;q=0.8',
+            'Accept-Encoding': 'gzip, deflate, br',
+            'Connection': 'keep-alive',
+            'Upgrade-Insecure-Requests': '1'
+        }
+
         # Inicializar extractor de tablas
         self.table_extractor = TableExtractor()
         # Inicializar extractor de montos
@@ -56,6 +85,92 @@ class SIBOMScraper:
         self.montos_acumulados = []
         # Almacén de normativas extraídas durante el scraping
         self.normativas_acumuladas: List[Normativa] = []
+
+    def _play_sound(self, sound_type: str = 'success'):
+        """
+        Reproduce un sonido del sistema según el tipo.
+        
+        Args:
+            sound_type: 'success' para boletín completado, 'complete' para tarea finalizada
+        """
+        try:
+            system = platform.system()
+            
+            if system == 'Darwin':  # macOS
+                if sound_type == 'success':
+                    # Sonido Hero para cada boletín completado
+                    subprocess.run(['afplay', '/System/Library/Sounds/Hero.aiff'], 
+                                 check=False, capture_output=True)
+                elif sound_type == 'complete':
+                    # Sonido Funk para tarea completa
+                    subprocess.run(['afplay', '/System/Library/Sounds/Funk.aiff'], 
+                                 check=False, capture_output=True)
+            elif system == 'Linux':
+                # Usar beep en Linux (requiere beep instalado)
+                if sound_type == 'success':
+                    subprocess.run(['paplay', '/usr/share/sounds/freedesktop/stereo/message.oga'], 
+                                 check=False, capture_output=True)
+                elif sound_type == 'complete':
+                    subprocess.run(['paplay', '/usr/share/sounds/freedesktop/stereo/complete.oga'], 
+                                 check=False, capture_output=True)
+            elif system == 'Windows':
+                # Usar winsound en Windows
+                import winsound
+                if sound_type == 'success':
+                    winsound.MessageBeep(winsound.MB_OK)
+                elif sound_type == 'complete':
+                    winsound.MessageBeep(winsound.MB_ICONASTERISK)
+        except Exception:
+            # Silenciosamente ignorar errores de sonido
+            pass
+
+    def _get_progress_file(self, bulletin_id: str, output_dir: Path) -> Path:
+        """Retorna path del archivo de progreso para un boletín"""
+        return output_dir / f".progress_{bulletin_id}.json"
+
+    def _save_progress(self, bulletin_id: str, output_dir: Path,
+                       normas_procesadas: List[str], normas_pendientes: List[str]):
+        """Guarda progreso incremental del scraping de un boletín"""
+        progress_file = self._get_progress_file(bulletin_id, output_dir)
+
+        progress_data = {
+            "bulletin_id": bulletin_id,
+            "timestamp": time.time(),
+            "normas_procesadas": normas_procesadas,
+            "normas_pendientes": normas_pendientes,
+            "total": len(normas_procesadas) + len(normas_pendientes),
+            "completed": len(normas_procesadas)
+        }
+
+        try:
+            with progress_file.open('w', encoding='utf-8') as f:
+                json.dump(progress_data, f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            console.print(f"[yellow]⚠ No se pudo guardar progreso: {e}[/yellow]")
+
+    def _load_progress(self, bulletin_id: str, output_dir: Path) -> Optional[Dict]:
+        """Carga progreso existente de un boletín"""
+        progress_file = self._get_progress_file(bulletin_id, output_dir)
+
+        if not progress_file.exists():
+            return None
+
+        try:
+            with progress_file.open('r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            console.print(f"[yellow]⚠ No se pudo cargar progreso: {e}[/yellow]")
+            return None
+
+    def _clean_progress(self, bulletin_id: str, output_dir: Path):
+        """Elimina archivo de progreso una vez completado el boletín"""
+        progress_file = self._get_progress_file(bulletin_id, output_dir)
+
+        if progress_file.exists():
+            try:
+                progress_file.unlink()
+            except Exception as e:
+                console.print(f"[dim]No se pudo eliminar archivo de progreso: {e}[/dim]")
 
     def _detect_document_types(self, text: str) -> List[str]:
         """
@@ -85,10 +200,16 @@ class SIBOMScraper:
         return types_found
 
     def _wait_for_rate_limit(self):
-        """Espera según rate limiting"""
+        """Espera según rate limiting con jitter aleatorio para evitar patrón detecta"""
         elapsed = time.time() - self.last_call_time
-        if elapsed < self.rate_limit_delay:
-            time.sleep(self.rate_limit_delay - elapsed)
+
+        # Agregar jitter aleatorio: delay base +/- variación aleatoria
+        jitter = random.uniform(-self.jitter_range, self.jitter_range)
+        actual_delay = max(1.0, self.rate_limit_delay + jitter)  # Mínimo 1 segundo
+
+        if elapsed < actual_delay:
+            time.sleep(actual_delay - elapsed)
+
         self.last_call_time = time.time()
 
     def _extract_json(self, text: str) -> str:
@@ -125,6 +246,18 @@ class SIBOMScraper:
         cleaned = re.sub(r'^\d+º?\s*', '', description)
         cleaned = re.sub(r'^de\s+', '', cleaned, flags=re.IGNORECASE)
         return cleaned.strip() or 'Desconocido'
+
+    def _get_city_name_from_url(self, url: str) -> Optional[str]:
+        """
+        Extrae el nombre de la ciudad desde la URL usando el mapeo CITY_MAP.
+        Ejemplo: "https://sibom.slyt.gba.gob.ar/cities/22" -> "Merlo"
+        """
+        # Buscar patrón /cities/[ID]
+        match = re.search(r'/cities/(\d+)', url)
+        if match:
+            city_id = match.group(1)
+            return self.CITY_MAP.get(city_id)
+        return None
 
     def _sanitize_filename(self, description: str, number: str = None) -> str:
         """
@@ -246,10 +379,10 @@ class SIBOMScraper:
             raise
 
     def fetch_html(self, url: str, max_retries: int = 3) -> str:
-        """Obtiene HTML de una URL con reintentos"""
+        """Obtiene HTML de una URL con reintentos y User-Agent real"""
         for attempt in range(max_retries):
             try:
-                response = requests.get(url, timeout=30)
+                response = requests.get(url, headers=self.headers, timeout=30)
                 response.raise_for_status()
                 return response.text
             except requests.RequestException as e:
@@ -378,9 +511,19 @@ HTML: {html[:200000]}"""
             console.print(f"[yellow]⚠ Error detectando páginas: {e}, asumiendo 1 página[/yellow]")
             return 1
 
-    def parse_bulletin_content_links(self, html: str) -> List[str]:
-        """Nivel 2: Extrae enlaces de contenido específico usando BeautifulSoup (con fallback a LLM)"""
-        console.print("[cyan]🔗 Nivel 2: Extrayendo enlaces de contenido...[/cyan]")
+    def parse_bulletin_content_links(self, html: str) -> List[Dict[str, Any]]:
+        """
+        Nivel 2: Extrae enlaces de contenido con metadatos completos.
+
+        Retorna lista de dicts con:
+        - url: URL de la norma individual
+        - tipo: ordenanza/decreto/resolución (de clase CSS)
+        - titulo: Título extraído del HTML
+        - fecha: Fecha de la norma
+        - preview: Preview del contenido (si disponible)
+        - id: ID numérico de la norma (extraído de URL)
+        """
+        console.print("[cyan]🔗 Nivel 2: Extrayendo metadatos de normas...[/cyan]")
 
         try:
             # Intentar con BeautifulSoup primero (95% de casos)
@@ -389,62 +532,70 @@ HTML: {html[:200000]}"""
             # Buscar todos los enlaces con clase "content-link"
             content_links = soup.find_all('a', class_='content-link')
 
-            # Extraer los atributos href
-            links = [link.get('href', '') for link in content_links if link.get('href')]
+            normas = []
+            for link_elem in content_links:
+                url = link_elem.get('href', '')
+                if not url:
+                    continue
 
-            if links:
-                console.print(f"[green]✓ Encontrados {len(links)} enlaces de contenido (BeautifulSoup)[/green]")
-                return links
+                # Extraer ID de la URL (/bulletins/1636/contents/1270278 -> 1270278)
+                norm_id = url.split('/')[-1] if '/' in url else 'unknown'
+
+                # Buscar el div interno con la clase que indica el tipo
+                div = link_elem.find('div', class_='white-box')
+                if not div:
+                    continue
+
+                # Extraer tipo de norma de las clases CSS
+                clases = div.get('class', [])
+                tipo_raw = [c for c in clases if c != 'white-box']
+                tipo = tipo_raw[0] if tipo_raw else 'norma'
+
+                # Mapeo de clases CSS a tipos legibles
+                tipo_map = {
+                    'ordinance': 'ordenanza',
+                    'decree': 'decreto',
+                    'resolution': 'resolución',
+                    'disposition': 'disposición',
+                    'edict': 'edicto'
+                }
+                tipo = tipo_map.get(tipo, tipo)
+
+                # Extraer título (primer párrafo)
+                title_elem = div.find('p')
+                titulo = title_elem.get_text(strip=True) if title_elem else f"{tipo.capitalize()} {norm_id}"
+
+                # Extraer fecha (párrafo con clase city-and-date)
+                date_elem = div.find('p', class_='city-and-date')
+                fecha = date_elem.get_text(strip=True) if date_elem else ''
+
+                # Extraer preview (siguiente párrafo después de título)
+                all_p = div.find_all('p', limit=5)
+                preview_parts = [p.get_text(strip=True) for p in all_p[2:4] if p.get_text(strip=True)]
+                preview = ' '.join(preview_parts)[:200] if preview_parts else ''
+
+                normas.append({
+                    'id': norm_id,
+                    'url': url,
+                    'tipo': tipo,
+                    'titulo': titulo,
+                    'fecha': fecha,
+                    'preview': preview
+                })
+
+            if normas:
+                console.print(f"[green]✓ Encontradas {len(normas)} normas con metadatos (BeautifulSoup)[/green]")
+                return normas
             else:
-                raise ValueError("No se encontraron enlaces con BeautifulSoup")
+                raise ValueError("No se encontraron normas con BeautifulSoup")
 
         except Exception as e:
             # Fallback a LLM si BeautifulSoup falla
             console.print(f"[yellow]⚠ BeautifulSoup falló ({str(e)[:50]}), usando LLM como fallback[/yellow]")
 
-            prompt = f"""Eres un experto en scraping. En este HTML de un boletín oficial, identifica TODOS los enlaces que llevan a contenidos específicos (ordenanzas, decretos, edictos).
-Suelen tener la clase "content-link" o estar dentro de una lista de sumario.
-Extrae exclusivamente los atributos 'href'.
-Devuelve SOLO un JSON válido (sin texto adicional) con el formato: {{"links": ["url1", "url2", ...]}}
-
-HTML: {html[:300000]}"""
-
-            try:
-                response = self._make_llm_call(prompt, use_json_mode=True)
-                cleaned = self._extract_json(response)
-
-                # Intentar parsear JSON
-                data = json.loads(cleaned)
-                links = data.get("links", [])
-                console.print(f"[green]✓ Encontrados {len(links)} enlaces de contenido (LLM fallback)[/green]")
-            except json.JSONDecodeError as e:
-                console.print(f"[red]⚠ Error parseando JSON del LLM: {e}[/red]")
-                console.print(f"[dim]Respuesta recibida (primeros 500 chars):[/dim]")
-                console.print(f"[dim]{response[:500]}...[/dim]")
-
-                # Intentar extraer manualmente el primer objeto JSON válido
-                try:
-                    # Buscar el primer { hasta el primer }
-                    start = response.find('{')
-                    if start != -1:
-                        count = 0
-                        for i, char in enumerate(response[start:], start):
-                            if char == '{':
-                                count += 1
-                            elif char == '}':
-                                count -= 1
-                                if count == 0:
-                                    first_json = response[start:i+1]
-                                    data = json.loads(first_json)
-                                    links = data.get("links", [])
-                                    console.print(f"[yellow]✓ Recuperado {len(links)} enlaces (usando fallback JSON)[/yellow]")
-                                    break
-                    else:
-                        raise ValueError("No se encontró objeto JSON en la respuesta")
-                except Exception as fallback_error:
-                    console.print(f"[red]✗ Fallback también falló: {fallback_error}[/red]")
-                    links = []
-            return links
+            # Por ahora, retornar lista vacía en vez de usar LLM (muy costoso y lento para fallback)
+            console.print(f"[red]✗ No se pudieron extraer normas del boletín[/red]")
+            return []
 
     def parse_final_content(self, html: str) -> str:
         """Nivel 3: Extrae texto completo del documento usando BeautifulSoup mejorado (sin LLM)"""
@@ -507,7 +658,7 @@ HTML: {html[:300000]}"""
         text_size = len(text)
         ratio = text_size / html_size if html_size > 0 else 0
 
-        console.print(f"[green]✓ Texto extraído: {text_size:,} caracteres ({ratio:.1%}% del HTML)[/green]")
+        console.print(f"[green]✓ Texto extraído: {text_size:,} caracteres ({ratio:.1%} del HTML)[/green]")
 
         # Alerta si el ratio es sospechosamente bajo
         if ratio < 0.05:
@@ -555,7 +706,7 @@ HTML: {html[:300000]}"""
         ratio = text_size / html_size if html_size > 0 else 0
         table_count = len(tables)
         
-        console.print(f"[green]✓ Texto extraído: {text_size:,} caracteres ({ratio:.1%}% del HTML)[/green]")
+        console.print(f"[green]✓ Texto extraído: {text_size:,} caracteres ({ratio:.1%} del HTML)[/green]")
         
         if table_count > 0:
             console.print(f"[green]✓ Tablas estructuradas: {table_count}[/green]")
@@ -572,6 +723,94 @@ HTML: {html[:300000]}"""
                 "extraction_method": "structured"
             }
         }
+
+    def _scrape_individual_norm(self, norma_metadata: Dict[str, Any], base_url: str,
+                                municipio: str) -> Dict[str, Any]:
+        """
+        Scrapea una norma individual obteniendo contenido completo, tablas y montos.
+
+        Args:
+            norma_metadata: Dict con id, url, tipo, titulo, fecha, preview
+            base_url: URL base del sitio
+            municipio: Nombre del municipio
+
+        Returns:
+            Dict con norma completa incluyendo contenido, tablas y montos
+        """
+        norm_url = norma_metadata['url'] if norma_metadata['url'].startswith('http') else f"{base_url}{norma_metadata['url']}"
+
+        try:
+            # Aplicar rate limiting con jitter
+            self._wait_for_rate_limit()
+
+            # Fetch HTML de la norma individual
+            norm_html = self.fetch_html(norm_url)
+
+            # Extraer contenido estructurado (con tablas)
+            try:
+                structured = self.parse_final_content_structured(norm_html)
+                contenido = structured["text_content"]
+                tablas = structured["tables"]
+            except Exception as e:
+                console.print(f"[yellow]⚠ Error en extracción estructurada: {e}, usando método tradicional[/yellow]")
+                contenido = self.parse_final_content(norm_html)
+                tablas = []
+
+            # Extraer montos del contenido
+            temp_boletin_data = {
+                'text_content': contenido,
+                'description': municipio,
+                'date': norma_metadata.get('fecha', ''),
+                'link': norm_url
+            }
+            montos = self.monto_extractor.extract_from_boletin(temp_boletin_data)
+            montos_list = [m.to_dict() for m in montos] if montos else []
+
+            # Extraer número de norma del título (ej: "Ordenanza Nº 2319" -> "2319")
+            numero_match = re.search(r'N[º°]\s*(\d+[/-]?\d*)', norma_metadata['titulo'])
+            numero = numero_match.group(1) if numero_match else norma_metadata['id']
+
+            # Construir norma completa
+            norma_completa = {
+                "id": norma_metadata['id'],
+                "tipo": norma_metadata['tipo'],
+                "numero": numero,
+                "titulo": norma_metadata['titulo'],
+                "fecha": norma_metadata['fecha'],
+                "municipio": municipio,
+                "url": norm_url,
+                "contenido": contenido,
+                "tablas": tablas,
+                "montos_extraidos": montos_list,
+                "metadata": {
+                    "longitud_caracteres": len(contenido),
+                    "tiene_tablas": len(tablas) > 0,
+                    "total_tablas": len(tablas),
+                    "total_montos": len(montos_list)
+                }
+            }
+
+            return norma_completa
+
+        except Exception as e:
+            console.print(f"[red]✗ Error scrapeando norma {norma_metadata['id']}: {e}[/red]")
+            # Retornar versión mínima con solo metadatos
+            return {
+                "id": norma_metadata['id'],
+                "tipo": norma_metadata['tipo'],
+                "numero": norma_metadata.get('id', 'unknown'),
+                "titulo": norma_metadata['titulo'],
+                "fecha": norma_metadata['fecha'],
+                "municipio": municipio,
+                "url": norm_url,
+                "contenido": norma_metadata.get('preview', ''),
+                "tablas": [],
+                "montos_extraidos": [],
+                "metadata": {
+                    "error": str(e),
+                    "scraping_failed": True
+                }
+            }
 
     def process_bulletin(self, bulletin: Dict, base_url: str, output_dir: Path, skip_existing: bool = False) -> Dict:
         """Procesa un boletín completo (niveles 2 y 3) y guarda archivo individual"""
@@ -644,74 +883,98 @@ HTML: {html[:300000]}"""
 
             console.print(f"\n[bold cyan]📰 Procesando boletín: {bulletin['number']}[/bold cyan]")
 
-            # Nivel 2: Obtener enlaces
+            # Nivel 2: Obtener metadatos de normas desde el HTML del boletín
             bulletin_url = bulletin['link'] if bulletin['link'].startswith('http') else f"{base_url}{bulletin['link']}"
             bulletin_html = self.fetch_html(bulletin_url)
-            content_links = self.parse_bulletin_content_links(bulletin_html)
+            normas_metadata = self.parse_bulletin_content_links(bulletin_html)
 
-            if not content_links:
-                console.print(f"[yellow]⚠ Sin enlaces de contenido en {bulletin['number']}[/yellow]")
-                no_content_result = {**bulletin, "status": "no_content", "fullText": ""}
+            if not normas_metadata:
+                console.print(f"[yellow]⚠ Sin normas en {bulletin['number']}[/yellow]")
+                no_content_result = {
+                    "municipio": self._extract_municipality_name(bulletin.get('description', '')),
+                    "numero_boletin": bulletin.get('number', 'N/A'),
+                    "fecha_boletin": bulletin.get('date', 'N/A'),
+                    "boletin_url": bulletin_url,
+                    "status": "no_content",
+                    "total_normas": 0,
+                    "normas": []
+                }
 
                 # Actualizar índice markdown
-                self._update_index_md(no_content_result, output_dir, base_url)
+                self._update_index_md({**bulletin, "status": "no_content"}, output_dir, base_url)
 
                 return no_content_result
 
-            # Nivel 3: Extraer texto de cada documento (con extracción estructurada de tablas)
-            full_text = ""
-            all_tables = []
-            
-            for i, link in enumerate(content_links, 1):
-                console.print(f"[dim]  → Documento {i}/{len(content_links)}[/dim]")
-                doc_url = link if link.startswith('http') else f"{base_url}{link}"
-                doc_html = self.fetch_html(doc_url)
-                
-                # Usar extracción estructurada
-                try:
-                    structured = self.parse_final_content_structured(doc_html)
-                    doc_text = structured["text_content"]
-                    doc_tables = structured["tables"]
-                    
-                    # Ajustar IDs de tablas para evitar colisiones entre documentos
-                    for table in doc_tables:
-                        original_id = table["id"]
-                        new_id = f"DOC{i}_{original_id}"
-                        table["id"] = new_id
-                        table["source_document"] = i
-                        # Actualizar placeholder en el texto
-                        doc_text = doc_text.replace(f"[{original_id}]", f"[{new_id}]")
-                    
-                    all_tables.extend(doc_tables)
-                    
-                except Exception as e:
-                    console.print(f"[yellow]⚠ Error en extracción estructurada, usando método tradicional: {e}[/yellow]")
-                    doc_text = self.parse_final_content(doc_html)
-                    doc_tables = []
+            # Extraer nombre del municipio
+            municipio = self._extract_municipality_name(bulletin.get('description', ''))
 
-                # Validación de longitud mínima del documento
-                if len(doc_text) < 500:
-                    console.print(f"[red]⚠ Documento {i} inusualmente corto ({len(doc_text)} caracteres)[/red]")
-                    console.print(f"[red]  URL: {doc_url}[/red]")
-                    console.print(f"[red]  Posible error de extracción. Revisar manualmente.[/red]")
+            console.print(f"[green]✓ Encontradas {len(normas_metadata)} normas para procesar[/green]")
 
-                full_text += f"\n[DOC {i}]\n{doc_text}\n"
+            # Verificar si hay progreso previo (modo resume)
+            bulletin_id = bulletin_url.split('/bulletins/')[-1].split('?')[0] if '/bulletins/' in bulletin_url else filename
+            progress_data = self._load_progress(bulletin_id, output_dir)
 
-            # Detectar tipos de documentos presentes en el boletín
-            document_types = self._detect_document_types(full_text)
+            if progress_data:
+                normas_procesadas_ids = set(progress_data.get('normas_procesadas', []))
+                console.print(f"[cyan]🔄 Resumiendo scraping: {len(normas_procesadas_ids)} normas ya procesadas[/cyan]")
+            else:
+                normas_procesadas_ids = set()
 
-            # Construir resultado con nuevo formato estructurado
+            # Nivel 3: Scrapear cada norma individual
+            normas_completas = []
+            normas_pendientes = [n['id'] for n in normas_metadata if n['id'] not in normas_procesadas_ids]
+
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                BarColumn(),
+                TaskProgressColumn(),
+                console=console
+            ) as progress:
+                task = progress.add_task(
+                    f"[cyan]Procesando {len(normas_pendientes)} normas...",
+                    total=len(normas_pendientes)
+                )
+
+                for i, norma_meta in enumerate(normas_metadata, 1):
+                    # Si ya fue procesada, saltarla
+                    if norma_meta['id'] in normas_procesadas_ids:
+                        console.print(f"[dim]  ⏭ Norma {norma_meta['id']} ya procesada[/dim]")
+                        continue
+
+                    console.print(f"[dim]  → Norma {i}/{len(normas_metadata)}: {norma_meta['titulo'][:50]}...[/dim]")
+
+                    # Scrapear norma individual
+                    norma_completa = self._scrape_individual_norm(norma_meta, base_url, municipio)
+                    normas_completas.append(norma_completa)
+
+                    # Actualizar progreso
+                    normas_procesadas_ids.add(norma_meta['id'])
+                    normas_pendientes.remove(norma_meta['id'])
+                    self._save_progress(
+                        bulletin_id,
+                        output_dir,
+                        list(normas_procesadas_ids),
+                        normas_pendientes
+                    )
+
+                    progress.update(task, advance=1)
+
+            # Construir resultado con nuevo formato de normas individuales
             result = {
-                **bulletin,
+                "municipio": municipio,
+                "numero_boletin": bulletin.get('number', 'N/A'),
+                "fecha_boletin": bulletin.get('date', 'N/A'),
+                "boletin_url": bulletin_url,
                 "status": "completed",
-                "text_content": full_text,  # Nuevo campo con placeholders
-                "tables": all_tables,        # Tablas estructuradas
-                "fullText": full_text,       # Mantener para compatibilidad (deprecated)
-                "documentTypes": document_types,  # Tipos de documentos detectados
-                "metadata": {
-                    "has_tables": len(all_tables) > 0,
-                    "table_count": len(all_tables),
-                    "document_count": len(content_links)
+                "total_normas": len(normas_completas),
+                "normas": normas_completas,
+                "metadata_boletin": {
+                    "total_caracteres": sum(n['metadata'].get('longitud_caracteres', 0) for n in normas_completas),
+                    "total_tablas": sum(n['metadata'].get('total_tablas', 0) for n in normas_completas),
+                    "total_montos": sum(n['metadata'].get('total_montos', 0) for n in normas_completas),
+                    "fecha_scraping": time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+                    "version_scraper": "2.0"
                 }
             }
 
@@ -722,30 +985,92 @@ HTML: {html[:300000]}"""
             with filepath.open('w', encoding='utf-8') as f:
                 json.dump(result, f, indent=2, ensure_ascii=False)
 
-            # Extraer montos monetarios del boletín
-            montos = self.monto_extractor.extract_from_boletin(result)
-            if montos:
-                self.montos_acumulados.extend([m.to_dict() for m in montos])
-                console.print(f"[dim]    → {len(montos)} montos extraídos[/dim]")
+            # Limpiar archivo de progreso (boletín completado)
+            self._clean_progress(bulletin_id, output_dir)
 
-            # Extraer normativas del boletín (tiempo real)
-            bulletin_url = result.get('link', '')
-            if bulletin_url and not bulletin_url.startswith('http'):
-                bulletin_url = f"https://sibom.slyt.gba.gob.ar{bulletin_url}"
-            normativas = extract_normativas_from_bulletin(
-                bulletin_data=result,
-                municipality=self._extract_municipality_name(bulletin.get('description', filename)),
-                bulletin_id=filename,
-                bulletin_url=bulletin_url
-            )
-            if normativas:
-                self.normativas_acumuladas.extend(normativas)
-                console.print(f"[dim]    → {len(normativas)} normativas extraídas[/dim]")
+            # Agregar montos al índice global (ya fueron extraídos por norma individual)
+            total_montos_agregados = 0
+            for norma in normas_completas:
+                montos_norma = norma.get('montos_extraidos', [])
+                if montos_norma:
+                    self.montos_acumulados.extend(montos_norma)
+                    total_montos_agregados += len(montos_norma)
 
-            # Actualizar índice markdown
-            self._update_index_md(result, output_dir, base_url)
+            if total_montos_agregados > 0:
+                console.print(f"[dim]    → {total_montos_agregados} montos agregados al índice global[/dim]")
 
-            console.print(f"[bold green]✓ Boletín {bulletin['number']} completado → {filepath.name}[/bold green]")
+            # Agregar normativas al índice global
+            for norma in normas_completas:
+                # Extraer año del número o de la fecha
+                year = ''
+                if '/' in norma['numero']:
+                    year = norma['numero'].split('/')[-1]
+                elif norma.get('fecha'):
+                    parts = norma['fecha'].split('/')
+                    if len(parts) == 3:
+                        year = parts[2]
+
+                normativa_obj = Normativa(
+                    id=norma['id'],
+                    municipality=municipio,
+                    type=norma['tipo'],
+                    number=norma['numero'],
+                    year=year,
+                    date=norma.get('fecha', ''),
+                    title=norma['titulo'],
+                    content=norma.get('contenido', ''),
+                    source_bulletin=filename,
+                    source_bulletin_url=bulletin_url,
+                    norma_url=norma['url'],
+                    doc_index=0,  # En V2 no usamos doc_index
+                    status='vigente',
+                    extracted_at=datetime.now().isoformat()
+                )
+                self.normativas_acumuladas.append(normativa_obj)
+
+            console.print(f"[dim]    → {len(normas_completas)} normativas agregadas al índice global[/dim]")
+
+            # Actualizar índice markdown (adaptar para nuevo formato)
+            index_data = {
+                "number": bulletin.get('number', 'N/A'),
+                "date": bulletin.get('date', 'N/A'),
+                "description": bulletin.get('description', ''),
+                "link": bulletin_url,
+                "status": "completed"
+            }
+            self._update_index_md(index_data, output_dir, base_url)
+
+            # Contar tipos de normas
+            tipos_count = {}
+            for norma in normas_completas:
+                tipo = norma.get('tipo', 'desconocido')
+                tipos_count[tipo] = tipos_count.get(tipo, 0) + 1
+            
+            # Construir string de tipos de normas
+            tipos_str = "\n".join([f"  • {tipo.capitalize()}: {count}" for tipo, count in sorted(tipos_count.items())])
+
+            # Panel de resumen del boletín procesado
+            console.print("\n")
+            console.print(Panel.fit(
+                f"[bold green]✓ Boletín Completado[/bold green]\n"
+                f"Número: {bulletin['number']}\n"
+                f"Municipio: {municipio}\n"
+                f"Archivo: {filepath.name}\n"
+                f"URL: {bulletin_url}\n"
+                f"\n"
+                f"[cyan]📊 Estadísticas:[/cyan]\n"
+                f"  • Normas: {len(normas_completas)}\n"
+                f"{tipos_str}\n"
+                f"  • Tablas: {result['metadata_boletin']['total_tablas']}\n"
+                f"  • Montos: {result['metadata_boletin']['total_montos']}\n"
+                f"  • Caracteres: {result['metadata_boletin']['total_caracteres']:,}",
+                title="📰 Resumen del Boletín",
+                border_style="green"
+            ))
+            
+            # Reproducir sonido de éxito
+            self._play_sound('success')
+            
             return result
 
         except Exception as e:
@@ -1018,6 +1343,9 @@ Ejemplos de uso:
         console.print(table)
         console.print(f"\n[bold green]✓ Boletines individuales guardados en: boletines/[/bold green]")
         console.print(f"[bold green]✓ Resumen consolidado guardado en: {output_path}[/bold green]")
+
+        # Reproducir sonido de tarea completa
+        scraper._play_sound('complete')
 
         # Guardar índice de montos extraídos
         if scraper.montos_acumulados:

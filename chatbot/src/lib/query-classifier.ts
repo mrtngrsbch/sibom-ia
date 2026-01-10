@@ -234,23 +234,26 @@ export function getOffTopicResponse(query: string): string | null {
  * @returns Límite de caracteres para truncar contenido
  */
 export function calculateContentLimit(query: string): number {
-  const lowerQuery = query.toLowerCase();
+  // Preguntas de LISTADO/CONTEO → usar metadata-only (200 chars)
+  // Estas queries necesitan CANTIDAD, no contenido completo
+  const isListingQuery = [
+    /(ordenanzas?|decretos?|resoluciones?).*\d{4}/i,  // "decretos 2025", "ordenanzas de 2024"
+    /cuántas?.+(ordenanzas?|decretos?|resoluciones?)/i,  // "cuántos decretos"
+    /listar|mostrar|todos.*los/i,  // "listar decretos", "todos los decretos"
+  ].some(pattern => pattern.test(query));
 
-  // Preguntas de listado de normativas específicas (necesitan MUCHO contenido)
-  const listingTypesPattern = /(ordenanzas?|decretos?|resoluciones?|disposiciones?|convenios?|licitaciones?).*(de|del|en|para)/i;
-  const hasListingType = listingTypesPattern.test(query);
-  const hasYear = /\b(202[0-9]|201[5-9])\b/.test(query);
-  const hasMunicipality = /municipio|carlos|tejedor|adolfo|alsina|alberti|arrecifes|avellaneda|bahia|balcarce|baradero|benito|bolivar|bragado|brandsen|campana|capitán|carmen|castelli|chacabuco|chascomús|chivilcoy|coronel|daireaux|dolores|exaltación|florentino/i.test(lowerQuery);
-
-  // Si pide un tipo específico + municipio/año → necesita contenido COMPLETO
-  // Los boletines pueden tener 130k+ palabras, necesitamos pasar todo el contenido
-  if (hasListingType && (hasYear || hasMunicipality)) {
-    return 200000;  // Contenido completo para extraer TODAS las normativas
+  if (isListingQuery) {
+    return 200;  // ✅ Metadata-only: permite devolver 100+ normativas sin explotar tokens
   }
 
-  // Preguntas "cuántas" con tipo específico también necesitan contenido completo
-  if (/cuántas?.+(ordenanzas?|decretos?|resoluciones?)/i.test(query)) {
-    return 200000;  // Necesita leer todo para contar
+  // Preguntas que piden CONTENIDO específico → aumentar límite
+  const needsFullContent = [
+    /qué.*dice|contenido|texto|artículo/i,  // "qué dice la ordenanza"
+    /resumen|detalle/i,  // "detalle del decreto"
+  ].some(pattern => pattern.test(query));
+
+  if (needsFullContent) {
+    return 2000;  // Contenido moderado para lectura específica
   }
 
   // Preguntas metadata-only (NO necesitan contenido completo)
@@ -285,16 +288,14 @@ export function calculateContentLimit(query: string): number {
  * @returns Número de documentos a recuperar
  */
 export function calculateOptimalLimit(query: string, hasFilters: boolean): number {
-  const lowerQuery = query.toLowerCase();
-
   // 1. Queries de listado/conteo → necesitan recuperar MUCHOS documentos
   const listingPatterns = [
     /cuántas|cuantas|cantidad|total/i,  // Conteo
     /lista|listar|listado/i,             // Listado explícito
     /todos.*los|todas.*las/i,            // "todos los decretos"
     /qué.*hay|que.*hay/i,                 // "qué ordenanzas hay"
-    // ✅ PATRÓN CRÍTICO: "ordenanzas de [municipio] [año]" = solicitud de listado implícita
-    /(ordenanzas|decretos|resoluciones).*de.*\d{4}/i  // "ordenanzas de carlos tejedor 2025"
+    // ✅ PATRÓN CRÍTICO: "ordenanzas [municipio] [año]" o "ordenanzas de [municipio] [año]"
+    /(ordenanzas|decretos|resoluciones).*\d{4}/i  // "ordenanzas carlos tejedor 2025" o "decretos de X 2025"
   ];
 
   if (listingPatterns.some(p => p.test(query))) {
@@ -302,8 +303,11 @@ export function calculateOptimalLimit(query: string, hasFilters: boolean): numbe
     return hasFilters ? 100 : 10;
   }
 
-  // 2. Búsqueda exacta por número → 1 doc
-  const hasExactNumber = /\b\d{1,5}\b/.test(query);
+  // 2. Búsqueda exacta por número de normativa (NO años) → 1 doc
+  // Detecta números de 1-4 dígitos precedidos por contexto de normativa
+  // Ejemplos que SÍ detecta: "ordenanza 2833", "decreto N° 123", "resolución nro 45"
+  // Ejemplos que NO detecta: "decretos 2025" (año en plural), "carlos tejedor 2025" (año solo)
+  const hasExactNumber = /(ordenanza|decreto|resoluci[oó]n|disposici[oó]n)\s+(n[°º]?|nro\.?)?\s*\d{1,4}\b/i.test(query);
   if (hasExactNumber && hasFilters) return 1;
 
   // 3. Query metadata-only simple (última, existe) → 1 doc suficiente

@@ -139,12 +139,22 @@ const USE_NORMATIVAS_INDEX = process.env.USE_NORMATIVAS_INDEX !== 'false'; // tr
 
 /**
  * Parsea una fecha en formato DD/MM/YYYY a objeto Date usando date-fns
- * @param dateStr - Fecha en formato DD/MM/YYYY
+ * @param dateStr - Fecha en formato DD/MM/YYYY o "Municipio, DD/MM/YYYY"
  * @returns Date object o null si el formato es inválido
  */
 function parseDate(dateStr: string): Date | null {
   if (!dateStr || typeof dateStr !== 'string') return null;
-  const parsed = parse(dateStr, 'dd/MM/yyyy', new Date());
+  
+  // Si la fecha tiene formato "Municipio, DD/MM/YYYY", extraer solo la fecha
+  let cleanDate = dateStr;
+  if (dateStr.includes(',')) {
+    const parts = dateStr.split(',');
+    if (parts.length >= 2) {
+      cleanDate = parts[1].trim();
+    }
+  }
+  
+  const parsed = parse(cleanDate, 'dd/MM/yyyy', new Date());
   return isValid(parsed) ? parsed : null;
 }
 
@@ -379,6 +389,8 @@ async function hasNormativasIndexFileChanged(): Promise<boolean> {
 async function loadNormativasIndex(): Promise<NormativaIndexEntry[]> {
   const now = Date.now();
 
+  console.log(`[RAG] 🔄 loadNormativasIndex() - useGitHub: ${useGitHub()}, cache size: ${normativasCache.length}`);
+
   if (useGitHub()) {
     if (normativasCache.length > 0 && now - normativasCacheTimestamp < CACHE_DURATION) {
       console.log('[RAG] ♻️ Usando índice de normativas cacheado (GitHub)');
@@ -387,6 +399,7 @@ async function loadNormativasIndex(): Promise<NormativaIndexEntry[]> {
   } else {
     const fileChanged = await hasNormativasIndexFileChanged();
     if (normativasCache.length > 0 && !fileChanged && now - normativasCacheTimestamp < CACHE_DURATION) {
+      console.log('[RAG] ♻️ Usando índice de normativas cacheado (local)');
       return normativasCache;
     }
     if (fileChanged && normativasCache.length > 0) {
@@ -395,9 +408,13 @@ async function loadNormativasIndex(): Promise<NormativaIndexEntry[]> {
   }
 
   try {
+    console.log(`[RAG] 📥 Cargando índice de normativas desde ${useGitHub() ? 'GitHub' : 'local'}...`);
+    
     const data = useGitHub()
       ? await fetchGitHubNormativasIndex()
       : await readLocalNormativasIndex();
+
+    console.log(`[RAG] ✅ Datos cargados: ${data.length} normativas`);
 
     normativasCache = data;
     normativasCacheTimestamp = now;
@@ -406,10 +423,12 @@ async function loadNormativasIndex(): Promise<NormativaIndexEntry[]> {
     return normativasCache;
   } catch (error) {
     console.error('[RAG] ❌ Error cargando índice de normativas:', error);
+    console.error('[RAG] Error details:', error instanceof Error ? error.message : String(error));
     if (normativasCache.length > 0) {
       console.warn('[RAG] ⚠️ Usando cache de normativas antiguo como fallback');
       return normativasCache;
     }
+    console.error('[RAG] ❌ No hay cache disponible, devolviendo array vacío');
     return [];
   }
 }
@@ -637,8 +656,12 @@ async function retrieveContextFromNormativas(
 ): Promise<SearchResult> {
   const startTime = Date.now();
 
+  console.log('[RAG] 📥 Cargando índice de normativas...');
+  
   // 1. Cargar índice de normativas
   const normativas = await loadNormativasIndex();
+
+  console.log(`[RAG] 📊 Índice cargado: ${normativas.length} normativas`);
 
   if (normativas.length === 0) {
     console.log('[RAG] ⚠️ Índice de normativas vacío, intentando fallback a boletines');
@@ -1015,14 +1038,19 @@ export async function retrieveContext(
   // Usar índice de normativas si está habilitado y disponible
   if (USE_NORMATIVAS_INDEX) {
     try {
-      return await retrieveContextFromNormativas(query, options);
+      console.log('[RAG] 🔍 Intentando usar índice de normativas...');
+      const result = await retrieveContextFromNormativas(query, options);
+      console.log('[RAG] ✅ Índice de normativas usado exitosamente');
+      return result;
     } catch (error) {
-      console.error('[RAG] ❌ Error con índice de normativas, usando fallback:', error);
+      console.error('[RAG] ❌ Error con índice de normativas, usando fallback a boletines:', error);
+      console.error('[RAG] Stack trace:', error instanceof Error ? error.stack : 'No stack available');
       return await retrieveContextFromBoletines(query, options);
     }
   }
 
   // Fallback: usar índice de boletines (legacy)
+  console.log('[RAG] ℹ️ Usando índice de boletines (legacy) - USE_NORMATIVAS_INDEX=false');
   return await retrieveContextFromBoletines(query, options);
 }
 

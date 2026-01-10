@@ -18,7 +18,13 @@
 - [x] Código pushed a GitHub exitosamente
 - [x] Repositorio: `mrtngrsbch/sibom-ia`
 - [x] Branch: `main`
-- [x] Commit: `40514821` - "feat: Preparar deployment con arquitectura GitHub → Vercel"
+- [x] Commit: `a06511a1` - "fix: Resolver conflictos de dependencias para Vercel"
+
+### 3. Dependencias Arregladas
+- [x] Actualizado `@testing-library/react` a v16.3.1 (compatible con React 19)
+- [x] Agregado `@testing-library/dom@^10.0.0`
+- [x] Configurado `vercel.json` para usar pnpm
+- [x] Build local exitoso: ✓ Compiled successfully
 
 **⚠️ Nota:** GitHub detectó 2 vulnerabilidades de dependencias (1 moderada, 1 baja)
 - Ver: https://github.com/mrtngrsbch/sibom-ia/security/dependabot
@@ -69,9 +75,9 @@ wrangler login
 4. Configurar:
    - **Framework Preset:** Next.js
    - **Root Directory:** `chatbot`
-   - **Build Command:** `npm run build` (default)
+   - **Build Command:** `pnpm run build` (default)
    - **Output Directory:** `.next` (default)
-5. Click **"Deploy"** (fallará - es normal, faltan variables)
+5. Click **"Deploy"** (ahora debería funcionar con las dependencias arregladas)
 
 #### 2.2 Configurar Variables de Entorno
 

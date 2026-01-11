@@ -27,6 +27,7 @@ import { buildBulletinUrl } from '@/lib/config';
 import { calculateContentLimit, isComputationalQuery } from '@/lib/query-classifier';
 import { BM25Index, tokenize } from './bm25';
 import { formatTablesForLLM, filterRelevantTables } from './table-formatter';
+import { vectorSearch, isVectorSearchAvailable } from './vector-search';
 import type { StructuredTable } from '@/lib/types';
 
 const gunzipAsync = promisify(gunzip);
@@ -1028,19 +1029,123 @@ Contenido: ${contentChunk}...`;
 }
 
 /**
+ * Recupera contexto usando Vector Search (OpenAI embeddings + Qdrant)
+ * Proporciona búsqueda semántica que entiende sinónimos y contexto
+ */
+async function retrieveContextWithVectorSearch(
+  query: string,
+  options: SearchOptions = {}
+): Promise<SearchResult> {
+  const startTime = Date.now();
+
+  // 1. Realizar búsqueda vectorial
+  const vectorResults = await vectorSearch(query, {
+    municipality: options.municipality,
+    type: options.type,
+    year: options.dateFrom ? parseInt(options.dateFrom.split('-')[0]) : undefined,
+    limit: options.limit || 10,
+  });
+
+  console.log(`[RAG] Vector search encontró ${vectorResults.length} resultados`);
+
+  // 2. Cargar contenido de los documentos encontrados
+  const documents = await Promise.all(
+    vectorResults.map(async (r) => {
+      try {
+        const data = await readFileContent(`${r.source_bulletin}.json`);
+        return {
+          id: r.id,
+          municipality: r.municipality,
+          type: r.type as DocumentType,
+          number: r.number,
+          title: r.title,
+          content: data.fullText || '',
+          date: `${r.municipality}, ${r.year}`,
+          url: r.url,
+          status: 'vigente',
+          filename: `${r.source_bulletin}.json`,
+        };
+      } catch (err) {
+        console.warn(`[RAG] Error cargando ${r.source_bulletin}:`, err);
+        return null;
+      }
+    })
+  );
+
+  const validDocuments = documents.filter(d => d !== null) as Document[];
+
+  // 3. Construir contexto
+  const contentLimit = calculateContentLimit(query);
+  const isMetadataOnly = contentLimit <= 200;
+
+  let context: string;
+  if (isMetadataOnly) {
+    // Modo listado: solo metadatos
+    context = validDocuments
+      .map(doc => `[${doc.municipality}] ${doc.type.toUpperCase()} ${doc.number}
+Título: ${doc.title}
+Fecha: ${doc.date}
+Estado: ${doc.status}`)
+      .join('\n\n---\n\n');
+  } else {
+    // Modo detallado: incluir contenido
+    context = validDocuments
+      .map((doc) => {
+        const contentChunk = doc.content.slice(0, contentLimit);
+        return `[${doc.municipality}] ${doc.type.toUpperCase()} ${doc.number}
+Título: ${doc.title}
+Fecha: ${doc.date}
+Estado: ${doc.status}
+Contenido: ${contentChunk}...`;
+      })
+      .join('\n\n---\n\n');
+  }
+
+  // 4. Construir fuentes
+  const sources = validDocuments.map((doc) => ({
+    title: `${doc.type} ${doc.number} - ${doc.municipality}`,
+    url: buildBulletinUrl(doc.url),
+    municipality: doc.municipality,
+    type: doc.type,
+    status: doc.status,
+  }));
+
+  const duration = Date.now() - startTime;
+  console.log(`[RAG] ✅ Vector search completado en ${duration}ms - ${validDocuments.length} docs`);
+
+  return {
+    context: context || `No se encontró información específica para: "${query}"`,
+    sources,
+  };
+}
+
+/**
  * Recupera contexto relevante para una consulta
- * Elige automáticamente entre índice de normativas (nuevo) o boletines (legacy)
+ * Prioridad: Vector Search (semántico) > Normativas Index (BM25) > Boletines (legacy)
  */
 export async function retrieveContext(
   query: string,
   options: SearchOptions = {}
 ): Promise<SearchResult> {
-  // Usar índice de normativas si está habilitado y disponible
+  // 1. PRIORIDAD MÁXIMA: Vector Search (si está disponible)
+  if (isVectorSearchAvailable()) {
+    try {
+      console.log('[RAG] 🔍 Usando Vector Search (OpenAI + Qdrant) - Búsqueda semántica');
+      const result = await retrieveContextWithVectorSearch(query, options);
+      console.log('[RAG] ✅ Vector Search exitoso');
+      return result;
+    } catch (error) {
+      console.error('[RAG] ⚠️ Error con Vector Search, fallback a BM25:', error);
+      // Continuar con fallback
+    }
+  }
+
+  // 2. FALLBACK: Índice de normativas con BM25 (keyword search)
   if (USE_NORMATIVAS_INDEX) {
     try {
-      console.log('[RAG] 🔍 Intentando usar índice de normativas...');
+      console.log('[RAG] 📝 Usando BM25 (keyword search)');
       const result = await retrieveContextFromNormativas(query, options);
-      console.log('[RAG] ✅ Índice de normativas usado exitosamente');
+      console.log('[RAG] ✅ BM25 exitoso');
       return result;
     } catch (error) {
       console.error('[RAG] ❌ Error con índice de normativas, usando fallback a boletines:', error);
@@ -1049,8 +1154,8 @@ export async function retrieveContext(
     }
   }
 
-  // Fallback: usar índice de boletines (legacy)
-  console.log('[RAG] ℹ️ Usando índice de boletines (legacy) - USE_NORMATIVAS_INDEX=false');
+  // 3. ÚLTIMO RECURSO: Índice de boletines (legacy)
+  console.log('[RAG] ℹ️ Usando índice de boletines (legacy)');
   return await retrieveContextFromBoletines(query, options);
 }
 

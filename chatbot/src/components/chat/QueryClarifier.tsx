@@ -1,10 +1,10 @@
 'use client';
 
 import { Bot } from '@/lib/icons';
-import { ClarificationNeeded } from '@/lib/query-analyzer';
+import { QueryAnalysisResult } from '@/lib/query-classifier';
 
 interface QueryClarifierProps {
-  clarification: ClarificationNeeded;
+  clarification: NonNullable<QueryAnalysisResult['clarification']>;
   onSelect: (selection: string) => void;
 }
 

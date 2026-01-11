@@ -21,11 +21,11 @@ echo -e "${BLUE}  ACTUALIZACIÓN DE DATOS SIBOM → GitHub${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
-# Paso 1: Reindexar boletines
-echo -e "${YELLOW}📋 Paso 1: Reindexando boletines...${NC}"
+# Paso 1: Generar base de datos SQLite
+echo -e "${YELLOW}📋 Paso 1: Generando base de datos SQLite...${NC}"
 cd "$SCRIPT_DIR"
-python indexar_boletines.py
-echo -e "${GREEN}✓ Índice actualizado${NC}"
+python3 build_database.py
+echo -e "${GREEN}✓ Base de datos generada${NC}"
 echo ""
 
 # Paso 2: Comprimir (opcional)
@@ -56,22 +56,37 @@ cd "$REPO_DATA"
 if [ "$USE_GZIP" = true ]; then
     # Copiar archivos comprimidos
     cp "$SCRIPT_DIR"/boletines/*.json.gz ./boletines/ 2>/dev/null || true
-    cp "$SCRIPT_DIR"/boletines_index.json.gz ./ 2>/dev/null || true
-    echo -e "${GREEN}✓ Archivos .gz copiados${NC}"
+    cp "$SCRIPT_DIR"/boletines/normativas.db.gz ./ 2>/dev/null || true
+    echo -e "${GREEN}✓ Archivos .gz copiados (incluyendo normativas.db.gz)${NC}"
 else
     # Copiar archivos sin comprimir
     cp "$SCRIPT_DIR"/boletines/*.json ./boletines/ 2>/dev/null || true
-    cp "$SCRIPT_DIR"/boletines_index.json ./ 2>/dev/null || true
-    echo -e "${GREEN}✓ Archivos .json copiados${NC}"
+    cp "$SCRIPT_DIR"/boletines/normativas.db ./ 2>/dev/null || true
+    echo -e "${GREEN}✓ Archivos copiados (incluyendo normativas.db)${NC}"
 fi
 echo ""
 
 # Paso 4: Commit y push a GitHub
 echo -e "${YELLOW}📤 Paso 4: Subiendo a GitHub...${NC}"
 
-# Obtener estadísticas
-TOTAL_DOCS=$(jq length "$SCRIPT_DIR/boletines_index.json" 2>/dev/null || echo "N/A")
-MUNICIPIOS=$(jq -r 'map(.municipality) | unique | length' "$SCRIPT_DIR/boletines_index.json" 2>/dev/null || echo "N/A")
+# Obtener estadísticas desde SQLite
+TOTAL_DOCS=$(python3 -c "
+import sqlite3
+conn = sqlite3.connect('$SCRIPT_DIR/boletines/normativas.db')
+cursor = conn.cursor()
+cursor.execute('SELECT COUNT(*) FROM normativas')
+print(cursor.fetchone()[0])
+conn.close()
+" 2>/dev/null || echo "N/A")
+
+MUNICIPIOS=$(python3 -c "
+import sqlite3
+conn = sqlite3.connect('$SCRIPT_DIR/boletines/normativas.db')
+cursor = conn.cursor()
+cursor.execute('SELECT COUNT(DISTINCT municipality) FROM normativas')
+print(cursor.fetchone()[0])
+conn.close()
+" 2>/dev/null || echo "N/A")
 
 # Mensaje de commit
 DEFAULT_MSG="Update: $TOTAL_DOCS documentos ($MUNICIPIOS municipios) - $(date +%Y-%m-%d)"

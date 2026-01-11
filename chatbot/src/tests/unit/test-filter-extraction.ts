@@ -2,7 +2,7 @@
  * Test de extracción de filtros
  */
 
-import { extractFiltersFromQuery } from './src/lib/query-filter-extractor';
+import { extractFiltersFromQuery } from '@/lib/query-filter-extractor';
 
 const municipalities = ['Carlos Tejedor', 'Salto', 'Alberti'];
 

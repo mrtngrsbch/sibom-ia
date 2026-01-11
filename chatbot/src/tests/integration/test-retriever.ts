@@ -1,4 +1,4 @@
-import { retrieveContext, getDatabaseStats } from './src/lib/rag/retriever';
+import { retrieveContext, getDatabaseStats } from '@/lib/rag/retriever';
 
 async function test() {
   console.log('--- Iniciando prueba de Retriever ---');

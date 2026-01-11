@@ -3,9 +3,9 @@
  * Para entender por qué no funciona en producción
  */
 
-import { extractFiltersFromQuery } from './src/lib/query-filter-extractor';
-import { retrieveContext, getDatabaseStats, type SearchOptions } from './src/lib/rag/retriever';
-import { needsRAGSearch, calculateOptimalLimit } from './src/lib/query-classifier';
+import { extractFiltersFromQuery } from '@/lib/query-filter-extractor';
+import { retrieveContext, getDatabaseStats, type SearchOptions } from '@/lib/rag/retriever';
+import { needsRAGSearch, calculateOptimalLimit } from '@/lib/query-classifier';
 
 async function simulateAPIRequest() {
   console.log('=== SIMULACIÓN DE PETICIÓN API ===\n');

@@ -2,7 +2,7 @@
  * Test de BM25 con ejemplos reales
  */
 
-import { BM25Index, tokenize } from './src/lib/rag/bm25';
+import { BM25Index, tokenize } from '@/lib/rag/bm25';
 
 // Documentos de ejemplo (simulando ordenanzas)
 const documents = [

@@ -1,8 +1,8 @@
 /**
- * Test para query-analyzer
+ * Test para query-analyzer (now consolidated in query-classifier)
  */
 
-import { analyzeQuery } from './src/lib/query-analyzer';
+import { analyzeQuery } from '@/lib/query-classifier';
 
 const municipalities = [
   'Carlos Tejedor',

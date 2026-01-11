@@ -16,11 +16,26 @@
  */
 
 import { createOpenAI } from '@ai-sdk/openai';
-import { streamText, convertToCoreMessages, StreamData } from 'ai';
+import { streamText, convertToCoreMessages, StreamData, tool } from 'ai';
+import { z } from 'zod';
 import { retrieveContext, getDatabaseStats } from '@/lib/rag/retriever';
 import { retrieveWithComputation, type ComputationalSearchResult } from '@/lib/rag/computational-retriever';
-import { needsRAGSearch, calculateOptimalLimit, getOffTopicResponse, isFAQQuestion, isComputationalQuery } from '@/lib/query-classifier';
+import {
+  needsRAGSearch,
+  calculateOptimalLimit,
+  getOffTopicResponse,
+  isFAQQuestion,
+  isComputationalQuery,
+  classifyQueryIntent,
+  generateDirectResponse
+} from '@/lib/query-classifier';
 import { extractFiltersFromQuery } from '@/lib/query-filter-extractor';
+import {
+  isComparisonQuery,
+  handleComparisonQuery,
+  type ComparisonResult
+} from '@/lib/rag/sql-retriever';
+import { generateDataCatalog, generateConciseCatalog } from '@/lib/data-catalog';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -122,51 +137,136 @@ export async function POST(req: Request) {
     // isManualTypeFilter = true solo cuando el usuario seleccionó explícitamente en el dropdown
     const isManualTypeFilter = uiFilters.type !== undefined && uiFilters.type === enhancedFilters.type;
 
+    // Detectar si es query de listado masivo (muchos resultados esperados)
+    const isMassiveListing = optimalLimit >= 100 && hasFilters;
+    
+    // Para listados masivos, NO limitar (recuperar todos los que coincidan)
+    // El usuario quiere ver TODOS los resultados, no una muestra
+    const adjustedLimit = isMassiveListing ? 10000 : optimalLimit; // Sin límite práctico para listados
+
     const searchOptions = {
       ...enhancedFilters,
-      limit: optimalLimit,
+      limit: adjustedLimit,
       isManualTypeFilter
     };
 
     console.log(`[ChatAPI] Filtros UI: ${JSON.stringify(uiFilters)}`);
     console.log(`[ChatAPI] Filtros extraídos de query: ${JSON.stringify(enhancedFilters)}`);
     console.log(`[ChatAPI] Tipo manual: ${isManualTypeFilter}`);
-    console.log(`[ChatAPI] Límite dinámico: ${optimalLimit} docs (filtros: ${hasFilters})`);
+    console.log(`[ChatAPI] Límite dinámico: ${adjustedLimit} docs (filtros: ${hasFilters}, listado masivo: ${isMassiveListing})`);
 
-    // Detectar si es query computacional que requiere comparación entre municipios
-    const isComp = isComputationalQuery(query);
-    const requiresCrossMunicipalityComparison = isComp &&
-      !enhancedFilters.municipality &&
-      /municipio|comparar|entre|menor|mayor|m[ií]nimo|m[aá]ximo/i.test(query);
-
-    console.log(`[ChatAPI] Query computacional: ${isComp}, Requiere comparación multi-municipio: ${requiresCrossMunicipalityComparison}`);
+    // Detectar si es query de comparación entre municipios (usar SQL)
+    const isSQLComparison = isComparisonQuery(query);
+    
+    console.log(`[ChatAPI] Query de comparación SQL: ${isSQLComparison}`);
+    
+    // Si es comparación SQL, usar SQL retriever directamente
+    let sqlComparisonResult: ComparisonResult | null = null;
+    if (shouldSearch && isSQLComparison) {
+      console.log('[ChatAPI] 🗄️ Usando SQL retriever para query comparativa');
+      sqlComparisonResult = await handleComparisonQuery(query);
+      
+      if (sqlComparisonResult.success) {
+        console.log(`[ChatAPI] ✅ SQL comparison exitosa: ${sqlComparisonResult.answer}`);
+        console.log(`[ChatAPI] 📊 Datos: ${sqlComparisonResult.data.length} municipios`);
+      } else {
+        console.log(`[ChatAPI] ❌ SQL comparison falló, usando RAG normal`);
+      }
+    }
 
     // Recuperar contexto con los filtros mejorados
-    // Para queries computacionales comparativas, usar retrieveWithComputation
     let retrievedContext;
-    if (shouldSearch && requiresCrossMunicipalityComparison) {
-      console.log('[ChatAPI] 🧮 Usando retrieveWithComputation para query comparativa');
-      retrievedContext = await retrieveWithComputation(query, searchOptions);
-
-      // Log del resultado computacional
-      if (retrievedContext.computationResult) {
-        console.log(`[ChatAPI] Resultado computacional: success=${retrievedContext.computationResult.success}`);
-        if (retrievedContext.computationResult.answer) {
-          console.log(`[ChatAPI] Respuesta computacional: ${retrievedContext.computationResult.answer.slice(0, 100)}...`);
-        }
-      }
-    } else if (shouldSearch) {
+    if (shouldSearch && !isSQLComparison) {
+      // Queries normales: usar RAG
       console.log('[ChatAPI] 📄 Usando retrieveContext normal');
+      retrievedContext = await retrieveContext(query, searchOptions);
+    } else if (shouldSearch && isSQLComparison && !sqlComparisonResult?.success) {
+      // SQL falló: fallback a RAG
+      console.log('[ChatAPI] 📄 Fallback a retrieveContext (SQL falló)');
       retrievedContext = await retrieveContext(query, searchOptions);
     } else {
       retrievedContext = { context: '', sources: [] };
     }
+
+    // Log de fuentes recuperadas (después de inicializar retrievedContext)
+    console.log(`[ChatAPI] 📊 Fuentes recuperadas: ${retrievedContext.sources?.length || 0}`);
+
+    // ============================================================================
+    // 🗄️ SQL COMPARISON - BYPASS COMPLETO DEL LLM (ÚNICO BYPASS PERMITIDO)
+    // ============================================================================
+    // Si es comparación SQL exitosa, generar respuesta directa sin LLM
+    if (sqlComparisonResult?.success) {
+      console.log(`[ChatAPI] 🗄️ SQL COMPARISON EXITOSA - Generando respuesta directa`);
+      console.log(`[ChatAPI] 💰 Ahorro estimado: ~150,000 tokens (~$0.45)`);
+      
+      // Construir respuesta con markdown table
+      const directResponse = sqlComparisonResult.answer + (sqlComparisonResult.markdown || '');
+      
+      // Crear StreamData para metadatos
+      const data = new StreamData();
+      
+      // No hay sources individuales en comparaciones SQL
+      data.append({
+        type: 'sources',
+        sources: []
+      });
+      
+      data.append({
+        type: 'usage',
+        usage: {
+          promptTokens: 0,
+          completionTokens: 0,
+          totalTokens: 0,
+          model: 'sql-direct-response (comparison)'
+        }
+      });
+
+      data.close();
+
+      // Crear stream compatible con Vercel AI SDK manualmente
+      const encoder = new TextEncoder();
+      const stream = new ReadableStream({
+        start(controller) {
+          // Enviar el texto en formato de stream de Vercel AI
+          controller.enqueue(encoder.encode(`0:"${directResponse.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"\n`));
+          
+          // Enviar metadatos de sources
+          controller.enqueue(encoder.encode(`2:[${JSON.stringify({type:'sources',sources:[]})}]\n`));
+          
+          // Enviar metadatos de usage
+          controller.enqueue(encoder.encode(`2:[${JSON.stringify({type:'usage',usage:{promptTokens:0,completionTokens:0,totalTokens:0,model:'sql-direct-response (comparison)'}})}]\n`));
+          
+          controller.close();
+        }
+      });
+
+      return new Response(stream, {
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'X-Vercel-AI-Data-Stream': 'v1'
+        }
+      });
+    }
+
+    // ============================================================================
+    // 🤖 SIEMPRE USAR LLM PARA QUERIES DE NORMATIVAS
+    // ============================================================================
+    // El LLM es lo suficientemente inteligente para entender cualquier query:
+    // - "sueldos de carlos tejedor 2025" → busca en contenido sobre salarios
+    // - "decretos de carlos tejedor 2025" → lista todos los decretos
+    // - "ordenanza 2947" → encuentra la ordenanza específica
+    // - "cuántas ordenanzas hay" → cuenta y explica
+    //
+    // STOP TRYING TO BE CLEVER! Let the LLM do its job.
+    console.log(`[ChatAPI] 🤖 Usando LLM para interpretar query y generar respuesta`);
 
     // Determinar tipo de respuesta según el contexto
     let systemPromptTemplate = '';
 
     if (!shouldSearch && isFAQQuestion(query)) {
       // Caso 2: Pregunta sugerida/FAQ - responder promoviendo NUESTRO CHAT
+      const dataCatalog = generateConciseCatalog();
+      
       systemPromptTemplate = `Eres un asistente para nuestro chatbot de legislación municipal.
 
 CONTEXTO CRÍTICO DEL PROYECTO:
@@ -194,6 +294,8 @@ ${stats.municipalityList.join(', ')}
 
 TOTAL DE DOCUMENTOS DISPONIBLES: ${stats.totalDocuments}
 
+${dataCatalog}
+
 IMPORTANTE: Los municipios listados son los ÚNICOS con datos scrapeados.
 El resto (${135 - stats.municipalities} municipios) NO tienen información aún.
 
@@ -218,6 +320,10 @@ ${offTopicResponse || "Disculpá, pero mi especialidad son las ordenanzas y norm
           throw new Error(`${promptPath} no es un archivo regular`);
         }
         systemPromptTemplate = await fs.readFile(promptPath, 'utf-8');
+        
+        // Inyectar catálogo de datos en el prompt
+        const dataCatalog = generateDataCatalog();
+        systemPromptTemplate = systemPromptTemplate.replace('{{data_catalog}}', dataCatalog);
       } catch (err) {
         console.error('[ChatAPI] Error leyendo system prompt:', err instanceof Error ? err.message : err);
         // Fallback básico si falla la lectura
@@ -242,14 +348,18 @@ TOTAL DE DOCUMENTOS DISPONIBLES: ${stats.totalDocuments}
 NOTA CRÍTICA: Los municipios listados arriba son los ÚNICOS que tienen información disponible en la base de datos. El resto de los municipios (${135 - stats.municipalities}) NO tienen datos scrapeados aún.`
         : '';
 
+      // ✅ FIX: Para listados masivos (>50), NO enviar todas las sources al LLM
+      // Solo enviar resumen agregado para ahorrar tokens
       const sourcesText = retrievedContext.sources.length > 0
-        ? retrievedContext.sources.map((s: any) => {
-            // ✅ Mostrar documentTypes si existen (más específico que type)
-            const typeLabel = s.documentTypes && s.documentTypes.length > 0
-              ? s.documentTypes.map((t: string) => t.toUpperCase()).join(', ')
-              : s.type.toUpperCase();
-            return `- ${typeLabel} ${s.title} - ${s.municipality} [Estado: ${s.status}] (${s.url})`;
-          }).join('\n')
+        ? (retrievedContext.sources.length > 50
+            ? `RESUMEN: ${retrievedContext.sources.length} normativas encontradas (listado completo disponible en UI)`
+            : retrievedContext.sources.map((s: any) => {
+                const typeLabel = s.documentTypes && s.documentTypes.length > 0
+                  ? s.documentTypes.map((t: string) => t.toUpperCase()).join(', ')
+                  : s.type.toUpperCase();
+                return `- ${typeLabel} ${s.title} - ${s.municipality} [Estado: ${s.status}] (${s.url})`;
+              }).join('\n')
+          )
         : '';
 
       // Construir texto de filtros aplicados
@@ -269,10 +379,38 @@ NOTA CRÍTICA: Los municipios listados arriba son los ÚNICOS que tienen informa
         console.log('[ChatAPI] ✅ Resultado computacional agregado al contexto');
       }
 
+      // Para listados masivos, agregar instrucción especial
+      let massiveListingInstruction = '';
+      if (isMassiveListing && retrievedContext.sources.length > 50) {
+        massiveListingInstruction = `\n\n## ⚠️ INSTRUCCIÓN CRÍTICA - LISTADO MASIVO (${retrievedContext.sources.length} RESULTADOS)
+
+**🚨 REGLAS ABSOLUTAS - NO NEGOCIABLES:**
+
+1. ❌ **PROHIBIDO GENERAR LISTA** - NO escribas ninguna lista numerada o con viñetas
+2. ❌ **PROHIBIDO CONTAR MANUALMENTE** - NO digas "Encontré X decretos:" seguido de lista
+3. ❌ **PROHIBIDO DUPLICAR** - La lista ya se muestra automáticamente en "Fuentes Consultadas"
+
+4. ✅ **SOLO PERMITIDO:** Resumen de 2-3 líneas máximo:
+   - Línea 1: "Se encontraron ${retrievedContext.sources.length} ${enhancedFilters.type || 'normativas'} de ${enhancedFilters.municipality || 'este municipio'}${enhancedFilters.dateFrom ? ' del año ' + new Date(enhancedFilters.dateFrom).getFullYear() : ''}."
+   - Línea 2 (opcional): Mencionar rango de números si es relevante
+   - Línea 3: "La lista completa con enlaces está disponible en la sección 'Fuentes Consultadas' más abajo."
+
+**EJEMPLO CORRECTO:**
+"Se encontraron 1,249 decretos de Carlos Tejedor del año 2025. La lista completa con enlaces está disponible en la sección 'Fuentes Consultadas' más abajo."
+
+**EJEMPLO INCORRECTO (NO HACER):**
+"Encontré 100 decretos de Carlos Tejedor en 2025:
+1. Decreto 1/25 - ...
+2. Decreto 2/25 - ...
+[...]"
+
+**RECORDATORIO:** El usuario ya verá TODOS los ${retrievedContext.sources.length} resultados en "Fuentes Consultadas". Tu trabajo es SOLO resumir, NO listar.`;
+      }
+
       systemPrompt = systemPromptTemplate
         .replace('{{stats}}', statsText)
         .replace('{{context}}', contextToUse)
-        .replace('{{sources}}', sourcesText) + filtersApplied;
+        .replace('{{sources}}', sourcesText) + filtersApplied + massiveListingInstruction;
     }
     // Para off-topic, systemPrompt ya está completo (no necesita contexto RAG)
 
@@ -326,7 +464,8 @@ NOTA CRÍTICA: Los municipios listados arriba son los ÚNICOS que tienen informa
         system: systemPrompt,
         messages: coreMessages,
         temperature: 0.3,
-        maxTokens: 4000,  // Aumentado para listados largos (98+ ordenanzas)
+        // Para listados masivos, reducir tokens para forzar respuesta breve
+        maxTokens: isMassiveListing ? 500 : 4000,
         onFinish: (completion) => {
           const duration = Date.now() - startTime;
           console.log(`[ChatAPI] Respuesta completada en ${duration}ms`);

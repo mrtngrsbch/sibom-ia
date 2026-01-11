@@ -9,9 +9,43 @@
  */
 
 /**
- * Tokeniza texto en español, eliminando stopwords y normalizando
+ * Diccionario de sinónimos para términos legales comunes
  */
-export function tokenize(text: string): string[] {
+const SYNONYMS: Record<string, string[]> = {
+  // Términos laborales
+  'sueldo': ['salario', 'remuneracion', 'haber', 'retribucion', 'paga'],
+  'salario': ['sueldo', 'remuneracion', 'haber', 'retribucion'],
+  'remuneracion': ['sueldo', 'salario', 'haber', 'retribucion'],
+  
+  // Términos de tránsito
+  'transito': ['vial', 'circulacion', 'trafico'],
+  'vial': ['transito', 'circulacion'],
+  
+  // Términos fiscales
+  'impuesto': ['tasa', 'tributo', 'gravamen', 'canon'],
+  'tasa': ['impuesto', 'tributo', 'canon'],
+  'tributo': ['impuesto', 'tasa', 'gravamen'],
+  
+  // Términos de habilitación
+  'habilitacion': ['permiso', 'licencia', 'autorizacion'],
+  'permiso': ['habilitacion', 'licencia', 'autorizacion'],
+  'licencia': ['habilitacion', 'permiso', 'autorizacion'],
+};
+
+/**
+ * Expande un término con sus sinónimos
+ */
+function expandWithSynonyms(term: string): string[] {
+  const normalized = term.toLowerCase();
+  const synonyms = SYNONYMS[normalized] || [];
+  return [normalized, ...synonyms];
+}
+
+/**
+ * Tokeniza texto en español, eliminando stopwords y normalizando
+ * Ahora con expansión de sinónimos para mejorar recall
+ */
+export function tokenize(text: string, expandSynonyms: boolean = false): string[] {
   // Stopwords comunes en español (mínimo para mantener contexto legal)
   const stopwords = new Set([
     'el', 'la', 'de', 'que', 'y', 'a', 'en', 'un', 'ser', 'se', 'no', 'haber',
@@ -26,13 +60,25 @@ export function tokenize(text: string): string[] {
     'después', 'vida', 'quedar', 'siempre', 'creer', 'hablar', 'llevar', 'dejar'
   ]);
 
-  return text
+  const tokens = text
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '') // Eliminar acentos para normalización
     .replace(/[^\w\s]/g, ' ') // Eliminar puntuación
     .split(/\s+/)
     .filter(token => token.length > 2 && !stopwords.has(token));
+
+  // Si se solicita expansión de sinónimos (solo para queries)
+  if (expandSynonyms) {
+    const expanded = new Set<string>();
+    for (const token of tokens) {
+      const synonyms = expandWithSynonyms(token);
+      synonyms.forEach(syn => expanded.add(syn));
+    }
+    return Array.from(expanded);
+  }
+
+  return tokens;
 }
 
 /**
@@ -125,9 +171,11 @@ export class BM25Index {
 
   /**
    * Busca y rankea documentos por relevancia
+   * Ahora con expansión de sinónimos para mejorar recall
    */
   public search(query: string, topK: number = 10): Array<{ index: number; score: number }> {
-    const queryTokens = tokenize(query);
+    // ✅ EXPANDIR QUERY CON SINÓNIMOS
+    const queryTokens = tokenize(query, true); // true = expandir sinónimos
 
     if (queryTokens.length === 0) {
       return [];

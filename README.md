@@ -1,5 +1,11 @@
 # SIBOM IA
 
+> **Estado Actual**: 🟢 Recomenzo Limpio - 2026-01-14
+
+El repositorio ha sido limpiado y sincronizado. Toda la documentación obsoleta y scripts viejos fueron archivados. Arquitectura actual estable y lista para desarrollo.
+
+---
+
 Ecosistema completo para extracción y consulta de boletines oficiales municipales de SIBOM (Sistema Integrado de Boletines Oficiales Municipales de la Provincia de Buenos Aires).
 
 ## 🏗️ Arquitectura del Proyecto
@@ -47,27 +53,103 @@ npm run dev
 
 **El chatbot leerá automáticamente los boletines extraídos** en `python-cli/boletines/`
 
+## 📊 Estado Actual del Proyecto
+
+**Fecha de Recomenzo**: 2026-01-14
+
+### Datos Actuales
+- **Archivos JSON**: 1,677 boletines individuales
+- **Tamaño local**: 662MB (6.8M líneas de código)
+- **DB SQLite**: 47MB (216K+ normativas indexadas)
+- **Proyección producción**: ~4GB / ~3,000 archivos
+
+### Arquitectura de Producción
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    PYTHON CLI (Backend)                      │
+├─────────────────────────────────────────────────────────────┤
+│  Scraper → Indices (6 tipos) → SQLite (agregaciones)       │
+│  - BM25 (keyword search)                                      │
+│  - Qdrant (vector search con embeddings)                     │
+│  - SQLite (COUNT, SUM, AVG rápidos)                        │
+│  - Cache multi-nivel (file, index, Vercel)                   │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│              CLOUDFLARE R2 (Storage + CDN)                    │
+├─────────────────────────────────────────────────────────────┤
+│  - Boletines JSON (gzip comprimido ~80% menos bandwidth)    │
+│  - Índices JSON (minimal, compact, completo)                 │
+│  - Caching agresivo (Vercel cache 3600s)                     │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                 NEXT.JS CHATBOT (Frontend)                    │
+├─────────────────────────────────────────────────────────────┤
+│  - BM25: Keywords exactas (números, nombres)                │
+│  - Vector Search: Sinónimos ("sueldo" → "remuneración")      │
+│  - SQL: Agregaciones rápidas (municipio con más normas)     │
+│  - Streaming: Respuestas en tiempo real                      │
+└─────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────┐
+│                 VERCEL (Deployment)                          │
+├─────────────────────────────────────────────────────────────┤
+│  - Zero-downtime deployments                                  │
+│  - Preview environments para testing                         │
+│  - Logs y analytics completos                               │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Motores de Búsqueda (Implementados)
+1. **BM25 (Keyword Search)**: Para búsquedas exactas
+   - Número de norma: "ordenanza 2947"
+   - Listados por tipo: "decretos de Carlos Tejedor"
+   - Filtrado por fechas y municipios
+
+2. **Vector Search (Qdrant + OpenAI)**: Para búsqueda semántica
+   - Sinónimos: "sueldos" encuentra "remuneración", "haberes"
+   - Contexto: "tránsito", "salud", "impuestos"
+   - Mejor para queries en lenguaje natural
+
+3. **SQLite (sql.js)**: Para agregaciones numéricas
+   - Comparaciones: "qué municipio tiene más decretos"
+   - Conteos: "cuántas ordenanzas hay en total"
+   - Rankings: "municipios con más normativa"
+
+---
+
 ## 📂 Estructura del Proyecto
 
 ```
 sibom-scraper-assistant/
 ├── python-cli/               # Backend: Scraper Python
-│   ├── sibom_scraper.py     # Script principal del scraper
+│   ├── sibom_scraper.py     # Scraper base (un municipio)
+│   ├── sibom_web_scraping.py # Orquestador (todos los municipios)
 │   ├── boletines/           # Boletines extraídos (JSON)
-│   │   └── csv/             # Herramientas JSON→CSV
-│   ├── README.md            # Documentación backend
-│   ├── MODELOS.md           # Guía de modelos LLM
-│   ├── EJEMPLOS_USO.md      # Ejemplos de uso
-│   └── CHANGELOG.md         # Historial de cambios
+│   │   └── normativas.db     # DB SQLite (agregaciones)
+│   ├── data/
+│   │   ├── indices/         # 6 tipos de índices
+│   │   ├── estado/          # Estado del scraping
+│   │   └── ejemplos/        # Ejemplos de datos
+│   ├── docs/                # Documentación del backend
+│   ├── scripts/             # Scripts utilitarios (R2, compresión)
+│   ├── tests/               # Tests unitarios
+│   └── tui/                 # UI opcional (React + Ink)
 ├── chatbot/                  # Frontend: Chatbot Next.js
 │   ├── src/
-│   │   ├── app/             # App Router Next.js 15
+│   │   ├── app/             # App Router Next.js 16
 │   │   ├── components/      # UI components (Chat, Sidebar)
-│   │   └── lib/rag/         # Motor RAG (BM25 + embeddings)
-│   ├── README.md            # Documentación frontend
-│   └── package.json         # Dependencias React/Next
-├── .agents/                  # Arquitectura de agentes (agnóstica)
-└── README.md                 # Este archivo
+│   │   └── lib/
+│   │       ├── rag/         # Motor RAG (BM25 + Vector + SQL)
+│   │       ├── computation/  # Motor de cómputo tabular
+│   │       └── data-catalog # Catálogo de datos para LLM
+│   └── .env.example         # Variables de entorno
+├── docs/                    # Documentación general
+│   ├── archive/             # Documentación archivada (historial)
+│   └── chatbot/             # Documentación del chatbot
+├── .agents/                 # Arquitectura de agentes
+└── README.md                # Este archivo
 ```
 
 ## 🔗 Documentación

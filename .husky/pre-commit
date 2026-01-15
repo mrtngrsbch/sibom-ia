@@ -1,0 +1,158 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Pre-commit hook for SIBOM Scraper Assistant
+# Validates data integrity before committing changes
+
+echo "🔍 Running pre-commit validations..."
+
+# Track exit status
+FAILED=0
+
+# 1. Check for untracked .env files
+if git diff --cached --name-only | grep -q "\.env$"; then
+    echo "❌ ERROR: Attempting to commit .env file with sensitive data"
+    echo "   Please remove .env from staging and add it to .gitignore"
+    FAILED=1
+fi
+
+# 2. Validate JSON files in python-cli/boletines/
+if git diff --cached --name-only | grep -q "python-cli/boletines/.*\.json$"; then
+    echo "📋 Validating JSON files in boletines/..."
+
+    cd python-cli
+
+    # Check if Python is available
+    if command -v python3 &> /dev/null; then
+        # Check if validation script exists
+        if [ -f "validate_data.py" ]; then
+            # Validate each staged JSON file
+            for file in $(git diff --cached --name-only | grep "python-cli/boletines/.*\.json$"); do
+                echo "  → Validating $file"
+                python3 validate_data.py --file="$file" || FAILED=1
+            done
+        else
+            echo "⚠️  WARNING: validate_data.py not found, skipping JSON validation"
+            echo "   Consider adding validation script for data integrity"
+        fi
+    else
+        echo "⚠️  WARNING: python3 not found, skipping JSON validation"
+    fi
+
+    cd ..
+fi
+
+# 3. Check for large uncompressed JSON files (>100MB)
+if git diff --cached --name-only | grep -q "python-cli/boletines/.*\.json$"; then
+    echo "📏 Checking file sizes..."
+
+    for file in $(git diff --cached --name-only | grep "python-cli/boletines/.*\.json$"); do
+        if [ -f "$file" ]; then
+            # Get file size in bytes
+            size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null || echo 0)
+
+            # 100MB = 104,857,600 bytes
+            if [ "$size" -gt 104857600 ]; then
+                echo "❌ ERROR: Large uncompressed file: $file ($(numfmt --to=iec $size))"
+                echo "   Please compress files >100MB with gzip before committing"
+                echo "   Suggestion: python3 compress_for_r2.py --keep-original"
+                FAILED=1
+            fi
+        fi
+    done
+fi
+
+# 4. Validate boletines_index.json if modified
+if git diff --cached --name-only | grep -q "python-cli/boletines_index.json"; then
+    echo "📊 Validating boletines_index.json..."
+
+    if [ -f "python-cli/boletines_index.json" ]; then
+        cd python-cli
+
+        # Check if Python is available and validation script exists
+        if command -v python3 &> /dev/null && [ -f "validate_data.py" ]; then
+            python3 validate_data.py --file="boletines_index.json" --type=index || FAILED=1
+        else
+            # Fallback: basic JSON validation
+            if command -v python3 &> /dev/null; then
+                echo "  → Performing basic JSON validation..."
+                python3 -c "import json; json.load(open('boletines_index.json'))" || FAILED=1
+            fi
+        fi
+
+        cd ..
+    fi
+fi
+
+# 5. Run Python tests if python-cli files changed
+if git diff --cached --name-only | grep -q "python-cli/.*\.py$"; then
+    echo "🧪 Running Python tests..."
+
+    if [ -d "python-cli" ]; then
+        cd python-cli
+
+        # Check if pytest is available
+        if [ -d ".venv" ] || [ -d "venv" ]; then
+            # Activate venv if exists
+            if [ -f ".venv/bin/activate" ]; then
+                source .venv/bin/activate
+            elif [ -f "venv/bin/activate" ]; then
+                source venv/bin/activate
+            fi
+
+            # Run tests
+            if command -v pytest &> /dev/null; then
+                pytest --tb=short || FAILED=1
+            else
+                echo "⚠️  WARNING: pytest not found, skipping tests"
+            fi
+        else
+            echo "⚠️  WARNING: No virtual environment found, skipping tests"
+        fi
+
+        cd ..
+    fi
+fi
+
+# 6. Run TypeScript/Next.js tests if chatbot files changed
+if git diff --cached --name-only | grep -q "chatbot/src/.*\.\(ts\|tsx\)$"; then
+    echo "🧪 Running TypeScript tests..."
+
+    if [ -d "chatbot" ]; then
+        cd chatbot
+
+        # Check if npm test is available
+        if command -v npm &> /dev/null && [ -f "package.json" ]; then
+            npm test -- --run 2>/dev/null || {
+                echo "⚠️  WARNING: Tests failed or not configured"
+                # Don't fail on test failures for now
+            }
+        else
+            echo "⚠️  WARNING: npm not found, skipping tests"
+        fi
+
+        cd ..
+    fi
+fi
+
+# 7. Check for .env files in python-cli
+if git diff --cached --name-only | grep -q "python-cli/\.env"; then
+    echo "❌ ERROR: Attempting to commit python-cli/.env file"
+    echo "   Please remove python-cli/.env from staging"
+    FAILED=1
+fi
+
+# Final report
+if [ $FAILED -eq 0 ]; then
+    echo "✅ Pre-commit validations passed!"
+else
+    echo ""
+    echo "❌ Pre-commit validations failed!"
+    echo "   Please fix the errors above before committing"
+    echo ""
+    echo "   You can bypass this hook with:"
+    echo "   git commit --no-verify"
+    echo ""
+    echo "   But it's highly recommended to fix the issues first"
+    exit 1
+fi

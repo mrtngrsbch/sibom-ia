@@ -36,6 +36,8 @@ project_commands:
 # Especialistas disponibles
 droids:
   - unit-test-and-code-review-specialist
+  - data-pipeline-specialist
+  - scraper-automation-specialist
 
 # Flujo de trabajo
 workflow:

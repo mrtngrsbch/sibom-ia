@@ -1,0 +1,541 @@
+name: Automated Scraping
+
+on:
+  schedule:
+    # Run weekly on Sundays at 2 AM UTC (Saturday 10 PM EST)
+    - cron: '0 2 * * 0'
+  workflow_dispatch:  # Allow manual triggering
+    inputs:
+      municipality:
+        description: 'Specific municipality to scrape (leave empty for all)'
+        required: false
+        default: ''
+      limit:
+        description: 'Number of bulletins to scrape (leave empty for all)'
+        required: false
+        default: ''
+      parallel:
+        description: 'Number of parallel workers (default: 3)'
+        required: false
+        default: '3'
+
+jobs:
+  setup:
+    name: Setup Environment
+    runs-on: ubuntu-latest
+    outputs:
+      python-version: ${{ steps.set-python.outputs.python-version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        id: set-python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: 'pip'
+
+      - name: Cache Python dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+            python-cli/.venv
+          key: ${{ runner.os }}-python-${{ hashFiles('python-cli/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-python-
+
+  scrape:
+    name: Scrape Bulletins
+    runs-on: ubuntu-latest
+    needs: setup
+    if: success()
+    env:
+      OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ needs.setup.outputs.python-version }}
+          cache: 'pip'
+
+      - name: Restore Python environment
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+            python-cli/.venv
+          key: ${{ runner.os }}-python-${{ hashFiles('python-cli/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-python-
+
+      - name: Install dependencies
+        working-directory: python-cli
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run scraper
+        id: scraper
+        working-directory: python-cli
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          source .venv/bin/activate
+
+          # Build command based on inputs
+          CMD="python3 sibom_scraper.py --skip-existing"
+
+          if [ -n "${{ github.event.inputs.municipality }}" ]; then
+            CMD="$CMD --municipality '${{ github.event.inputs.municipality }}'"
+          fi
+
+          if [ -n "${{ github.event.inputs.limit }}" ]; then
+            CMD="$CMD --limit ${{ github.event.inputs.limit }}"
+          fi
+
+          if [ -n "${{ github.event.inputs.parallel }}" ]; then
+            CMD="$CMD --parallel ${{ github.event.inputs.parallel }}"
+          else
+            CMD="$CMD --parallel 3"
+          fi
+
+          echo "Running: $CMD"
+          $CMD
+
+      - name: Upload scraping results
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: scraped-bulletins
+          path: |
+            python-cli/boletines/*.json
+            !python-cli/boletines/.progress*.json
+          retention-days: 7
+
+      - name: Generate scraping report
+        if: always()
+        working-directory: python-cli
+        run: |
+          source .venv/bin/activate
+
+          # Count processed bulletins
+          TOTAL=$(find boletines -name "*.json" -not -name ".progress*" | wc -l)
+          echo "Total bulletins: $TOTAL"
+
+          # Check for errors in progress files
+          ERROR_COUNT=0
+          for file in boletines/.progress*.json; do
+            if [ -f "$file" ]; then
+              if grep -q "error" "$file" || grep -q "failed" "$file"; then
+                ERROR_COUNT=$((ERROR_COUNT + 1))
+                echo "Error found in: $file"
+              fi
+            fi
+          done
+
+          echo "Errors detected: $ERROR_COUNT"
+
+          # Save report
+          cat > scraping-report.txt <<EOF
+          Scraping Report - $(date)
+          ===========================
+          Total bulletins: $TOTAL
+          Errors detected: $ERROR_COUNT
+          Status: $([ $ERROR_COUNT -eq 0 ] && echo "SUCCESS" || echo "FAILED")
+          EOF
+
+      - name: Upload scraping report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: scraping-report
+          path: python-cli/scraping-report.txt
+          retention-days: 30
+
+  extract:
+    name: Extract Data
+    runs-on: ubuntu-latest
+    needs: [setup, scrape]
+    if: success()
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ needs.setup.outputs.python-version }}
+          cache: 'pip'
+
+      - name: Restore Python environment
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+            python-cli/.venv
+          key: ${{ runner.os }}-python-${{ hashFiles('python-cli/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-python-
+
+      - name: Install dependencies
+        working-directory: python-cli
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Extract normativas
+        working-directory: python-cli
+        run: |
+          source .venv/bin/activate
+          python3 normativas_extractor.py
+
+      - name: Extract montos
+        working-directory: python-cli
+        run: |
+          source .venv/bin/activate
+          python3 monto_extractor.py
+
+      - name: Extract tables
+        working-directory: python-cli
+        run: |
+          source .venv/bin/activate
+          python3 table_extractor.py
+
+      - name: Upload extracted data
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: extracted-data
+          path: |
+            python-cli/normativas_index*.json
+            python-cli/montos_index.json
+            python-cli/tablas_index.json
+          retention-days: 7
+
+  validate:
+    name: Validate Data
+    runs-on: ubuntu-latest
+    needs: [setup, scrape, extract]
+    if: success()
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ needs.setup.outputs.python-version }}
+          cache: 'pip'
+
+      - name: Restore Python environment
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+            python-cli/.venv
+          key: ${{ runner.os }}-python-${{ hashFiles('python-cli/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-python-
+
+      - name: Install dependencies
+        working-directory: python-cli
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Validate data integrity
+        working-directory: python-cli
+        run: |
+          source .venv/bin/activate
+
+          # Validate index files
+          python3 -c "import json; json.load(open('boletines_index.json'))"
+          python3 -c "import json; json.load(open('normativas_index.json'))"
+
+          # Sample validation of bulletin files
+          for file in $(find boletines -name "*.json" -not -name ".progress*" | head -10); do
+            python3 validate_data.py --file="$file" || exit 1
+          done
+
+      - name: Generate validation report
+        working-directory: python-cli
+        run: |
+          # Count files
+          BULLETINS=$(find boletines -name "*.json" -not -name ".progress*" | wc -l)
+          NORMATIVAS=$(python3 -c "import json; print(len(json.load(open('normativas_index.json'))))")
+          MONTOS=$(python3 -c "import json; print(len(json.load(open('montos_index.json'))))")
+
+          # Generate report
+          cat > validation-report.txt <<EOF
+          Data Validation Report - $(date)
+          ================================
+          Bulletin files: $BULLETINS
+          Normativas: $NORMATIVAS
+          Montos extracted: $MONTOS
+          Status: VALIDATION PASSED
+          EOF
+
+          cat validation-report.txt
+
+      - name: Upload validation report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: validation-report
+          path: python-cli/validation-report.txt
+          retention-days: 30
+
+  compress:
+    name: Compress Data
+    runs-on: ubuntu-latest
+    needs: [setup, validate]
+    if: success()
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ needs.setup.outputs.python-version }}
+          cache: 'pip'
+
+      - name: Restore Python environment
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pip
+            python-cli/.venv
+          key: ${{ runner.os }}-python-${{ hashFiles('python-cli/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-python-
+
+      - name: Install dependencies
+        working-directory: python-cli
+        run: |
+          python3 -m venv .venv
+          source .venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Compress for R2
+        working-directory: python-cli
+        run: |
+          source .venv/bin/activate
+          python3 compress_for_r2.py --keep-original
+
+      - name: Upload compressed data
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: compressed-data
+          path: |
+            python-cli/dist/**/*.json.gz
+          retention-days: 7
+
+      - name: Generate compression report
+        working-directory: python-cli
+        run: |
+          # Calculate sizes
+          ORIGINAL_SIZE=$(du -sh boletines | cut -f1)
+          COMPRESSED_SIZE=$(du -sh dist | cut -f1)
+
+          cat > compression-report.txt <<EOF
+          Compression Report - $(date)
+          ===========================
+          Original size: $ORIGINAL_SIZE
+          Compressed size: $COMPRESSED_SIZE
+          Status: COMPRESSION COMPLETE
+          EOF
+
+          cat compression-report.txt
+
+      - name: Upload compression report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compression-report
+          path: python-cli/compression-report.txt
+          retention-days: 30
+
+  deploy-r2:
+    name: Upload to R2
+    runs-on: ubuntu-latest
+    needs: [setup, compress]
+    if: success()
+    env:
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install wrangler
+        run: npm install -g wrangler
+
+      - name: Configure wrangler
+        run: |
+          mkdir -p ~/.wrangler
+          cat > ~/.wrangler/config.toml <<EOF
+          [[r2_buckets]]
+          binding = "BUCKET"
+          bucket_name = "sibom-data"
+          account_id = "${{ secrets.R2_ACCOUNT_ID }}"
+          EOF
+
+      - name: Download compressed data
+        uses: actions/download-artifact@v4
+        with:
+          name: compressed-data
+          path: python-cli/dist
+
+      - name: Upload normativas index
+        working-directory: python-cli/dist
+        run: |
+          wrangler r2 object put sibom-data/normativas_index_minimal.json.gz \
+            --file normativas_index_minimal.json.gz
+
+      - name: Upload bulletins
+        working-directory: python-cli/dist/boletines
+        run: |
+          for file in *.json.gz; do
+            wrangler r2 object put "sibom-data/boletines/$file" --file "$file"
+            echo "Uploaded: $file"
+          done
+
+      - name: Verify upload
+        run: |
+          # Verify index is accessible
+          if command -v curl &> /dev/null; then
+            curl -I "https://pub-${{ secrets.R2_ACCOUNT_ID }}.r2.dev/sibom-data/normativas_index_minimal.json.gz" || exit 1
+          fi
+
+      - name: Generate deployment report
+        working-directory: python-cli
+        run: |
+          # Count uploaded files
+          UPLOADED=$(find dist/boletines -name "*.json.gz" | wc -l)
+
+          cat > deployment-report.txt <<EOF
+          R2 Deployment Report - $(date)
+          ===========================
+          Index uploaded: normativas_index_minimal.json.gz
+          Bulletins uploaded: $UPLOADED files
+          Status: DEPLOYMENT SUCCESSFUL
+          EOF
+
+          cat deployment-report.txt
+
+      - name: Upload deployment report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: deployment-report
+          path: python-cli/deployment-report.txt
+          retention-days: 30
+
+  notify:
+    name: Notify Results
+    runs-on: ubuntu-latest
+    needs: [scrape, extract, validate, compress, deploy-r2]
+    if: always()
+
+    steps:
+      - name: Download all reports
+        uses: actions/download-artifact@v4
+        with:
+          path: reports
+
+      - name: Generate summary report
+        run: |
+          cat > workflow-summary.txt <<EOF
+          SIBOM Automated Scraping - Workflow Summary
+          ===========================================
+
+          Workflow ID: ${{ github.run_id }}
+          Triggered by: ${{ github.event_name }}
+          Started at: ${{ github.event.head_commit.timestamp }}
+
+          ---
+          Job Status:
+          EOF
+
+          # Add job statuses
+          for job in scrape extract validate compress deploy-r2; do
+            if [ "${{ needs.$job.result }}" == "success" ]; then
+              echo "  ✅ $job: SUCCESS" >> workflow-summary.txt
+            else
+              echo "  ❌ $job: ${{ needs.$job.result }}" >> workflow-summary.txt
+            fi
+          done
+
+          # Add reports
+          if [ -f reports/scraping-report/scraping-report.txt ]; then
+            echo "" >> workflow-summary.txt
+            echo "---" >> workflow-summary.txt
+            echo "Scraping Report:" >> workflow-summary.txt
+            cat reports/scraping-report/scraping-report.txt >> workflow-summary.txt
+          fi
+
+          if [ -f reports/validation-report/validation-report.txt ]; then
+            echo "" >> workflow-summary.txt
+            echo "---" >> workflow-summary.txt
+            echo "Validation Report:" >> workflow-summary.txt
+            cat reports/validation-report/validation-report.txt >> workflow-summary.txt
+          fi
+
+          if [ -f reports/compression-report/compression-report.txt ]; then
+            echo "" >> workflow-summary.txt
+            echo "---" >> workflow-summary.txt
+            echo "Compression Report:" >> workflow-summary.txt
+            cat reports/compression-report/compression-report.txt >> workflow-summary.txt
+          fi
+
+          if [ -f reports/deployment-report/deployment-report.txt ]; then
+            echo "" >> workflow-summary.txt
+            echo "---" >> workflow-summary.txt
+            echo "Deployment Report:" >> workflow-summary.txt
+            cat reports/deployment-report/deployment-report.txt >> workflow-summary.txt
+          fi
+
+          cat workflow-summary.txt
+
+      - name: Upload summary report
+        uses: actions/upload-artifact@v4
+        with:
+          name: workflow-summary
+          path: workflow-summary.txt
+          retention-days: 90
+
+      - name: Comment on issue (if triggered manually)
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const summary = fs.readFileSync('workflow-summary.txt', 'utf8');
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary
+            });

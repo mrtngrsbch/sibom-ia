@@ -152,21 +152,56 @@ sibom-scraper-assistant/
 └── README.md                # Este archivo
 ```
 
-## 🔗 Documentación
+## 📂 Documentación
 
-### Backend (Scraper)
-- **[README Backend](python-cli/README.md)** - Instalación y uso del scraper
-- **[Guía de Modelos](python-cli/MODELOS.md)** - Comparación de modelos LLM (costos, calidad)
-- **[Ejemplos de Uso](python-cli/EJEMPLOS_USO.md)** - Casos prácticos y comandos
-- **[JSON to CSV](python-cli/boletines/csv/JSON2CSV.md)** - Conversión de datos a CSV
+La documentación del proyecto está organizada en [`docs/`](docs/) con la siguiente estructura:
 
-### Frontend (Chatbot)
-- **[README Chatbot](chatbot/README.md)** - Instalación y configuración del chatbot
-- **[API Endpoints](chatbot/README.md#api)** - Documentación de la API REST
+```
+docs/
+├── README.md                    # Índice de documentación
+├── 01-architecture/             # Arquitectura y diseño del sistema
+│   ├── arquitectura-sistema.md  # Arquitectura con Function Calling
+│   ├── analisis-solucion.md    # Análisis crítico de soluciones
+│   └── analisis-stack.md       # Análisis del stack tecnológico
+├── 02-deployment/              # Guías de deployment (Vercel, R2)
+│   ├── guia-completa.md        # Guía completa de deployment
+│   ├── quickstart.md            # Quickstart para deployment rápido
+│   ├── entornos.md             # Diferencias dev vs producción
+│   └── troubleshooting.md      # Solución de problemas comunes
+├── 03-features/               # Features implementadas
+│   ├── vector-search.md         # Búsqueda semántica (OpenAI + Qdrant)
+│   ├── sql-retriever.md         # Base de datos SQLite para queries rápidas
+│   ├── data-catalog.md          # Catálogo de datos para el LLM
+│   ├── semantic-search.md        # Búsqueda semántica mejorada
+│   └── embeddings-comparacion.md  # Comparación OpenAI vs Cohere
+├── 04-changelogs/             # Historial de cambios por fecha
+│   ├── 2026-01-optimizaciones.md     # Optimizaciones de tokens y performance
+│   ├── 2026-01-refactor-filtros.md    # Refactor de filtros
+│   ├── 2026-01-cleanup.md             # Limpieza de código obsoleto
+│   ├── session-2026-01-10.md          # Resumen de sesión
+│   └── audit-complete.md                # Auditoría completa del código
+├── 05-issues/                  # Bugs y fixes documentados
+│   ├── massive-listings.md      # Fix para listados >500 resultados
+│   ├── comparative-queries.md    # Fix para queries comparativas
+│   ├── individual-urls.md       # Fix de URLs individuales
+│   └── llm-strategy.md         # Estrategia de uso del LLM (simplificación)
+└── 06-reference/               # Referencias y migraciones
+    ├── factory-implementation.md # Implementación de droids/skills/hooks
+    └── migracion.md            # Migración Gemini → OpenRouter + CLI Python
+```
 
-### General
-- **[Historia de Migración](MIGRACION.md)** - Migración de React a Python
-- **[.agents/](.agents/)** - Arquitectura de agentes del proyecto
+**Documentación relacionada:**
+- **[AGENTS.md](AGENTS.md)** - Guía de agentes para AI assistants
+- **[python-cli/README.md](python-cli/README.md)** - Documentación del scraper Python
+- **[chatbot/README.md](chatbot/README.md)** - Documentación del chatbot Next.js
+
+**Documentación relacionada:**
+- **[docs/README.md](docs/README.md)** - Índice completo de documentación organizada
+- **[AGENTS.md](AGENTS.md)** - Guía de agentes para AI assistants (arquitectura del proyecto)
+- **[python-cli/README.md](python-cli/README.md)** - Documentación del scraper Python
+- **[chatbot/README.md](chatbot/README.md)** - Documentación del chatbot Next.js
+
+---
 
 ## 🎯 Características
 

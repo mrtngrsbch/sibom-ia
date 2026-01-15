@@ -341,9 +341,9 @@ python .agents/hooks/sync_status.py
 
 ### Documentación Relacionada
 
-- **[Análisis de Integridad](.agents/ANALISIS_INTEGRIDAD.md)** - Confirmación de arquitectura
-- **[Guía Completa](.agents/GUIA_COMPLETA.md)** - Manual completo
-- **[Plan de Coexistencia](.agents/PLAN_COEXISTENCIA.md)** - Estrategia original
+- **[Análisis de Integridad](docs/ANALISIS_INTEGRIDAD.md)** - Confirmación de arquitectura
+- **[Guía Completa](docs/GUIA_COMPLETA.md)** - Manual completo
+- **[Plan de Coexistencia](docs/PLAN_COEXISTENCIA.md)** - Estrategia original
 
 ### Preguntas Frecuentes
 

@@ -7,24 +7,24 @@ JSON2Markdown Converter = https://memochou1993.github.io/json2markdown-converter
 |--------|------|-------------|------|--------|
 | 105º | 17/02/2021 | 105º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4937](https://sibom.slyt.gba.gob.ar/bulletins/4937) | ✅ Completado |
 | 104º | 10/02/2021 | 104º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4921](https://sibom.slyt.gba.gob.ar/bulletins/4921) | ✅ Completado |
-| 103º | 29/12/2022 | 103º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7943](https://sibom.slyt.gba.gob.ar/bulletins/7943) | ✅ Completado |
-| 102º | 06/12/2022 | 102º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7908](https://sibom.slyt.gba.gob.ar/bulletins/7908) | ✅ Completado |
-| 101º | 02/12/2022 | 101º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7800](https://sibom.slyt.gba.gob.ar/bulletins/7800) | ✅ Completado |
-| 100º | 09/11/2022 | 100º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7791](https://sibom.slyt.gba.gob.ar/bulletins/7791) | ✅ Completado |
-| 99º | 03/11/2022 | 99º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7776](https://sibom.slyt.gba.gob.ar/bulletins/7776) | ✅ Completado |
-| 98º | 02/11/2022 | 98º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7764](https://sibom.slyt.gba.gob.ar/bulletins/7764) | ✅ Completado |
-| 97º | 28/10/2022 | 97º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7745](https://sibom.slyt.gba.gob.ar/bulletins/7745) | ✅ Completado |
-| 96º | 27/10/2022 | 96º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7678](https://sibom.slyt.gba.gob.ar/bulletins/7678) | ✅ Completado |
-| 95º | 11/10/2022 | 95º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7677](https://sibom.slyt.gba.gob.ar/bulletins/7677) | ✅ Completado |
-| 94º | 29/09/2022 | 94º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7639](https://sibom.slyt.gba.gob.ar/bulletins/7639) | ✅ Completado |
-| 93º | 29/09/2022 | 93º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7523](https://sibom.slyt.gba.gob.ar/bulletins/7523) | ✅ Completado |
-| 92º | 06/09/2022 | 92º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7518](https://sibom.slyt.gba.gob.ar/bulletins/7518) | ✅ Completado |
-| 91º | 25/08/2022 | 91º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7458](https://sibom.slyt.gba.gob.ar/bulletins/7458) | ✅ Completado |
-| 90º | 24/08/2022 | 90º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7394](https://sibom.slyt.gba.gob.ar/bulletins/7394) | ✅ Completado |
-| 89º | 10/08/2022 | 89º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7392](https://sibom.slyt.gba.gob.ar/bulletins/7392) | ✅ Completado |
-| 88º | 28/07/2022 | 88º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7343](https://sibom.slyt.gba.gob.ar/bulletins/7343) | ✅ Completado |
-| 87º | 28/07/2022 | 87º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7266](https://sibom.slyt.gba.gob.ar/bulletins/7266) | ✅ Completado |
-| 86º | 01/07/2022 | 86º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7235](https://sibom.slyt.gba.gob.ar/bulletins/7235) | ✅ Completado |
+| 103º | 08/02/2021 | 103º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4902](https://sibom.slyt.gba.gob.ar/bulletins/4902) | ✅ Completado |
+| 102º | 03/02/2021 | 102º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4889](https://sibom.slyt.gba.gob.ar/bulletins/4889) | ✅ Completado |
+| 101º | 29/01/2021 | 101º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4864](https://sibom.slyt.gba.gob.ar/bulletins/4864) | ✅ Completado |
+| 100º | 26/01/2021 | 100º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4857](https://sibom.slyt.gba.gob.ar/bulletins/4857) | ✅ Completado |
+| 99º | 25/01/2021 | 99º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4845](https://sibom.slyt.gba.gob.ar/bulletins/4845) | ✅ Completado |
+| 98º | 22/01/2021 | 98º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4814](https://sibom.slyt.gba.gob.ar/bulletins/4814) | ✅ Completado |
+| 97º | 19/01/2021 | 97º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4781](https://sibom.slyt.gba.gob.ar/bulletins/4781) | ✅ Completado |
+| 96º | 13/01/2021 | 96º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4737](https://sibom.slyt.gba.gob.ar/bulletins/4737) | ✅ Completado |
+| 95º | 05/01/2021 | 95º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4725](https://sibom.slyt.gba.gob.ar/bulletins/4725) | ✅ Completado |
+| 94º | 04/01/2021 | 94º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4624](https://sibom.slyt.gba.gob.ar/bulletins/4624) | ✅ Completado |
+| 93º | 11/12/2020 | 93º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4591](https://sibom.slyt.gba.gob.ar/bulletins/4591) | ✅ Completado |
+| 92º | 30/11/2020 | 92º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4574](https://sibom.slyt.gba.gob.ar/bulletins/4574) | ✅ Completado |
+| 91º | 27/11/2020 | 91º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4543](https://sibom.slyt.gba.gob.ar/bulletins/4543) | ✅ Completado |
+| 90º | 13/11/2020 | 90º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4438](https://sibom.slyt.gba.gob.ar/bulletins/4438) | ✅ Completado |
+| 89º | 28/10/2020 | 89º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4423](https://sibom.slyt.gba.gob.ar/bulletins/4423) | ✅ Completado |
+| 88º | 26/10/2020 | 88º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4402](https://sibom.slyt.gba.gob.ar/bulletins/4402) | ✅ Completado |
+| 87º | 21/10/2020 | 87º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4401](https://sibom.slyt.gba.gob.ar/bulletins/4401) | ✅ Completado |
+| 86º | 21/10/2020 | 86º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/4392](https://sibom.slyt.gba.gob.ar/bulletins/4392) | ✅ Completado |
 | 85º | 01/07/2022 | 85º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7129](https://sibom.slyt.gba.gob.ar/bulletins/7129) | ✅ Completado |
 | 84º | 07/06/2022 | 84º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/7123](https://sibom.slyt.gba.gob.ar/bulletins/7123) | ✅ Completado |
 | 83º | 06/06/2022 | 83º de Bragado | [https://sibom.slyt.gba.gob.ar/bulletins/6992](https://sibom.slyt.gba.gob.ar/bulletins/6992) | ✅ Completado |
@@ -169,49 +169,49 @@ JSON2Markdown Converter = https://memochou1993.github.io/json2markdown-converter
 | 164º | 15/06/2023 | 164º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8882](https://sibom.slyt.gba.gob.ar/bulletins/8882) | ✅ Completado |
 | 163º | 06/06/2023 | 163º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8851](https://sibom.slyt.gba.gob.ar/bulletins/8851) | ✅ Completado |
 | 162º | 05/06/2023 | 162º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8840](https://sibom.slyt.gba.gob.ar/bulletins/8840) | ✅ Completado |
-| 161º | 14/09/2022 | 161º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7449](https://sibom.slyt.gba.gob.ar/bulletins/7449) | ✅ Completado |
-| 160º | 22/08/2022 | 160º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7425](https://sibom.slyt.gba.gob.ar/bulletins/7425) | ✅ Completado |
-| 159º | 17/08/2022 | 159º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7393](https://sibom.slyt.gba.gob.ar/bulletins/7393) | ✅ Completado |
-| 158º | 09/08/2022 | 158º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7376](https://sibom.slyt.gba.gob.ar/bulletins/7376) | ✅ Completado |
-| 157º | 03/08/2022 | 157º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7365](https://sibom.slyt.gba.gob.ar/bulletins/7365) | ✅ Completado |
-| 156º | 02/08/2022 | 156º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7294](https://sibom.slyt.gba.gob.ar/bulletins/7294) | ✅ Completado |
-| 155º | 15/07/2022 | 155º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7253](https://sibom.slyt.gba.gob.ar/bulletins/7253) | ✅ Completado |
-| 154º | 06/07/2022 | 154º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7239](https://sibom.slyt.gba.gob.ar/bulletins/7239) | ✅ Completado |
-| 153º | 04/07/2022 | 153º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7204](https://sibom.slyt.gba.gob.ar/bulletins/7204) | ✅ Completado |
-| 152º | 23/06/2022 | 152º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7164](https://sibom.slyt.gba.gob.ar/bulletins/7164) | ✅ Completado |
-| 151º | 14/06/2022 | 151º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7142](https://sibom.slyt.gba.gob.ar/bulletins/7142) | ✅ Completado |
-| 150º | 09/06/2022 | 150º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7126](https://sibom.slyt.gba.gob.ar/bulletins/7126) | ✅ Completado |
-| 149º | 07/06/2022 | 149º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7120](https://sibom.slyt.gba.gob.ar/bulletins/7120) | ✅ Completado |
-| 148º | 06/06/2022 | 148º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7087](https://sibom.slyt.gba.gob.ar/bulletins/7087) | ✅ Completado |
-| 147º | 31/05/2022 | 147º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7079](https://sibom.slyt.gba.gob.ar/bulletins/7079) | ✅ Completado |
-| 146º | 27/05/2022 | 146º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7066](https://sibom.slyt.gba.gob.ar/bulletins/7066) | ✅ Completado |
-| 145º | 24/05/2022 | 145º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7057](https://sibom.slyt.gba.gob.ar/bulletins/7057) | ✅ Completado |
-| 144º | 20/05/2022 | 144º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7049](https://sibom.slyt.gba.gob.ar/bulletins/7049) | ✅ Completado |
-| 143º | 19/05/2022 | 143º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/7004](https://sibom.slyt.gba.gob.ar/bulletins/7004) | ✅ Completado |
-| 142º | 10/05/2022 | 142º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6881](https://sibom.slyt.gba.gob.ar/bulletins/6881) | ✅ Completado |
-| 141º | 13/04/2022 | 141º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6775](https://sibom.slyt.gba.gob.ar/bulletins/6775) | ✅ Completado |
-| 140º | 21/03/2022 | 140º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6741](https://sibom.slyt.gba.gob.ar/bulletins/6741) | ✅ Completado |
-| 139º | 15/03/2022 | 139º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6698](https://sibom.slyt.gba.gob.ar/bulletins/6698) | ✅ Completado |
-| 138º | 07/03/2022 | 138º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6659](https://sibom.slyt.gba.gob.ar/bulletins/6659) | ✅ Completado |
-| 137º | 23/02/2022 | 137º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6641](https://sibom.slyt.gba.gob.ar/bulletins/6641) | ✅ Completado |
-| 136º | 21/02/2022 | 136º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6632](https://sibom.slyt.gba.gob.ar/bulletins/6632) | ✅ Completado |
-| 135º | 17/02/2022 | 135º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6589](https://sibom.slyt.gba.gob.ar/bulletins/6589) | ✅ Completado |
-| 134º | 04/02/2022 | 134º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6555](https://sibom.slyt.gba.gob.ar/bulletins/6555) | ✅ Completado |
-| 133º | 26/01/2022 | 133º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6508](https://sibom.slyt.gba.gob.ar/bulletins/6508) | ✅ Completado |
-| 132º | 17/01/2022 | 132º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6365](https://sibom.slyt.gba.gob.ar/bulletins/6365) | ✅ Completado |
-| 131º | 20/12/2021 | 131º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6325](https://sibom.slyt.gba.gob.ar/bulletins/6325) | ✅ Completado |
-| 130º | 10/12/2021 | 130º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6262](https://sibom.slyt.gba.gob.ar/bulletins/6262) | ✅ Completado |
-| 129º | 29/11/2021 | 129º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6212](https://sibom.slyt.gba.gob.ar/bulletins/6212) | ✅ Completado |
-| 128º | 16/11/2021 | 128º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6161](https://sibom.slyt.gba.gob.ar/bulletins/6161) | ✅ Completado |
-| 127º | 04/11/2021 | 127º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6114](https://sibom.slyt.gba.gob.ar/bulletins/6114) | ✅ Completado |
-| 126º | 25/10/2021 | 126º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6090](https://sibom.slyt.gba.gob.ar/bulletins/6090) | ✅ Completado |
-| 125º | 18/10/2021 | 125º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6056](https://sibom.slyt.gba.gob.ar/bulletins/6056) | ✅ Completado |
-| 124º | 12/10/2021 | 124º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6033](https://sibom.slyt.gba.gob.ar/bulletins/6033) | ✅ Completado |
-| 123º | 04/10/2021 | 123º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/6004](https://sibom.slyt.gba.gob.ar/bulletins/6004) | ✅ Completado |
-| 122º | 27/09/2021 | 122º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/5967](https://sibom.slyt.gba.gob.ar/bulletins/5967) | ✅ Completado |
-| 121º | 15/09/2021 | 121º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/5956](https://sibom.slyt.gba.gob.ar/bulletins/5956) | ✅ Completado |
-| 120º | 13/09/2021 | 120º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/5919](https://sibom.slyt.gba.gob.ar/bulletins/5919) | ✅ Completado |
-| 119º | 06/09/2021 | 119º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/5821](https://sibom.slyt.gba.gob.ar/bulletins/5821) | ✅ Completado |
+| 161º | 02/06/2023 | 161º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8831](https://sibom.slyt.gba.gob.ar/bulletins/8831) | ✅ Completado |
+| 160º | 30/05/2023 | 160º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8804](https://sibom.slyt.gba.gob.ar/bulletins/8804) | ✅ Completado |
+| 159º | 24/05/2023 | 159º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8748](https://sibom.slyt.gba.gob.ar/bulletins/8748) | ✅ Completado |
+| 158º | 15/05/2023 | 158º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8729](https://sibom.slyt.gba.gob.ar/bulletins/8729) | ✅ Completado |
+| 157º | 15/05/2023 | 157º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8728](https://sibom.slyt.gba.gob.ar/bulletins/8728) | ✅ Completado |
+| 156º | 10/05/2023 | 156º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8707](https://sibom.slyt.gba.gob.ar/bulletins/8707) | ✅ Completado |
+| 155º | 09/05/2023 | 155º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8665](https://sibom.slyt.gba.gob.ar/bulletins/8665) | ✅ Completado |
+| 154º | 28/04/2023 | 154º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8637](https://sibom.slyt.gba.gob.ar/bulletins/8637) | ✅ Completado |
+| 153º | 27/04/2023 | 153º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8633](https://sibom.slyt.gba.gob.ar/bulletins/8633) | ✅ Completado |
+| 152º | 27/04/2023 | 152º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8618](https://sibom.slyt.gba.gob.ar/bulletins/8618) | ✅ Completado |
+| 151º | 20/04/2023 | 151º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8452](https://sibom.slyt.gba.gob.ar/bulletins/8452) | ✅ Completado |
+| 150º | 17/03/2023 | 150º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8422](https://sibom.slyt.gba.gob.ar/bulletins/8422) | ✅ Completado |
+| 149º | 14/03/2023 | 149º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8385](https://sibom.slyt.gba.gob.ar/bulletins/8385) | ✅ Completado |
+| 148º | 06/03/2023 | 148º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8348](https://sibom.slyt.gba.gob.ar/bulletins/8348) | ✅ Completado |
+| 147º | 24/02/2023 | 147º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8250](https://sibom.slyt.gba.gob.ar/bulletins/8250) | ✅ Completado |
+| 146º | 06/02/2023 | 146º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8249](https://sibom.slyt.gba.gob.ar/bulletins/8249) | ✅ Completado |
+| 145º | 24/01/2023 | 145º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8180](https://sibom.slyt.gba.gob.ar/bulletins/8180) | ✅ Completado |
+| 144º | 19/01/2023 | 144º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8112](https://sibom.slyt.gba.gob.ar/bulletins/8112) | ✅ Completado |
+| 143º | 09/01/2023 | 143º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8108](https://sibom.slyt.gba.gob.ar/bulletins/8108) | ✅ Completado |
+| 142º | 05/01/2023 | 142º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8099](https://sibom.slyt.gba.gob.ar/bulletins/8099) | ✅ Completado |
+| 141º | 04/01/2023 | 141º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8083](https://sibom.slyt.gba.gob.ar/bulletins/8083) | ✅ Completado |
+| 140º | 03/01/2023 | 140º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8073](https://sibom.slyt.gba.gob.ar/bulletins/8073) | ✅ Completado |
+| 139º | 29/12/2022 | 139º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8038](https://sibom.slyt.gba.gob.ar/bulletins/8038) | ✅ Completado |
+| 138º | 27/12/2022 | 138º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/8025](https://sibom.slyt.gba.gob.ar/bulletins/8025) | ✅ Completado |
+| 137º | 21/12/2022 | 137º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7971](https://sibom.slyt.gba.gob.ar/bulletins/7971) | ✅ Completado |
+| 136º | 15/12/2022 | 136º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7969](https://sibom.slyt.gba.gob.ar/bulletins/7969) | ✅ Completado |
+| 135º | 15/12/2022 | 135º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7939](https://sibom.slyt.gba.gob.ar/bulletins/7939) | ✅ Completado |
+| 134º | 04/11/2022 | 134º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7690](https://sibom.slyt.gba.gob.ar/bulletins/7690) | ✅ Completado |
+| 133º | 03/10/2022 | 133º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7644](https://sibom.slyt.gba.gob.ar/bulletins/7644) | ✅ Completado |
+| 132º | 29/09/2022 | 132º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7634](https://sibom.slyt.gba.gob.ar/bulletins/7634) | ✅ Completado |
+| 131º | 29/09/2022 | 131º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7626](https://sibom.slyt.gba.gob.ar/bulletins/7626) | ✅ Completado |
+| 130º | 27/09/2022 | 130º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7249](https://sibom.slyt.gba.gob.ar/bulletins/7249) | ✅ Completado |
+| 129º | 05/07/2022 | 129º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7220](https://sibom.slyt.gba.gob.ar/bulletins/7220) | ✅ Completado |
+| 128º | 28/06/2022 | 128º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7150](https://sibom.slyt.gba.gob.ar/bulletins/7150) | ✅ Completado |
+| 127º | 10/06/2022 | 127º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7147](https://sibom.slyt.gba.gob.ar/bulletins/7147) | ✅ Completado |
+| 126º | 09/06/2022 | 126º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7144](https://sibom.slyt.gba.gob.ar/bulletins/7144) | ✅ Completado |
+| 125º | 09/06/2022 | 125º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7113](https://sibom.slyt.gba.gob.ar/bulletins/7113) | ✅ Completado |
+| 124º | 03/06/2022 | 124º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7098](https://sibom.slyt.gba.gob.ar/bulletins/7098) | ✅ Completado |
+| 123º | 01/06/2022 | 123º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7096](https://sibom.slyt.gba.gob.ar/bulletins/7096) | ✅ Completado |
+| 122º | 30/05/2022 | 122º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/7067](https://sibom.slyt.gba.gob.ar/bulletins/7067) | ✅ Completado |
+| 121º | 26/05/2022 | 121º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6962](https://sibom.slyt.gba.gob.ar/bulletins/6962) | ✅ Completado |
+| 120º | 18/04/2022 | 120º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6896](https://sibom.slyt.gba.gob.ar/bulletins/6896) | ✅ Completado |
+| 119º | 18/04/2022 | 119º de Brandsen | [https://sibom.slyt.gba.gob.ar/bulletins/6868](https://sibom.slyt.gba.gob.ar/bulletins/6868) | ✅ Completado |
 | 118º | 09/08/2021 | 118º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/5649](https://sibom.slyt.gba.gob.ar/bulletins/5649) | ✅ Completado |
 | 117º | 08/07/2021 | 117º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/5571](https://sibom.slyt.gba.gob.ar/bulletins/5571) | ✅ Completado |
 | 253º | 31/12/2025 | 253º de Coronel Pringles | [https://sibom.slyt.gba.gob.ar/bulletins/14196](https://sibom.slyt.gba.gob.ar/bulletins/14196) | ✅ Completado |

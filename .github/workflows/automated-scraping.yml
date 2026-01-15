@@ -427,6 +427,14 @@ jobs:
             curl -I "https://pub-${{ secrets.R2_ACCOUNT_ID }}.r2.dev/sibom-data/normativas_index_minimal.json.gz" || exit 1
           fi
 
+      - name: Upload bulletins
+        working-directory: python-cli/dist/boletines
+        run: |
+          for file in *.json.gz; do
+            wrangler r2 object put "sibom-data/boletines/$file" --file "$file"
+            echo "Uploaded: $file"
+          done
+
       - name: Generate deployment report
         working-directory: python-cli
         run: |

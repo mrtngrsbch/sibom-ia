@@ -29,6 +29,34 @@
 ├── agents/                     # Definiciones de agentes (YAML/JSON)
 │   ├── README.md              # Cómo crear agentes
 │   ├── rag-indexer.yaml       # Ejemplo: Indexador RAG
+│   └── commit-agent.yaml      # Agente de commits automáticos
+├── prompts/                    # Prompts reutilizables
+│   ├── system-prompts.md      # Prompts de sistema
+│   └── task-prompts.md        # Prompts de tareas
+├── steering/                   # Reglas de código (obligatorias)
+│   ├── python-patterns.md
+│   ├── typescript-patterns.md
+│   ├── error-handling.md
+│   ├── testing-patterns.md
+│   ├── performance-optimization.md
+│   └── git-workflow.md       # Reglas de commits (Conventional Commits)
+├── workflows/                  # Procedimientos multi-paso
+│   └── commit-workflow.md    # Guía paso a paso del commit-agent
+├── specs/                      # Referencias a .kiro/
+│   └── README.md              # Pointer a análisis técnico
+├── hooks/                      # Scripts de sincronización
+│   ├── sync_from_kiro.py      # .kiro/ → .agents/
+│   ├── propagate_to_kiro.py   # .agents/ → .kiro/
+│   ├── sync_all.py            # Bidireccional
+│   └── sync_to_opencode.py    # .agents/ → .opencode/ (backup)
+└── scripts/                    # Scripts de implementación
+    └── commit_agent.py       # Implementación del agente de commits
+```
+.agents/
+├── README.md                   # Este archivo (manual completo)
+├── agents/                     # Definiciones de agentes (YAML/JSON)
+│   ├── README.md              # Cómo crear agentes
+│   ├── rag-indexer.yaml       # Ejemplo: Indexador RAG
 │   └── scraper-orchestrator.yaml
 ├── prompts/                    # Prompts reutilizables
 │   ├── system-prompts.md      # Prompts de sistema
@@ -241,6 +269,42 @@ Eres un orquestador de scraping web para sitios gubernamentales argentinos.
 4. Indexar con retry logic
 5. Verificar indexación exitosa
 ```
+
+---
+
+## 🤖 Agentes Disponibles
+
+### 1. rag-indexer
+**Descripción:** Indexa documentos JSON desde R2 a Qdrant para búsqueda semántica
+
+**Uso:**
+```bash
+python3 python-cli/rag_indexer.py
+```
+
+**Más info:** [`.agents/agents/rag-indexer.yaml`](agents/rag-indexer.yaml)
+
+---
+
+### 2. commit-agent ⭐ NUEVO
+**Descripción:** Genera mensajes de commit y alerta sobre cambios pendientes
+
+**Uso:**
+```bash
+# Analizar cambios
+python3 .agents/scripts/commit_agent.py analyze
+
+# Ver sugerencias de mensajes
+python3 .agents/scripts/commit_agent.py suggest
+
+# Iniciar monitor (cada 30 min)
+python3 .agents/scripts/commit_agent.py monitor --interval 30
+```
+
+**Más info:**
+- [`.agents/agents/commit-agent.yaml`](agents/commit-agent.yaml)
+- [`.agents/steering/git-workflow.md`](steering/git-workflow.md) - Reglas de commits
+- [`.agents/workflows/commit-workflow.md`](workflows/commit-workflow.md) - Guía de uso
 
 ---
 

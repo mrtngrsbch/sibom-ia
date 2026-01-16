@@ -1,16 +1,22 @@
 # Configuración Droid - SIBOM Scraper Assistant
 # Este archivo configura cómo los droids deben trabajar en este proyecto
 
+# ⚠️ NOTA IMPORTANTE
+# Este proyecto usa OpenCode como herramienta principal.
+# - Configuración activa: .opencode/
+# - Este archivo: Configuración para Factory/Droids (runtime alternativo)
+# - Portabilidad: .agents/ funciona con cualquier herramienta
+
 # Contexto principal para agentes
 agents_context:
-  # LEER PRIMERO (reglas obligatorias)
+  # LEER PRIMERO (manual completo + reglas obligatorias)
   read_first:
-    - .agents/specs/
-    - .agents/steering/
+    - .agents/README.md           # Manual completo (500+ líneas)
+    - .agents/steering/            # Reglas obligatorias
   
-  # Consultar para detalles técnicos profundos
+  # Consultar para detalles técnicos profundos (opcional)
   reference_for_details:
-    - .kiro/specs/
+    - .kiro/specs/                 # Análisis técnico profundo
   
   # Restricciones DURAS (no negociables)
   hard_constraints:
@@ -42,18 +48,33 @@ droids:
 # Flujo de trabajo
 workflow:
   before_coding:
-    - "Leer .agents/specs/ para entender arquitectura"
+    - "Leer .agents/README.md para entender arquitectura completa"
     - "Revisar .agents/steering/ para reglas obligatorias"
-    - "Consultar .kiro/specs/ si necesitas detalles técnicos"
+    - "Consultar .kiro/specs/ si necesitas detalles técnicos (opcional)"
   
   before_commit:
     - "Verificar que se siguieron patrones de .agents/steering/"
     - "Ejecutar tests relevantes"
     - "Revisar que no se rompieron reglas obligatorias"
+    - "Sincronizar .agents/ si es necesario"
+
+# Arquitectura
+architecture: |
+  .agents/ (DOMINIO) → .opencode/ (RUNTIME PRINCIPAL)
+                    → .factory/ (RUNTIME ALTERNATIVO)
+                    → .kiro/ (REFERENCIA)
+  
+  Principios:
+  - .agents/ define QUÉ hacer (agnóstico de herramientas)
+  - .factory/ define CÓMO Factory/Droids ejecuta
+  - .kiro/ es referencia técnica opcional
 
 # Notas importantes
 notes: |
-  - .agents/ es la FUENTE DE VERDAD para reglas de agentes AI
+  - .agents/ es la FUENTE DE VERDAD para dominio de agentes
+  - .agents/README.md tiene TODO lo que necesitas (500+ líneas)
   - .kiro/ es la REFERENCIA TÉCNICA para análisis profundo
-  - Siempre leer .agents/ ANTES de modificar código
+  - Siempre leer .agents/README.md ANTES de modificar código
   - Consultar .kiro/ solo cuando necesites detalles de implementación
+  - OpenCode es la herramienta principal, Factory es alternativa
+  - Portabilidad: .agents/ funciona con cualquier herramienta

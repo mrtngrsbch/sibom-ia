@@ -42,9 +42,10 @@ load_dotenv()
 
 console = Console()
 
+
 class SIBOMScraper:
-    # Mapeo de IDs de ciudades a nombres
-    CITY_MAP = {
+    # Mapeo de IDs de ciudades a nombres (fallback)
+    CITY_MAP_FALLBACK = {
         '22': 'Merlo',
         '23': 'Carlos Tejedor',
         '24': 'La Plata',
@@ -56,7 +57,54 @@ class SIBOMScraper:
         '30': 'Tres de Febrero',
         # Agregar más ciudades según sea necesario
     }
-    
+
+    CITY_MAP_FILE = Path("boletines/CITY_MAP.json")
+
+    def _load_city_map(self) -> Dict[str, str]:
+        """
+        Carga el mapa de ciudades desde CITY_MAP.json.
+
+        Returns:
+            Dict con el mapeo de IDs a nombres
+        """
+        if self.CITY_MAP_FILE.exists():
+            try:
+                with self.CITY_MAP_FILE.open('r', encoding='utf-8') as f:
+                    city_map = json.load(f)
+                console.print(
+                    f"[dim]  ✓ CITY_MAP cargado: {len(city_map)} ciudades[/dim]")
+                return city_map
+            except Exception as e:
+                console.print(
+                    f"[yellow]  ⚠ Error cargando CITY_MAP: {e}[/yellow]")
+
+        # Fallback al mapa interno
+        console.print(
+            f"[dim]  ✓ Usando CITY_MAP_FALLBACK: {len(self.CITY_MAP_FALLBACK)} ciudades[/dim]")
+        return self.CITY_MAP_FALLBACK.copy()
+
+    def get_city_name(self, city_id: str, city_url: str = None) -> str:
+        """
+        Obtiene el nombre de una ciudad usando CITY_MAP.json.
+
+        Args:
+            city_id: ID de la ciudad
+            city_url: URL de la ciudad (no usado, se mantiene por compatibilidad)
+
+        Returns:
+            Nombre de la ciudad o "Ciudad ID {id}" si no se puede obtener
+        """
+        # Cargar CITY_MAP desde archivo
+        city_map = self._load_city_map()
+
+        # Buscar en CITY_MAP
+        name = city_map.get(city_id)
+        if name:
+            return name
+
+        # Fallback
+        return f"Ciudad ID {city_id}"
+
     def __init__(self, api_key: str, model: str = "z-ai/glm-4.5-air:free"):
         self.client = OpenAI(
             api_key=api_key,
@@ -89,30 +137,30 @@ class SIBOMScraper:
     def _play_sound(self, sound_type: str = 'success'):
         """
         Reproduce un sonido del sistema según el tipo.
-        
+
         Args:
             sound_type: 'success' para boletín completado, 'complete' para tarea finalizada
         """
         try:
             system = platform.system()
-            
+
             if system == 'Darwin':  # macOS
                 if sound_type == 'success':
                     # Sonido Hero para cada boletín completado
-                    subprocess.run(['afplay', '/System/Library/Sounds/Hero.aiff'], 
-                                 check=False, capture_output=True)
+                    subprocess.run(['afplay', '/System/Library/Sounds/Hero.aiff'],
+                                   check=False, capture_output=True)
                 elif sound_type == 'complete':
                     # Sonido Funk para tarea completa
-                    subprocess.run(['afplay', '/System/Library/Sounds/Funk.aiff'], 
-                                 check=False, capture_output=True)
+                    subprocess.run(['afplay', '/System/Library/Sounds/Funk.aiff'],
+                                   check=False, capture_output=True)
             elif system == 'Linux':
                 # Usar beep en Linux (requiere beep instalado)
                 if sound_type == 'success':
-                    subprocess.run(['paplay', '/usr/share/sounds/freedesktop/stereo/message.oga'], 
-                                 check=False, capture_output=True)
+                    subprocess.run(['paplay', '/usr/share/sounds/freedesktop/stereo/message.oga'],
+                                   check=False, capture_output=True)
                 elif sound_type == 'complete':
-                    subprocess.run(['paplay', '/usr/share/sounds/freedesktop/stereo/complete.oga'], 
-                                 check=False, capture_output=True)
+                    subprocess.run(['paplay', '/usr/share/sounds/freedesktop/stereo/complete.oga'],
+                                   check=False, capture_output=True)
             elif system == 'Windows':
                 # Usar winsound en Windows
                 import winsound
@@ -146,7 +194,8 @@ class SIBOMScraper:
             with progress_file.open('w', encoding='utf-8') as f:
                 json.dump(progress_data, f, indent=2, ensure_ascii=False)
         except Exception as e:
-            console.print(f"[yellow]⚠ No se pudo guardar progreso: {e}[/yellow]")
+            console.print(
+                f"[yellow]⚠ No se pudo guardar progreso: {e}[/yellow]")
 
     def _load_progress(self, bulletin_id: str, output_dir: Path) -> Optional[Dict]:
         """Carga progreso existente de un boletín"""
@@ -159,7 +208,8 @@ class SIBOMScraper:
             with progress_file.open('r', encoding='utf-8') as f:
                 return json.load(f)
         except Exception as e:
-            console.print(f"[yellow]⚠ No se pudo cargar progreso: {e}[/yellow]")
+            console.print(
+                f"[yellow]⚠ No se pudo cargar progreso: {e}[/yellow]")
             return None
 
     def _clean_progress(self, bulletin_id: str, output_dir: Path):
@@ -170,7 +220,8 @@ class SIBOMScraper:
             try:
                 progress_file.unlink()
             except Exception as e:
-                console.print(f"[dim]No se pudo eliminar archivo de progreso: {e}[/dim]")
+                console.print(
+                    f"[dim]No se pudo eliminar archivo de progreso: {e}[/dim]")
 
     def _detect_document_types(self, text: str) -> List[str]:
         """
@@ -205,7 +256,8 @@ class SIBOMScraper:
 
         # Agregar jitter aleatorio: delay base +/- variación aleatoria
         jitter = random.uniform(-self.jitter_range, self.jitter_range)
-        actual_delay = max(1.0, self.rate_limit_delay + jitter)  # Mínimo 1 segundo
+        actual_delay = max(1.0, self.rate_limit_delay +
+                           jitter)  # Mínimo 1 segundo
 
         if elapsed < actual_delay:
             time.sleep(actual_delay - elapsed)
@@ -278,7 +330,8 @@ class SIBOMScraper:
         # Para descripciones largas (modo individual), extraer solo el nombre de la ciudad
         # Buscar patrón "de [Ciudad]" o "Municipal de [Ciudad]" o "Municipalidad de [Ciudad]"
         if len(description) > 50:
-            city_match = re.search(r'(?:de\s+la\s+Municipalidad\s+de\s+|Municipal\s+de\s+|de\s+)([A-Z][a-zA-Z\s]+?)(?:\s+que|\s*$|,)', description)
+            city_match = re.search(
+                r'(?:de\s+la\s+Municipalidad\s+de\s+|Municipal\s+de\s+|de\s+)([A-Z][a-zA-Z\s]+?)(?:\s+que|\s*$|,)', description)
             if city_match:
                 cleaned = city_match.group(1).strip()
                 cleaned = re.sub(r'[^\w\s-]', '', cleaned)
@@ -286,7 +339,8 @@ class SIBOMScraper:
                 return f"{cleaned}_{num}"
 
         # Para descripciones cortas (modo listado), remover el número y "de" del principio
-        cleaned = re.sub(r'^\d+º?\s*(de\s*)?', '', description, flags=re.IGNORECASE)
+        cleaned = re.sub(r'^\d+º?\s*(de\s*)?', '',
+                         description, flags=re.IGNORECASE)
 
         # Limpiar caracteres no válidos para nombres de archivo
         cleaned = re.sub(r'[^\w\s-]', '', cleaned)
@@ -307,7 +361,8 @@ class SIBOMScraper:
         if not index_file.exists():
             with index_file.open('w', encoding='utf-8') as f:
                 f.write("# Boletines Procesados\n\n")
-                f.write("JSON2Markdown Converter = https://memochou1993.github.io/json2markdown-converter/\n\n\n")
+                f.write(
+                    "JSON2Markdown Converter = https://memochou1993.github.io/json2markdown-converter/\n\n\n")
                 f.write("| Number | Date | Description | Link | Status |\n")
                 f.write("|--------|------|-------------|------|--------|\n")
 
@@ -394,7 +449,8 @@ class SIBOMScraper:
 
     def parse_listing_page(self, html: str, url: str) -> List[Dict]:
         """Nivel 1: Extrae listado de boletines usando BeautifulSoup (con fallback a LLM)"""
-        console.print("[cyan]📋 Nivel 1: Extrayendo listado de boletines...[/cyan]")
+        console.print(
+            "[cyan]📋 Nivel 1: Extrayendo listado de boletines...[/cyan]")
 
         try:
             # Intentar con BeautifulSoup primero (95% de casos)
@@ -407,11 +463,13 @@ class SIBOMScraper:
             for bulletin_div in bulletin_divs:
                 # Extraer título (número + descripción)
                 title_elem = bulletin_div.find('p', class_='bulletin-title')
-                title = title_elem.get_text(strip=True) if title_elem else "N/A"
+                title = title_elem.get_text(
+                    strip=True) if title_elem else "N/A"
 
                 # Extraer fecha
                 date_elem = bulletin_div.find('p', class_='bulletin-date')
-                date_text = date_elem.get_text(strip=True) if date_elem else "N/A"
+                date_text = date_elem.get_text(
+                    strip=True) if date_elem else "N/A"
                 # Limpiar "Publicado el " del texto
                 date = date_text.replace('Publicado el ', '')
 
@@ -421,7 +479,8 @@ class SIBOMScraper:
 
                 # Extraer número del título (ej: "105º de Carlos Tejedor" -> "105º")
                 number_match = re.search(r'(\d+º)', title)
-                number = number_match.group(1) if number_match else title.split()[0]
+                number = number_match.group(
+                    1) if number_match else title.split()[0]
 
                 bulletins.append({
                     'number': number,
@@ -431,14 +490,17 @@ class SIBOMScraper:
                 })
 
             if bulletins:
-                console.print(f"[green]✓ Encontrados {len(bulletins)} boletines (BeautifulSoup)[/green]")
+                console.print(
+                    f"[green]✓ Encontrados {len(bulletins)} boletines (BeautifulSoup)[/green]")
                 return bulletins
             else:
-                raise ValueError("No se encontraron boletines con BeautifulSoup")
+                raise ValueError(
+                    "No se encontraron boletines con BeautifulSoup")
 
         except Exception as e:
             # Fallback a LLM si BeautifulSoup falla
-            console.print(f"[yellow]⚠ BeautifulSoup falló ({str(e)[:50]}), usando LLM como fallback[/yellow]")
+            console.print(
+                f"[yellow]⚠ BeautifulSoup falló ({str(e)[:50]}), usando LLM como fallback[/yellow]")
 
             prompt = f"""Analiza este HTML de SIBOM. Extrae los boletines dentro de <div class="row bulletin">.
 IMPORTANTE: Busca el número, la fecha, una breve descripción y el enlace (href).
@@ -451,7 +513,8 @@ HTML: {html[:200000]}"""
             data = json.loads(cleaned)
 
             bulletins = data.get("bulletins", [])
-            console.print(f"[green]✓ Encontrados {len(bulletins)} boletines (LLM fallback)[/green]")
+            console.print(
+                f"[green]✓ Encontrados {len(bulletins)} boletines (LLM fallback)[/green]")
             return bulletins
 
     def detect_total_pages(self, html: str) -> int:
@@ -472,12 +535,14 @@ HTML: {html[:200000]}"""
             pagination = soup.find('ul', class_='pagination')
 
             if not pagination:
-                console.print("[dim]No se encontró paginación, asumiendo 1 página[/dim]")
+                console.print(
+                    "[dim]No se encontró paginación, asumiendo 1 página[/dim]")
                 return 1
 
             # Buscar el enlace "Última" que contiene el número total de páginas
             # Patrón: <a href="/cities/22?page=14">Última &raquo;</a>
-            last_page_link = pagination.find('a', string=lambda text: text and 'Última' in text)
+            last_page_link = pagination.find(
+                'a', string=lambda text: text and 'Última' in text)
 
             if last_page_link:
                 href = last_page_link.get('href', '')
@@ -485,11 +550,13 @@ HTML: {html[:200000]}"""
                 match = re.search(r'page=(\d+)', href)
                 if match:
                     total_pages = int(match.group(1))
-                    console.print(f"[green]✓ Detectadas {total_pages} páginas totales[/green]")
+                    console.print(
+                        f"[green]✓ Detectadas {total_pages} páginas totales[/green]")
                     return total_pages
 
             # Fallback: buscar todos los enlaces con page= y tomar el máximo
-            all_page_links = pagination.find_all('a', href=re.compile(r'page=\d+'))
+            all_page_links = pagination.find_all(
+                'a', href=re.compile(r'page=\d+'))
             if all_page_links:
                 page_numbers = []
                 for link in all_page_links:
@@ -500,15 +567,18 @@ HTML: {html[:200000]}"""
 
                 if page_numbers:
                     total_pages = max(page_numbers)
-                    console.print(f"[yellow]✓ Detectadas {total_pages} páginas (fallback)[/yellow]")
+                    console.print(
+                        f"[yellow]✓ Detectadas {total_pages} páginas (fallback)[/yellow]")
                     return total_pages
 
             # Si no se encontró nada, asumir 1 página
-            console.print("[dim]No se pudo determinar número de páginas, asumiendo 1[/dim]")
+            console.print(
+                "[dim]No se pudo determinar número de páginas, asumiendo 1[/dim]")
             return 1
 
         except Exception as e:
-            console.print(f"[yellow]⚠ Error detectando páginas: {e}, asumiendo 1 página[/yellow]")
+            console.print(
+                f"[yellow]⚠ Error detectando páginas: {e}, asumiendo 1 página[/yellow]")
             return 1
 
     def parse_bulletin_content_links(self, html: str) -> List[Dict[str, Any]]:
@@ -523,7 +593,8 @@ HTML: {html[:200000]}"""
         - preview: Preview del contenido (si disponible)
         - id: ID numérico de la norma (extraído de URL)
         """
-        console.print("[cyan]🔗 Nivel 2: Extrayendo metadatos de normas...[/cyan]")
+        console.print(
+            "[cyan]🔗 Nivel 2: Extrayendo metadatos de normas...[/cyan]")
 
         try:
             # Intentar con BeautifulSoup primero (95% de casos)
@@ -563,7 +634,8 @@ HTML: {html[:200000]}"""
 
                 # Extraer título (primer párrafo)
                 title_elem = div.find('p')
-                titulo = title_elem.get_text(strip=True) if title_elem else f"{tipo.capitalize()} {norm_id}"
+                titulo = title_elem.get_text(
+                    strip=True) if title_elem else f"{tipo.capitalize()} {norm_id}"
 
                 # Extraer fecha (párrafo con clase city-and-date)
                 date_elem = div.find('p', class_='city-and-date')
@@ -571,8 +643,10 @@ HTML: {html[:200000]}"""
 
                 # Extraer preview (siguiente párrafo después de título)
                 all_p = div.find_all('p', limit=5)
-                preview_parts = [p.get_text(strip=True) for p in all_p[2:4] if p.get_text(strip=True)]
-                preview = ' '.join(preview_parts)[:200] if preview_parts else ''
+                preview_parts = [p.get_text(strip=True)
+                                 for p in all_p[2:4] if p.get_text(strip=True)]
+                preview = ' '.join(preview_parts)[
+                    :200] if preview_parts else ''
 
                 normas.append({
                     'id': norm_id,
@@ -584,29 +658,35 @@ HTML: {html[:200000]}"""
                 })
 
             if normas:
-                console.print(f"[green]✓ Encontradas {len(normas)} normas con metadatos (BeautifulSoup)[/green]")
+                console.print(
+                    f"[green]✓ Encontradas {len(normas)} normas con metadatos (BeautifulSoup)[/green]")
                 return normas
             else:
                 raise ValueError("No se encontraron normas con BeautifulSoup")
 
         except Exception as e:
             # Fallback a LLM si BeautifulSoup falla
-            console.print(f"[yellow]⚠ BeautifulSoup falló ({str(e)[:50]}), usando LLM como fallback[/yellow]")
+            console.print(
+                f"[yellow]⚠ BeautifulSoup falló ({str(e)[:50]}), usando LLM como fallback[/yellow]")
 
             # Por ahora, retornar lista vacía en vez de usar LLM (muy costoso y lento para fallback)
-            console.print(f"[red]✗ No se pudieron extraer normas del boletín[/red]")
+            console.print(
+                f"[red]✗ No se pudieron extraer normas del boletín[/red]")
             return []
 
     def parse_final_content(self, html: str) -> str:
         """Nivel 3: Extrae texto completo del documento usando BeautifulSoup mejorado (sin LLM)"""
-        console.print("[cyan]📄 Nivel 3: Extrayendo contenido textual...[/cyan]")
+        console.print(
+            "[cyan]📄 Nivel 3: Extrayendo contenido textual...[/cyan]")
 
         # Validación inicial del HTML
         if not html or len(html) < 100:
-            raise ValueError(f"HTML inválido o demasiado corto ({len(html) if html else 0} caracteres)")
+            raise ValueError(
+                f"HTML inválido o demasiado corto ({len(html) if html else 0} caracteres)")
 
         html_size = len(html)
-        console.print(f"[dim]  → HTML recibido: {html_size:,} caracteres[/dim]")
+        console.print(
+            f"[dim]  → HTML recibido: {html_size:,} caracteres[/dim]")
 
         soup = BeautifulSoup(html, 'lxml')
 
@@ -616,7 +696,8 @@ HTML: {html[:200000]}"""
 
         if not container:
             # Estrategia 2: Buscar contenedor por clase que contenga 'content'
-            container = soup.find('div', class_=lambda x: x and 'content' in str(x).lower())
+            container = soup.find(
+                'div', class_=lambda x: x and 'content' in str(x).lower())
             strategy_used = "clase con 'content'"
 
         if not container:
@@ -635,7 +716,8 @@ HTML: {html[:200000]}"""
                 strategy_used = "<body> limpio"
 
         if not container:
-            raise ValueError("No se pudo encontrar contenido válido en el HTML con ninguna estrategia")
+            raise ValueError(
+                "No se pudo encontrar contenido válido en el HTML con ninguna estrategia")
 
         console.print(f"[dim]  → Estrategia utilizada: {strategy_used}[/dim]")
 
@@ -652,67 +734,77 @@ HTML: {html[:200000]}"""
 
         # Validaciones de calidad
         if len(text) < 100:
-            raise ValueError(f"Texto extraído demasiado corto ({len(text)} caracteres)")
+            raise ValueError(
+                f"Texto extraído demasiado corto ({len(text)} caracteres)")
 
         # Calcular y mostrar métricas
         text_size = len(text)
         ratio = text_size / html_size if html_size > 0 else 0
 
-        console.print(f"[green]✓ Texto extraído: {text_size:,} caracteres ({ratio:.1%} del HTML)[/green]")
+        console.print(
+            f"[green]✓ Texto extraído: {text_size:,} caracteres ({ratio:.1%} del HTML)[/green]")
 
         # Alerta si el ratio es sospechosamente bajo
         if ratio < 0.05:
-            console.print(f"[yellow]⚠ Alerta: Ratio texto/HTML muy bajo ({ratio:.1%}), posible contenido HTML denso[/yellow]")
+            console.print(
+                f"[yellow]⚠ Alerta: Ratio texto/HTML muy bajo ({ratio:.1%}), posible contenido HTML denso[/yellow]")
 
         return text
 
     def parse_final_content_structured(self, html: str) -> Dict[str, Any]:
         """
         Nivel 3 mejorado: Extrae contenido preservando estructura tabular.
-        
+
         Usa TableExtractor para extraer tablas como datos estructurados,
         reemplazándolas con placeholders [TABLA_N] en el texto.
-        
+
         Args:
             html: Contenido HTML del documento
-            
+
         Returns:
             Dict con:
                 - text_content: Texto con placeholders [TABLA_N]
                 - tables: Lista de tablas estructuradas
                 - metadata: Información sobre tablas extraídas
         """
-        console.print("[cyan]📄 Nivel 3: Extrayendo contenido estructurado...[/cyan]")
-        
+        console.print(
+            "[cyan]📄 Nivel 3: Extrayendo contenido estructurado...[/cyan]")
+
         # Validación inicial del HTML
         if not html or len(html) < 100:
-            raise ValueError(f"HTML inválido o demasiado corto ({len(html) if html else 0} caracteres)")
-        
+            raise ValueError(
+                f"HTML inválido o demasiado corto ({len(html) if html else 0} caracteres)")
+
         html_size = len(html)
-        console.print(f"[dim]  → HTML recibido: {html_size:,} caracteres[/dim]")
-        
+        console.print(
+            f"[dim]  → HTML recibido: {html_size:,} caracteres[/dim]")
+
         # Extraer tablas estructuradas
         text_content, tables = self.table_extractor.extract_tables(html)
-        
+
         # Validaciones de calidad
         if len(text_content) < 50:
             # Fallback al método original si la extracción estructurada falla
-            console.print(f"[yellow]⚠ Extracción estructurada produjo poco texto, usando método tradicional[/yellow]")
+            console.print(
+                f"[yellow]⚠ Extracción estructurada produjo poco texto, usando método tradicional[/yellow]")
             text_content = self.parse_final_content(html)
             tables = []
-        
+
         # Calcular métricas
         text_size = len(text_content)
         ratio = text_size / html_size if html_size > 0 else 0
         table_count = len(tables)
-        
-        console.print(f"[green]✓ Texto extraído: {text_size:,} caracteres ({ratio:.1%} del HTML)[/green]")
-        
+
+        console.print(
+            f"[green]✓ Texto extraído: {text_size:,} caracteres ({ratio:.1%} del HTML)[/green]")
+
         if table_count > 0:
-            console.print(f"[green]✓ Tablas estructuradas: {table_count}[/green]")
+            console.print(
+                f"[green]✓ Tablas estructuradas: {table_count}[/green]")
             for t in tables:
-                console.print(f"[dim]    → {t.id}: {t.title[:50]}... ({t.stats.row_count} filas)[/dim]")
-        
+                console.print(
+                    f"[dim]    → {t.id}: {t.title[:50]}... ({t.stats.row_count} filas)[/dim]")
+
         # Construir resultado
         return {
             "text_content": text_content,
@@ -737,7 +829,8 @@ HTML: {html[:200000]}"""
         Returns:
             Dict con norma completa incluyendo contenido, tablas y montos
         """
-        norm_url = norma_metadata['url'] if norma_metadata['url'].startswith('http') else f"{base_url}{norma_metadata['url']}"
+        norm_url = norma_metadata['url'] if norma_metadata['url'].startswith(
+            'http') else f"{base_url}{norma_metadata['url']}"
 
         try:
             # Aplicar rate limiting con jitter
@@ -752,7 +845,8 @@ HTML: {html[:200000]}"""
                 contenido = structured["text_content"]
                 tablas = structured["tables"]
             except Exception as e:
-                console.print(f"[yellow]⚠ Error en extracción estructurada: {e}, usando método tradicional[/yellow]")
+                console.print(
+                    f"[yellow]⚠ Error en extracción estructurada: {e}, usando método tradicional[/yellow]")
                 contenido = self.parse_final_content(norm_html)
                 tablas = []
 
@@ -763,12 +857,15 @@ HTML: {html[:200000]}"""
                 'date': norma_metadata.get('fecha', ''),
                 'link': norm_url
             }
-            montos = self.monto_extractor.extract_from_boletin(temp_boletin_data)
+            montos = self.monto_extractor.extract_from_boletin(
+                temp_boletin_data)
             montos_list = [m.to_dict() for m in montos] if montos else []
 
             # Extraer número de norma del título (ej: "Ordenanza Nº 2319" -> "2319")
-            numero_match = re.search(r'N[º°]\s*(\d+[/-]?\d*)', norma_metadata['titulo'])
-            numero = numero_match.group(1) if numero_match else norma_metadata['id']
+            numero_match = re.search(
+                r'N[º°]\s*(\d+[/-]?\d*)', norma_metadata['titulo'])
+            numero = numero_match.group(
+                1) if numero_match else norma_metadata['id']
 
             # Construir norma completa
             norma_completa = {
@@ -793,7 +890,8 @@ HTML: {html[:200000]}"""
             return norma_completa
 
         except Exception as e:
-            console.print(f"[red]✗ Error scrapeando norma {norma_metadata['id']}: {e}[/red]")
+            console.print(
+                f"[red]✗ Error scrapeando norma {norma_metadata['id']}: {e}[/red]")
             # Retornar versión mínima con solo metadatos
             return {
                 "id": norma_metadata['id'],
@@ -824,33 +922,54 @@ HTML: {html[:200000]}"""
 
             if filepath.exists():
                 if skip_existing:
-                    console.print(f"[yellow]⏭ Saltando boletín {bulletin['number']} (ya existe)[/yellow]")
-                    # Leer el archivo existente
+                    # Mostrar información del archivo existente
+                    stat = filepath.stat()
+                    size_mb = stat.st_size / (1024 * 1024)
+
+                    # Leer el archivo existente para obtener el municipio
                     with filepath.open('r', encoding='utf-8') as f:
                         existing_data = json.load(f)
+                    municipio = existing_data.get('municipio', 'Desconocido')
 
-                    # Actualizar índice con status "skipped" solo si no está en el índice
-                    # o si el status actual no es completed
+                    console.print(
+                        f"[green]✓ Saltando boletín {bulletin['number']} (ya existe)[/green]")
+                    console.print(f"[dim]    Archivo: {filepath.name}[/dim]")
+                    console.print(f"[dim]    Municipio: {municipio}[/dim]")
+                    console.print(f"[dim]    Tamaño: {size_mb:.2f} MB[/dim]")
+                    console.print(
+                        f"[dim]    Modificado: {time.ctime(stat.st_mtime)}[/dim]")
+
+                    # Crear una copia con status="skipped" para el resultado
+                    skipped_data = {**existing_data, 'status': 'skipped'}
+
+                    # Actualizar índice con status "skipped"
                     if existing_data.get('status') != 'error':
-                        update_data = {**existing_data, 'status': 'skipped'}
-                        self._update_index_md(update_data, output_dir, base_url)
+                        self._update_index_md(
+                            skipped_data, output_dir, base_url)
 
-                    return existing_data
+                    return skipped_data
                 else:
-                    console.print(f"\n[yellow]⚠ El archivo {filepath.name} ya existe[/yellow]")
-                    console.print(f"\n¿Qué deseas hacer con el boletín [bold]{bulletin['number']}[/bold]?")
-                    console.print("  [cyan]1.[/cyan] Saltar y continuar con el siguiente")
-                    console.print("  [cyan]2.[/cyan] Sobreescribir este boletín")
+                    console.print(
+                        f"\n[yellow]⚠ El archivo {filepath.name} ya existe[/yellow]")
+                    console.print(
+                        f"\n¿Qué deseas hacer con el boletín [bold]{bulletin['number']}[/bold]?")
+                    console.print(
+                        "  [cyan]1.[/cyan] Saltar y continuar con el siguiente")
+                    console.print(
+                        "  [cyan]2.[/cyan] Sobreescribir este boletín")
                     console.print("  [cyan]3.[/cyan] Cancelar todo el proceso")
 
                     try:
-                        choice = input("\nElige una opción (1-3) [1]: ").strip() or "1"
+                        choice = input(
+                            "\nElige una opción (1-3) [1]: ").strip() or "1"
 
                         if choice == "3":
-                            console.print(f"[red]✗ Proceso cancelado por el usuario[/red]")
+                            console.print(
+                                f"[red]✗ Proceso cancelado por el usuario[/red]")
                             sys.exit(0)
                         elif choice == "1":
-                            console.print(f"[yellow]⏭ Saltando boletín {bulletin['number']}[/yellow]\n")
+                            console.print(
+                                f"[yellow]⏭ Saltando boletín {bulletin['number']}[/yellow]\n")
 
                             # Leer archivo existente
                             with filepath.open('r', encoding='utf-8') as f:
@@ -858,14 +977,18 @@ HTML: {html[:200000]}"""
 
                             # Actualizar índice con status "skipped"
                             if existing_data.get('status') != 'error':
-                                update_data = {**existing_data, 'status': 'skipped'}
-                                self._update_index_md(update_data, output_dir, base_url)
+                                update_data = {
+                                    **existing_data, 'status': 'skipped'}
+                                self._update_index_md(
+                                    update_data, output_dir, base_url)
 
                             return existing_data
                         elif choice == "2":
-                            console.print(f"[cyan]♻️ Sobreescribiendo {filepath.name}...[/cyan]\n")
+                            console.print(
+                                f"[cyan]♻️ Sobreescribiendo {filepath.name}...[/cyan]\n")
                         else:
-                            console.print(f"[yellow]⚠ Opción inválida, saltando...[/yellow]\n")
+                            console.print(
+                                f"[yellow]⚠ Opción inválida, saltando...[/yellow]\n")
 
                             # Leer archivo existente
                             with filepath.open('r', encoding='utf-8') as f:
@@ -873,23 +996,29 @@ HTML: {html[:200000]}"""
 
                             # Actualizar índice con status "skipped"
                             if existing_data.get('status') != 'error':
-                                update_data = {**existing_data, 'status': 'skipped'}
-                                self._update_index_md(update_data, output_dir, base_url)
+                                update_data = {
+                                    **existing_data, 'status': 'skipped'}
+                                self._update_index_md(
+                                    update_data, output_dir, base_url)
 
                             return existing_data
                     except KeyboardInterrupt:
-                        console.print(f"\n[red]✗ Proceso cancelado por el usuario[/red]")
+                        console.print(
+                            f"\n[red]✗ Proceso cancelado por el usuario[/red]")
                         sys.exit(0)
 
-            console.print(f"\n[bold cyan]📰 Procesando boletín: {bulletin['number']}[/bold cyan]")
+            console.print(
+                f"\n[bold cyan]📰 Procesando boletín: {bulletin['number']}[/bold cyan]")
 
             # Nivel 2: Obtener metadatos de normas desde el HTML del boletín
-            bulletin_url = bulletin['link'] if bulletin['link'].startswith('http') else f"{base_url}{bulletin['link']}"
+            bulletin_url = bulletin['link'] if bulletin['link'].startswith(
+                'http') else f"{base_url}{bulletin['link']}"
             bulletin_html = self.fetch_html(bulletin_url)
             normas_metadata = self.parse_bulletin_content_links(bulletin_html)
 
             if not normas_metadata:
-                console.print(f"[yellow]⚠ Sin normas en {bulletin['number']}[/yellow]")
+                console.print(
+                    f"[yellow]⚠ Sin normas en {bulletin['number']}[/yellow]")
                 no_content_result = {
                     "municipio": self._extract_municipality_name(bulletin.get('description', '')),
                     "numero_boletin": bulletin.get('number', 'N/A'),
@@ -901,28 +1030,35 @@ HTML: {html[:200000]}"""
                 }
 
                 # Actualizar índice markdown
-                self._update_index_md({**bulletin, "status": "no_content"}, output_dir, base_url)
+                self._update_index_md(
+                    {**bulletin, "status": "no_content"}, output_dir, base_url)
 
                 return no_content_result
 
             # Extraer nombre del municipio
-            municipio = self._extract_municipality_name(bulletin.get('description', ''))
+            municipio = self._extract_municipality_name(
+                bulletin.get('description', ''))
 
-            console.print(f"[green]✓ Encontradas {len(normas_metadata)} normas para procesar[/green]")
+            console.print(
+                f"[green]✓ Encontradas {len(normas_metadata)} normas para procesar[/green]")
 
             # Verificar si hay progreso previo (modo resume)
-            bulletin_id = bulletin_url.split('/bulletins/')[-1].split('?')[0] if '/bulletins/' in bulletin_url else filename
+            bulletin_id = bulletin_url.split(
+                '/bulletins/')[-1].split('?')[0] if '/bulletins/' in bulletin_url else filename
             progress_data = self._load_progress(bulletin_id, output_dir)
 
             if progress_data:
-                normas_procesadas_ids = set(progress_data.get('normas_procesadas', []))
-                console.print(f"[cyan]🔄 Resumiendo scraping: {len(normas_procesadas_ids)} normas ya procesadas[/cyan]")
+                normas_procesadas_ids = set(
+                    progress_data.get('normas_procesadas', []))
+                console.print(
+                    f"[cyan]🔄 Resumiendo scraping: {len(normas_procesadas_ids)} normas ya procesadas[/cyan]")
             else:
                 normas_procesadas_ids = set()
 
             # Nivel 3: Scrapear cada norma individual
             normas_completas = []
-            normas_pendientes = [n['id'] for n in normas_metadata if n['id'] not in normas_procesadas_ids]
+            normas_pendientes = [
+                n['id'] for n in normas_metadata if n['id'] not in normas_procesadas_ids]
 
             with Progress(
                 SpinnerColumn(),
@@ -939,13 +1075,16 @@ HTML: {html[:200000]}"""
                 for i, norma_meta in enumerate(normas_metadata, 1):
                     # Si ya fue procesada, saltarla
                     if norma_meta['id'] in normas_procesadas_ids:
-                        console.print(f"[dim]  ⏭ Norma {norma_meta['id']} ya procesada[/dim]")
+                        console.print(
+                            f"[dim]  ⏭ Norma {norma_meta['id']} ya procesada[/dim]")
                         continue
 
-                    console.print(f"[dim]  → Norma {i}/{len(normas_metadata)}: {norma_meta['titulo'][:50]}...[/dim]")
+                    console.print(
+                        f"[dim]  → Norma {i}/{len(normas_metadata)}: {norma_meta['titulo'][:50]}...[/dim]")
 
                     # Scrapear norma individual
-                    norma_completa = self._scrape_individual_norm(norma_meta, base_url, municipio)
+                    norma_completa = self._scrape_individual_norm(
+                        norma_meta, base_url, municipio)
                     normas_completas.append(norma_completa)
 
                     # Actualizar progreso
@@ -979,7 +1118,8 @@ HTML: {html[:200000]}"""
             }
 
             # Guardar archivo individual
-            filename = self._sanitize_filename(bulletin.get('description', bulletin['number']))
+            filename = self._sanitize_filename(
+                bulletin.get('description', bulletin['number']))
             filepath = output_dir / f"{filename}.json"
 
             with filepath.open('w', encoding='utf-8') as f:
@@ -997,7 +1137,8 @@ HTML: {html[:200000]}"""
                     total_montos_agregados += len(montos_norma)
 
             if total_montos_agregados > 0:
-                console.print(f"[dim]    → {total_montos_agregados} montos agregados al índice global[/dim]")
+                console.print(
+                    f"[dim]    → {total_montos_agregados} montos agregados al índice global[/dim]")
 
             # Agregar normativas al índice global
             for norma in normas_completas:
@@ -1028,7 +1169,8 @@ HTML: {html[:200000]}"""
                 )
                 self.normativas_acumuladas.append(normativa_obj)
 
-            console.print(f"[dim]    → {len(normas_completas)} normativas agregadas al índice global[/dim]")
+            console.print(
+                f"[dim]    → {len(normas_completas)} normativas agregadas al índice global[/dim]")
 
             # Actualizar índice markdown (adaptar para nuevo formato)
             index_data = {
@@ -1045,9 +1187,10 @@ HTML: {html[:200000]}"""
             for norma in normas_completas:
                 tipo = norma.get('tipo', 'desconocido')
                 tipos_count[tipo] = tipos_count.get(tipo, 0) + 1
-            
+
             # Construir string de tipos de normas
-            tipos_str = "\n".join([f"  • {tipo.capitalize()}: {count}" for tipo, count in sorted(tipos_count.items())])
+            tipos_str = "\n".join(
+                [f"  • {tipo.capitalize()}: {count}" for tipo, count in sorted(tipos_count.items())])
 
             # Panel de resumen del boletín procesado
             console.print("\n")
@@ -1067,15 +1210,17 @@ HTML: {html[:200000]}"""
                 title="📰 Resumen del Boletín",
                 border_style="green"
             ))
-            
+
             # Reproducir sonido de éxito
             self._play_sound('success')
-            
+
             return result
 
         except Exception as e:
-            console.print(f"[bold red]✗ Error en boletín {bulletin['number']}: {e}[/bold red]")
-            error_result = {**bulletin, "status": "error", "fullText": "", "error": str(e)}
+            console.print(
+                f"[bold red]✗ Error en boletín {bulletin['number']}: {e}[/bold red]")
+            error_result = {**bulletin, "status": "error",
+                            "fullText": "", "error": str(e)}
 
             # Actualizar índice markdown incluso en caso de error
             self._update_index_md(error_result, output_dir, base_url)
@@ -1106,11 +1251,14 @@ HTML: {html[:200000]}"""
 
         if is_bulletin_url:
             # Modo boletín individual
-            console.print("\n[bold cyan]🎯 Modo: Boletín Individual[/bold cyan]")
+            console.print(
+                "\n[bold cyan]🎯 Modo: Boletín Individual[/bold cyan]")
 
             # Extraer número del boletín de la URL
-            bulletin_id = target_url.split('/bulletins/')[-1].split('?')[0].split('#')[0]
-            console.print(f"[dim]Obteniendo metadatos del boletín {bulletin_id}...[/dim]")
+            bulletin_id = target_url.split(
+                '/bulletins/')[-1].split('?')[0].split('#')[0]
+            console.print(
+                f"[dim]Obteniendo metadatos del boletín {bulletin_id}...[/dim]")
 
             # Obtener metadatos reales del boletín
             try:
@@ -1123,7 +1271,8 @@ Devuelve SOLO un JSON válido con el formato: {{"number": string, "date": string
 
 HTML: {bulletin_html[:50000]}"""
 
-                response = self._make_llm_call(metadata_prompt, use_json_mode=True)
+                response = self._make_llm_call(
+                    metadata_prompt, use_json_mode=True)
                 cleaned = self._extract_json(response)
                 metadata = json.loads(cleaned)
 
@@ -1135,11 +1284,14 @@ HTML: {bulletin_html[:50000]}"""
                     "link": f"/bulletins/{bulletin_id}"
                 }]
 
-                console.print(f"[green]✓ Boletín: {bulletins[0]['number']} - {bulletins[0]['description']}[/green]")
+                console.print(
+                    f"[green]✓ Boletín: {bulletins[0]['number']} - {bulletins[0]['description']}[/green]")
 
             except Exception as e:
-                console.print(f"[yellow]⚠ No se pudieron obtener metadatos: {e}[/yellow]")
-                console.print(f"[yellow]  Usando valores por defecto...[/yellow]")
+                console.print(
+                    f"[yellow]⚠ No se pudieron obtener metadatos: {e}[/yellow]")
+                console.print(
+                    f"[yellow]  Usando valores por defecto...[/yellow]")
 
                 # Fallback a valores genéricos
                 bulletins = [{
@@ -1157,12 +1309,14 @@ HTML: {bulletin_html[:50000]}"""
 
             if has_page_param:
                 # Modo página única: procesar solo la página especificada
-                console.print("[cyan]🎯 Modo: Página única (parámetro ?page= detectado)[/cyan]")
+                console.print(
+                    "[cyan]🎯 Modo: Página única (parámetro ?page= detectado)[/cyan]")
                 list_html = self.fetch_html(target_url)
                 bulletins = self.parse_listing_page(list_html, target_url)
             else:
                 # Modo automático: detectar y procesar todas las páginas
-                console.print("[cyan]🔄 Modo: Detección automática de paginación[/cyan]")
+                console.print(
+                    "[cyan]🔄 Modo: Detección automática de paginación[/cyan]")
 
                 # Obtener primera página para detectar total de páginas
                 list_html = self.fetch_html(target_url)
@@ -1170,7 +1324,8 @@ HTML: {bulletin_html[:50000]}"""
 
                 # Extraer boletines de la primera página
                 bulletins = self.parse_listing_page(list_html, target_url)
-                console.print(f"[dim]  Página 1/{total_pages}: {len(bulletins)} boletines[/dim]")
+                console.print(
+                    f"[dim]  Página 1/{total_pages}: {len(bulletins)} boletines[/dim]")
 
                 # Procesar páginas restantes
                 if total_pages > 1:
@@ -1180,33 +1335,42 @@ HTML: {bulletin_html[:50000]}"""
                     for page_num in range(2, total_pages + 1):
                         try:
                             page_url = f"{base_url_parsed}?page={page_num}"
-                            console.print(f"[cyan]📄 Página {page_num}/{total_pages}...[/cyan]")
+                            console.print(
+                                f"[cyan]📄 Página {page_num}/{total_pages}...[/cyan]")
 
                             page_html = self.fetch_html(page_url)
-                            page_bulletins = self.parse_listing_page(page_html, page_url)
+                            page_bulletins = self.parse_listing_page(
+                                page_html, page_url)
 
                             bulletins.extend(page_bulletins)
-                            console.print(f"[dim]  Página {page_num}/{total_pages}: {len(page_bulletins)} boletines (total acumulado: {len(bulletins)})[/dim]")
+                            console.print(
+                                f"[dim]  Página {page_num}/{total_pages}: {len(page_bulletins)} boletines (total acumulado: {len(bulletins)})[/dim]")
                         except Exception as e:
-                            console.print(f"[red]✗ Error en página {page_num}: {e}[/red]")
-                            console.print(f"[yellow]⚠ Continuando con las páginas restantes...[/yellow]")
+                            console.print(
+                                f"[red]✗ Error en página {page_num}: {e}[/red]")
+                            console.print(
+                                f"[yellow]⚠ Continuando con las páginas restantes...[/yellow]")
                             continue
 
-                    console.print(f"\n[bold green]✓ Total: {len(bulletins)} boletines de {total_pages} páginas[/bold green]")
+                    console.print(
+                        f"\n[bold green]✓ Total: {len(bulletins)} boletines de {total_pages} páginas[/bold green]")
 
         # Aplicar límite DESPUÉS de recolectar todos los boletines
         if limit:
             original_count = len(bulletins)
             bulletins = bulletins[:limit]
-            console.print(f"[yellow]⚙ Limitando de {original_count} a {limit} boletines[/yellow]")
+            console.print(
+                f"[yellow]⚙ Limitando de {original_count} a {limit} boletines[/yellow]")
 
         # Crear carpeta de salida
         output_dir = Path("boletines")
         output_dir.mkdir(exist_ok=True)
-        console.print(f"[cyan]📁 Carpeta de salida: {output_dir.absolute()}[/cyan]")
+        console.print(
+            f"[cyan]📁 Carpeta de salida: {output_dir.absolute()}[/cyan]")
 
         # Procesar boletines
-        console.print(f"\n[bold]═══ NIVELES 2 y 3: PROCESANDO {len(bulletins)} BOLETINES ═══[/bold]")
+        console.print(
+            f"\n[bold]═══ NIVELES 2 y 3: PROCESANDO {len(bulletins)} BOLETINES ═══[/bold]")
 
         base_url = "https://sibom.slyt.gba.gob.ar"
         results = []
@@ -1214,7 +1378,8 @@ HTML: {bulletin_html[:50000]}"""
         if parallel > 1:
             # Procesamiento paralelo
             with ThreadPoolExecutor(max_workers=parallel) as executor:
-                futures = {executor.submit(self.process_bulletin, b, base_url, output_dir, skip_existing): b for b in bulletins}
+                futures = {executor.submit(
+                    self.process_bulletin, b, base_url, output_dir, skip_existing): b for b in bulletins}
 
                 with Progress(
                     SpinnerColumn(),
@@ -1223,7 +1388,8 @@ HTML: {bulletin_html[:50000]}"""
                     TaskProgressColumn(),
                     console=console
                 ) as progress:
-                    task = progress.add_task(f"[cyan]Procesando...", total=len(bulletins))
+                    task = progress.add_task(
+                        f"[cyan]Procesando...", total=len(bulletins))
 
                     for future in as_completed(futures):
                         result = future.result()
@@ -1232,10 +1398,13 @@ HTML: {bulletin_html[:50000]}"""
         else:
             # Procesamiento secuencial
             for i, bulletin in enumerate(bulletins, 1):
-                console.print(f"\n[dim]→ Procesando {i}/{len(bulletins)}: {bulletin['number']}[/dim]")
-                result = self.process_bulletin(bulletin, base_url, output_dir, skip_existing)
+                console.print(
+                    f"\n[dim]→ Procesando {i}/{len(bulletins)}: {bulletin['number']}[/dim]")
+                result = self.process_bulletin(
+                    bulletin, base_url, output_dir, skip_existing)
                 results.append(result)
-                console.print(f"[dim]→ Resultado agregado. Total acumulado: {len(results)}[/dim]")
+                console.print(
+                    f"[dim]→ Resultado agregado. Total acumulado: {len(results)}[/dim]")
 
         return results
 
@@ -1304,7 +1473,8 @@ Ejemplos de uso:
     # Obtener API key
     api_key = args.api_key or os.getenv('OPENROUTER_API_KEY')
     if not api_key:
-        console.print("[bold red]Error: No se encontró OPENROUTER_API_KEY[/bold red]")
+        console.print(
+            "[bold red]Error: No se encontró OPENROUTER_API_KEY[/bold red]")
         console.print("Usa --api-key o configura la variable en .env")
         sys.exit(1)
 
@@ -1313,7 +1483,8 @@ Ejemplos de uso:
 
     try:
         start_time = time.time()
-        results = scraper.scrape(args.url, limit=args.limit, parallel=args.parallel, skip_existing=args.skip_existing)
+        results = scraper.scrape(
+            args.url, limit=args.limit, parallel=args.parallel, skip_existing=args.skip_existing)
         elapsed = time.time() - start_time
 
         # Guardar resumen consolidado (opcional)
@@ -1335,14 +1506,17 @@ Ejemplos de uso:
         table.add_row("Errores", str(errors))
         table.add_row("Sin contenido", str(no_content))
         table.add_row("Tiempo total", f"{elapsed:.1f}s")
-        table.add_row("Tiempo por boletín", f"{elapsed/len(results):.1f}s" if len(results) > 0 else "N/A")
+        table.add_row("Tiempo por boletín",
+                      f"{elapsed/len(results):.1f}s" if len(results) > 0 else "N/A")
         table.add_row("Carpeta boletines", "boletines/")
         table.add_row("Resumen consolidado", str(output_path))
 
         console.print("\n")
         console.print(table)
-        console.print(f"\n[bold green]✓ Boletines individuales guardados en: boletines/[/bold green]")
-        console.print(f"[bold green]✓ Resumen consolidado guardado en: {output_path}[/bold green]")
+        console.print(
+            f"\n[bold green]✓ Boletines individuales guardados en: boletines/[/bold green]")
+        console.print(
+            f"[bold green]✓ Resumen consolidado guardado en: {output_path}[/bold green]")
 
         # Reproducir sonido de tarea completa
         scraper._play_sound('complete')
@@ -1350,8 +1524,10 @@ Ejemplos de uso:
         # Guardar índice de montos extraídos
         if scraper.montos_acumulados:
             montos_path = Path("montos_index.json")
-            scraper.monto_extractor._save_index(scraper.montos_acumulados, montos_path)
-            console.print(f"[bold green]✓ Índice de montos guardado: {len(scraper.montos_acumulados):,} registros[/bold green]")
+            scraper.monto_extractor._save_index(
+                scraper.montos_acumulados, montos_path)
+            console.print(
+                f"[bold green]✓ Índice de montos guardado: {len(scraper.montos_acumulados):,} registros[/bold green]")
 
         # Guardar índice de normativas extraídas
         if scraper.normativas_acumuladas:
@@ -1360,16 +1536,22 @@ Ejemplos de uso:
             normativas_minimal_path = Path("normativas_index_minimal.json")
 
             # Guardar índice completo
-            save_index(scraper.normativas_acumuladas, normativas_path, compact=False)
-            console.print(f"[bold green]✓ Índice de normativas (completo): {len(scraper.normativas_acumuladas):,} registros[/bold green]")
+            save_index(scraper.normativas_acumuladas,
+                       normativas_path, compact=False)
+            console.print(
+                f"[bold green]✓ Índice de normativas (completo): {len(scraper.normativas_acumuladas):,} registros[/bold green]")
 
             # Guardar índice compacto (sin contenido)
-            save_index(scraper.normativas_acumuladas, normativas_compact_path, compact=True)
-            console.print(f"[bold green]✓ Índice de normativas (compacto): {normativas_compact_path}[/bold green]")
+            save_index(scraper.normativas_acumuladas,
+                       normativas_compact_path, compact=True)
+            console.print(
+                f"[bold green]✓ Índice de normativas (compacto): {normativas_compact_path}[/bold green]")
 
             # Guardar índice minimalista (para frontend)
-            save_minimal_index(scraper.normativas_acumuladas, normativas_minimal_path)
-            console.print(f"[bold green]✓ Índice de normativas (minimal): {normativas_minimal_path}[/bold green]")
+            save_minimal_index(scraper.normativas_acumuladas,
+                               normativas_minimal_path)
+            console.print(
+                f"[bold green]✓ Índice de normativas (minimal): {normativas_minimal_path}[/bold green]")
 
     except KeyboardInterrupt:
         console.print("\n[yellow]Proceso interrumpido por el usuario[/yellow]")

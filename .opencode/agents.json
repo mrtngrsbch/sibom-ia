@@ -1,3 +1,33 @@
 {
-  "agents": []
+  "agents": [
+    {
+      "name": "rag-indexer",
+      "source": "../.agents/agents/rag-indexer.yaml",
+      "runtime": "python",
+      "version": "1.0.0",
+      "tools": [
+        "qdrant-client",
+        "boto3",
+        "openrouter-api",
+        "structlog"
+      ],
+      "autoReload": true,
+      "metadata": {
+        "description": "Indexa documentos JSON desde R2 a Qdrant para búsqueda semántica",
+        "author": "mrtn",
+        "tags": [
+          "rag",
+          "indexing",
+          "qdrant",
+          "r2",
+          "embeddings"
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "syncedAt": "2026-01-16T03:14:54.492760Z",
+    "syncedFrom": ".agents/agents/",
+    "totalAgents": 1
+  }
 }

@@ -1,0 +1,50 @@
+name: rag-indexer
+version: 1.0.0
+description: Indexa documentos JSON desde R2 a Qdrant para búsqueda semántica
+
+goal: |
+  Indexar todos los documentos JSON limpios desde Cloudflare R2
+  al vector store Qdrant para búsqueda semántica.
+  
+  El agente debe:
+  1. Leer documentos JSON desde R2 (bucket: sibom-cleaned-data)
+  2. Generar embeddings usando OpenRouter
+  3. Indexar en Qdrant con metadata correcta
+  4. Manejar errores gracefully con retry logic
+
+inputs:
+  - r2://sibom-cleaned-data/*.json
+  - config/qdrant-settings.yaml
+
+outputs:
+  - qdrant://sibom-collection
+  - logs/indexing-{timestamp}.log
+
+constraints:
+  - No scraping (solo lectura de R2)
+  - No modificar frontend
+  - Respetar rate limits de Qdrant (100 req/s)
+  - Usar embeddings de OpenRouter (modelo: text-embedding-3-small)
+  - Batch processing: 100 documentos por batch
+
+tools:
+  - qdrant-client
+  - boto3  # Para acceso a R2
+  - openrouter-api
+  - structlog  # Para logging estructurado
+
+runtime:
+  language: python
+  version: "3.13"
+  entrypoint: python-cli/rag_indexer.py
+
+prompts:
+  system: ../prompts/system-prompts.md#rag-indexer
+  task: ../prompts/task-prompts.md#indexing
+
+metadata:
+  author: mrtn
+  created: 2025-01-16
+  tags: [rag, indexing, qdrant, r2, embeddings]
+  priority: high
+  status: active

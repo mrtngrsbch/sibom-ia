@@ -58,6 +58,9 @@ cd chatbot && npm test -- -u
 
 - **Setup**: `cd python-cli && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt`
 - **Run Scraper**: `python3 sibom_scraper.py --limit 5`
+- **Multi-city Scraper**: `python3 sibom_scraper.py --cities 1-21,23-136 --skip-existing --parallel 1`
+- **Resume from city**: `python3 sibom_scraper.py --cities 1-136 --skip-existing --start-from 50`
+- **City with name**: `python3 sibom_scraper.py --url https://sibom.slyt.gba.gob.ar/cities/22` (shows city name in header)
 - **Run Tests**: `pytest` (requires venv activation)
 - **Test Coverage**: `pytest --cov=. --cov-report=html`
 - **Extraction Tools**: Scripts like `monto_extractor.py` and `table_extractor.py` are used for post-processing.
@@ -455,12 +458,22 @@ src/
 ```
 python-cli/
 ├── sibom_scraper.py       # Main scraper
+├── init_city_map.py       # City map initialization script
 ├── build_database.py      # Database builder
 ├── generate_embeddings.py # Embeddings generator
 ├── tests/                 # Tests
 │   └── test_*.py
 ├── data/                  # Data files
-└── boletines/             # Scraped bulletins
+└── boletines/             # Scraped bulletins (JSON files)
+```
+python-cli/
+├── sibom_scraper.py       # Main scraper
+├── build_database.py      # Database builder
+├── generate_embeddings.py # Embeddings generator
+├── tests/                 # Tests
+│   └── test_*.py
+├── data/                  # Data files
+└── boletines/             # Scraped bulletins (JSON files)
 ```
 
 ## 🎯 Testing Best Practices

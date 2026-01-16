@@ -311,6 +311,24 @@ class SIBOMScraper:
             return self.CITY_MAP.get(city_id)
         return None
 
+    def _get_city_name_from_url(self, url: str) -> Optional[str]:
+        """
+        Extrae el nombre de la ciudad desde la URL usando el mapeo CITY_MAP.json.
+        
+        Args:
+            url: URL de la ciudad
+            
+        Returns:
+            Nombre de la ciudad o None si no se puede obtener
+        """
+        # Buscar patrón en la URL
+        match = re.search(r'/cities/(\d+)', url)
+        if match:
+            city_id = match.group(1)
+            city_map = self._load_city_map()
+            return city_map.get(city_id)
+        return None
+
     def _sanitize_filename(self, description: str, number: str = None) -> str:
         """
         Convierte descripción en nombre de archivo válido.
@@ -931,21 +949,18 @@ HTML: {html[:200000]}"""
                         existing_data = json.load(f)
                     municipio = existing_data.get('municipio', 'Desconocido')
 
-                    console.print(
-                        f"[green]✓ Saltando boletín {bulletin['number']} (ya existe)[/green]")
+                    console.print(f"[green]✓ Saltando boletín {bulletin['number']} (ya existe)[/green]")
                     console.print(f"[dim]    Archivo: {filepath.name}[/dim]")
                     console.print(f"[dim]    Municipio: {municipio}[/dim]")
                     console.print(f"[dim]    Tamaño: {size_mb:.2f} MB[/dim]")
-                    console.print(
-                        f"[dim]    Modificado: {time.ctime(stat.st_mtime)}[/dim]")
+                    console.print(f"[dim]    Modificado: {time.ctime(stat.st_mtime)}[/dim]")
 
                     # Crear una copia con status="skipped" para el resultado
                     skipped_data = {**existing_data, 'status': 'skipped'}
 
                     # Actualizar índice con status "skipped"
                     if existing_data.get('status') != 'error':
-                        self._update_index_md(
-                            skipped_data, output_dir, base_url)
+                        self._update_index_md(skipped_data, output_dir, base_url)
 
                     return skipped_data
                 else:

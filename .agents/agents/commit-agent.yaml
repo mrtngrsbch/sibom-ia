@@ -1,0 +1,59 @@
+name: commit-agent
+version: 1.0.0
+description: Genera mensajes de commit y alerta sobre cambios pendientes
+
+goal: |
+  Monitorear cambios en el working directory y generar mensajes de commit
+  siguiendo el formato Conventional Commits.
+  
+  El agente debe:
+  1. Analizar cambios actuales (staged y unstaged)
+  2. Detectar si supera umbrales de alerta (>5 archivos, >300 líneas)
+  3. Generar 3 opciones de mensajes de commit en formato conventional
+  4. Registrar alertas para notificaciones en chat
+  5. Correr en background cada 30 minutos para alertas proactivas
+
+inputs:
+  - git status --short
+  - git diff --cached
+  - git diff
+  - git log -5 --format="%h | %s"
+  - Configuración en .agents/steering/git-workflow.md
+
+outputs:
+  - Mensaje de commit generado (3 opciones)
+  - Análisis de cambios por módulo
+  - Alertas registradas en .agents/logs/commit-alerts.log
+  - Estadísticas de cambios (archivos, líneas, tiempo)
+
+constraints:
+  - Solo alertar cuando hay >5 archivos modificados
+  - Solo alertar cuando hay >300 líneas modificadas
+  - Seguir formato Conventional Commits (type(scope): description)
+  - Tipos permitidos: feat, fix, docs, refactor, test, chore
+  - Scopes permitidos: chatbot, scraper, agents, docs, ci
+  - NO commitear sin confirmación explícita del usuario
+  - NO modificar git state directamente
+  - Mantener español/inglés mixto en descripciones si aplica
+
+tools:
+  - git-cli (via subprocess en Python)
+  - openrouter-api (para generar mensajes con LLM si se desea)
+  - structlog (logging estructurado)
+  - yaml (lectura de configuración)
+
+runtime:
+  language: python
+  version: "3.13"
+  entrypoint: .agents/scripts/commit_agent.py
+
+prompts:
+  system: ../prompts/system-prompts.md#commit-agent
+  task: ../prompts/task-prompts.md#generate-commit
+
+metadata:
+  author: mrtn
+  created: 2025-01-16
+  tags: [git, commits, conventional-commits, automation]
+  priority: high
+  status: active

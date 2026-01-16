@@ -46,7 +46,7 @@ python3 init_city_map.py
 | `python3 sibom_scraper.py --url https://.../bulletins/13556` | Un boletín específico |
 | `python3 sibom_scraper.py --limit 10 --parallel 3` | Con paralelismo |
 | `python3 sibom_scraper.py --model z-ai/glm-4.5-air:free` | Con modelo gratuito |
-| `python3 sibom_scraper.py --cities 1-21,23-136 --skip-existing --parallel 1` | Multi-ciudad con rangos |
+| `python3 sibom_scraper.py --cities '1-21,23-136' --skip-existing --parallel 1` | Multi-ciudad con rangos |
 | `python3 sibom_scraper.py --cities 1-136 --skip-existing --start-from 50` | Retomar desde ciudad 50 |
 | `python3 sibom_scraper.py --cities 22 --limit 10` | Una ciudad específica (modo multi-ciudad) |
 
@@ -55,7 +55,7 @@ python3 init_city_map.py
 | Opción | Default | Descripción |
 |--------|---------|-------------|
 | `--url` | `None` | URL de listado o boletín individual (ignorado con --cities) |
-| `--cities` | `None` | Rangos de ciudades (ej: `"1-21,23-136"`) |
+| `--cities` | `None` | Rangos de ciudades (ej: `"'1-21,23-136'"`) |
 | `--start-from` | `None` | Retomar desde esta ciudad ID (solo con --cities) |
 | `--limit` | `None` (todos) | Máximo de boletines a procesar por ciudad |
 | `--parallel` | `1` | Boletines en paralelo |
@@ -154,7 +154,7 @@ python3 sibom_scraper.py --url "https://sibom.slyt.gba.gob.ar/cities/22?page=6"
 
 ```bash
 # Múltiples ciudades con rangos concatenados
-python3 sibom_scraper.py --cities 1-21,23-136 --skip-existing --parallel 1
+python3 sibom_scraper.py --cities '1-21,23-136' --skip-existing --parallel 1
 
 # Retomar desde una ciudad específica (útil si se detuvo)
 python3 sibom_scraper.py --cities 1-136 --skip-existing --start-from 50 --parallel 1
@@ -247,7 +247,7 @@ Usa `--skip-existing` para evitar el menú.
 - **v2.9** - Mejora en extracción de nombres de ciudades (múltiples patrones para HTML)
 - **v2.8** - Encabezado mejorado con nombres de ciudades, obtención automática de nombres desde SIBOM
 - **v2.7** - Modo multi-ciudad sin subcarpetas (todo en `boletines/`), opción `--start-from`, logs detallados de archivos saltados
-- **v2.6** - Modo multi-ciudad con `--cities` (rangos concatenados: `"1-21,23-136"`)
+- **v2.6** - Modo multi-ciudad con `--cities` (rangos concatenados: `"'1-21,23-136'"`)
 - **v2.5** - Modelos LLM configurables
 - **v2.4** - Modo boletín individual
 - **v2.3** - Menú interactivo simplificado

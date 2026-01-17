@@ -24,11 +24,12 @@ import os
 import time
 import signal
 
-# Umbrales de alerta (conservadores)
+# Umbrales de alerta (ajustados para evitar falsos positivos)
 THRESHOLDS = {
-    'warning': {'files': 5, 'lines': 300, 'hours': 4},
-    'critical': {'files': 10, 'lines': 1000, 'hours': 8},
-    'emergency': {'files': 20, 'lines': 2000, 'hours': 24},
+    'info': {'files': 3, 'lines': 200, 'hours': 2},
+    'warning': {'files': 10, 'lines': 1000, 'hours': 6},
+    'critical': {'files': 20, 'lines': 2000, 'hours': 12},
+    'emergency': {'files': 50, 'lines': 5000, 'hours': 24},
 }
 
 # Tipos de commits permitidos
@@ -206,24 +207,24 @@ class CommitAgent:
         if (num_files >= THRESHOLDS['emergency']['files'] or
             num_lines >= THRESHOLDS['emergency']['lines'] or
             hours_since_commit >= THRESHOLDS['emergency']['hours']):
-            return 'EMERGENCY', "🚨 EMERGENCY: ¡Demasiados cambios!"
+            return 'EMERGENCY', "🚨 ¡EMERGENCY! Demasiados cambios acumulados"
         
         # Check critical
         if (num_files >= THRESHOLDS['critical']['files'] or
             num_lines >= THRESHOLDS['critical']['lines'] or
             hours_since_commit >= THRESHOLDS['critical']['hours']):
-            return 'CRITICAL', "🔴 CRITICAL: ¡Muchos cambios acumulados!"
+            return 'CRITICAL', "🔴 ¡CRITICAL! Muchos cambios acumulados"
         
         # Check warning
         if (num_files >= THRESHOLDS['warning']['files'] or
             num_lines >= THRESHOLDS['warning']['lines'] or
             hours_since_commit >= THRESHOLDS['warning']['hours']):
-            return 'WARNING', "⚠️  WARNING: Considerá hacer un commit"
+            return 'WARNING', "⚠️  ¡WARNING! Considerá hacer un commit"
         
-        if num_files >= 3:
-            return 'INFO', "ℹ️  INFO: Hay cambios pendientes"
+        if num_files >= THRESHOLDS['info']['files']:
+            return 'INFO', "ℹ️  Hay cambios pendientes"
         
-        return 'OK', "✅ OK: Pocos cambios"
+        return 'OK', "✅ Pocos cambios"
     
     def generate_commit_messages(self, changes: Dict, num_files: int, hours_since_commit: float) -> List[Dict]:
         """Genera 3 opciones de mensajes de commit"""
@@ -341,13 +342,32 @@ class CommitAgent:
     def send_notification(self, level: str, message: str, stats: Dict):
         """Envía notificación nativa de macOS"""
         try:
-            stats_str = f"Files: {stats.get('total_files', 0)}\nTime: {stats.get('time_str', 'N/A')}"
-            script = f'''
-            tell application "System Events"
-                display dialog "{message}\n\n{stats_str}" with title "Commit Agent" buttons {{"OK"}} default button 1
-            end tell
-            '''
-            subprocess.run(['osascript', '-e', script], capture_output=True, timeout=10)
+            total_files = stats.get('total_files', 0)
+            time_str = stats.get('time_str', 'N/A')
+            
+            # Usar display notification en lugar de display dialog (no requiere interacción)
+            if level in ['WARNING', 'CRITICAL', 'EMERGENCY']:
+                # Notificación con comando accionable
+                command = 'python3 .agents/scripts/commit_agent.py suggest'
+                script = f'''
+                tell application "System Events"
+                    display notification "{message} ({total_files} files, {time_str} ago)" with title "Commit Agent" sound name "Basso"
+                end tell
+                '''
+                subprocess.run(['osascript', '-e', script], capture_output=True, timeout=5)
+            else:
+                # Notificación simple para INFO
+                script = f'''
+                tell application "System Events"
+                    display notification "{message}" with title "Commit Agent"
+                end tell
+                '''
+                subprocess.run(['osascript', '-e', script], capture_output=True, timeout=5)
+                
+            print(f"🔔 Notificación enviada: {message} ({total_files} files)")
+                
+        except subprocess.TimeoutExpired:
+            print(f"⚠️  Notificación timeout (continuando normalmente)")
         except Exception as e:
             print(f"⚠️  No se pudo enviar notificación: {e}")
     
@@ -534,6 +554,22 @@ def print_analysis_result(analysis: Dict):
         for file_info in changes['staged'] + changes['unstaged']:
             status_icon = '✓' if file_info in changes['staged'] else '•'
             print(f"  {status_icon} {file_info['path']}")
+    
+    # Sugerencias accionables
+    if level in ['WARNING', 'CRITICAL', 'EMERGENCY']:
+        print(f"\n💡 ¿Qué hacer?")
+        print(f"   1. Ver opciones de commit:")
+        print(f"      python3 .agents/scripts/commit_agent.py suggest")
+        print(f"")
+        print(f"   2. O commitear manualmente con el mensaje que quieras:")
+        print(f"      git add <archivos>")
+        print(f"      git commit -m 'tipo(scope): descripción'")
+        print(f"")
+        print(f"   3. Ver ayuda del formato:")
+        print(f"      cat .agents/steering/git-workflow.md")
+        print(f"")
+        print(f"   Ejemplo de commit correcto:")
+        print(f"      git commit -m 'feat(scraper): add arg parser for cities'")
 
 
 def print_commit_suggestions(options: List[Dict]):

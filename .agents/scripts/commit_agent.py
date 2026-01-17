@@ -572,8 +572,68 @@ def print_analysis_result(analysis: Dict):
         print(f"      git commit -m 'feat(scraper): add arg parser for cities'")
 
 
+def print_commit_suggestions_dry_run(options: List[Dict]):
+    """Imprime solo los comandos git sin ejecutar"""
+    
+    print(f"\n📋 Comandos git listos para copiar:\n")
+    
+    for i, option in enumerate(options, 1):
+        print(f"Opción {i}:")
+        print(f"git commit -m \"{option['subject']}\"")
+        if option['body']:
+            for line in option['body'].split('\n'):
+                print(f"git commit -m \"{line}\"")
+        print()
+
+
+def execute_commit_with_option(options: List[Dict], option_num: int):
+    """Ejecuta git commit con la opción seleccionada"""
+    option = options[option_num - 1]
+    
+    print(f"🚀 Ejecutando commit con opción {option_num}...")
+    print()
+    
+    # Preparar el mensaje completo
+    commit_msg = f"{option['subject']}"
+    if option['body']:
+        commit_msg += f"\n\n{option['body']}"
+    
+    # Mostrar el mensaje que se va a usar
+    print("📝 Mensaje de commit:")
+    print("─" * 40)
+    print(commit_msg)
+    print("─" * 40)
+    print()
+    
+    # Confirmar
+    from getpass import getpass
+    confirm = getpass("¿Confirmar commit? (presiona Enter para confirmar, Ctrl+C para cancelar): ")
+    
+    if confirm:
+        # Añadir archivos modificados
+        subprocess.run(['git', 'add', '.'], capture_output=True)
+        
+        # Ejecutar commit
+        result = subprocess.run(
+            ['git', 'commit', '-m', commit_msg],
+            capture_output=True,
+            text=True
+        )
+        
+        if result.returncode == 0:
+            print("✅ Commit creado exitosamente!")
+            print()
+            print("Último commit:")
+            subprocess.run(['git', 'log', '-1', '--format="%h | %s"'])
+        else:
+            print("❌ Error al crear commit:")
+            print(result.stderr)
+    else:
+        print("❌ Cancelado por el usuario")
+
+
 def print_commit_suggestions(options: List[Dict]):
-    """Imprime las 3 sugerencias de commit"""
+    """Imprime las 3 sugerencias de commit con comandos listos para usar"""
     
     print(f"\n📋 Opciones de mensajes de commit:\n")
     
@@ -583,6 +643,54 @@ def print_commit_suggestions(options: List[Dict]):
             for line in option['body'].split('\n'):
                 print(f"   {line}")
         print()
+    
+    print("=" * 40)
+    print("💡 Cómo usar estas opciones:")
+    print()
+    print("Opción 1: Usar una opción específica:")
+    print(f"   git commit -m \"{options[0]['subject']}\"")
+    if options[0]['body']:
+        for line in options[0]['body'].split('\n'):
+            print(f"   git commit -m \"{line}\"")
+    
+    print()
+    print("Opción 2: Copiar y pegar (recomendado para commits complejos):")
+    for i, option in enumerate(options, 1):
+        print(f"   Opción {i}:")
+        print(f"   git commit -m \"{option['subject']}\"")
+        if option['body']:
+            for line in option['body'].split('\n'):
+                print(f"   git commit -m \"{line}\"")
+        print()
+    
+    print("Opción 3: Usar el comando suggest con --option:")
+    for i in range(1, len(options) + 1):
+        print(f"   python3 .agents/scripts/commit_agent.py commit --option {i}")
+    print()
+    
+    print("=" * 40)
+    print("💡 Cómo usar estas opciones:")
+    print()
+    print("Opción 1: Usar una opción específica:")
+    print(f"   git commit -m \"{options[0]['subject']}\"")
+    if options[0]['body']:
+        for line in options[0]['body'].split('\n'):
+            print(f"   git commit -m \"{line}\"")
+    
+    print()
+    print("Opción 2: Copiar y pegar (recomendado para commits complejos):")
+    for i, option in enumerate(options, 1):
+        print(f"   Opción {i}:")
+        print(f"   git commit -m \"{option['subject']}\"")
+        if option['body']:
+            for line in option['body'].split('\n'):
+                print(f"   git commit -m \"{line}\"")
+        print()
+    
+    print("Opción 3: Usar el comando suggest con --option:")
+    for i in range(1, len(options) + 1):
+        print(f"   python3 .agents/scripts/commit_agent.py commit --option {i}")
+    print()
 
 
 def main():
@@ -598,7 +706,11 @@ def main():
     analyze_parser.add_argument('--debug', action='store_true', help='Modo debug')
     
     # Comando suggest
-    subparsers.add_parser('suggest', help='Generar 3 opciones de mensajes de commit')
+    suggest_parser = subparsers.add_parser('suggest', help='Generar 3 opciones de mensajes de commit')
+    suggest_parser.add_argument('--option', type=int, choices=[1, 2, 3],
+                              help='Seleccionar opción y ejecutar git commit automáticamente')
+    suggest_parser.add_argument('--dry-run', action='store_true',
+                              help='Solo mostrar comandos git sin ejecutar')
     
     # Comando commit
     commit_parser = subparsers.add_parser('commit', help='Commitear cambios con opción específica')

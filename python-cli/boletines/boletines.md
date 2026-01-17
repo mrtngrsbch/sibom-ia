@@ -1,8 +1,8 @@
 | N/A | N/A | N/A | [N/A](N/A) | 🤖 Creado |
 | 225º | 25/04/2024 | 225º de Adolfo Gonzales Chaves | [https://sibom.slyt.gba.gob.ar/bulletins/10515](https://sibom.slyt.gba.gob.ar/bulletins/10515) | ⚠️ Sin contenido |
-| 130º | 09/06/2021 | 130º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5476](https://sibom.slyt.gba.gob.ar/bulletins/5476) | ❌ Error |
-| 118º | 06/05/2021 | 118º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5304](https://sibom.slyt.gba.gob.ar/bulletins/5304) | ❌ Error |
-| 116º | 03/05/2021 | 116º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5207](https://sibom.slyt.gba.gob.ar/bulletins/5207) | ❌ Error |
+| 130º | 17/07/2020 | 130º de Adolfo Gonzales Chaves | [https://sibom.slyt.gba.gob.ar/bulletins/3915](https://sibom.slyt.gba.gob.ar/bulletins/3915) | ⚠️ Sin contenido |
+| 118º | 09/01/2020 | 118º de Adolfo Gonzales Chaves | [https://sibom.slyt.gba.gob.ar/bulletins/3131](https://sibom.slyt.gba.gob.ar/bulletins/3131) | ⚠️ Sin contenido |
+| 116º | 03/01/2020 | 116º de Adolfo Gonzales Chaves | [https://sibom.slyt.gba.gob.ar/bulletins/3109](https://sibom.slyt.gba.gob.ar/bulletins/3109) | ⚠️ Sin contenido |
 | 87º | 13/05/2019 | 87º de Adolfo Gonzales Chaves | [https://sibom.slyt.gba.gob.ar/bulletins/2218](https://sibom.slyt.gba.gob.ar/bulletins/2218) | ⚠️ Sin contenido |
 | 81º | 25/03/2019 | 81º de Adolfo Gonzales Chaves | [https://sibom.slyt.gba.gob.ar/bulletins/2055](https://sibom.slyt.gba.gob.ar/bulletins/2055) | ⚠️ Sin contenido |
 | 61º | 02/11/2018 | 61º de Adolfo Gonzales Chaves | [https://sibom.slyt.gba.gob.ar/bulletins/1573](https://sibom.slyt.gba.gob.ar/bulletins/1573) | ⚠️ Sin contenido |
@@ -208,3 +208,4 @@
 | 39º | 10/10/2019 | 39º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/2764](https://sibom.slyt.gba.gob.ar/bulletins/2764) | ❌ Error |
 | 38º | 27/09/2019 | 38º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/2714](https://sibom.slyt.gba.gob.ar/bulletins/2714) | ❌ Error |
 | 37º | 09/09/2019 | 37º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/2660](https://sibom.slyt.gba.gob.ar/bulletins/2660) | ❌ Error |
+| 475º | 16/01/2026 | 475º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/14228](https://sibom.slyt.gba.gob.ar/bulletins/14228) | ✅ Completado |

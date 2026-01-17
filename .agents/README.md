@@ -1,7 +1,7 @@
 # .agents/ - Arquitectura de Agentes AI
 
-**Última actualización:** 2025-01-16  
-**Versión:** 2.0  
+**Última actualización:** 2025-01-17
+**Versión:** 2.1
 **Estado:** Producción
 
 ---
@@ -18,6 +18,33 @@
 ```
 .agents/ define → .opencode/ ejecuta → .kiro/ referencia
 ```
+
+---
+
+## 🛠️ Tecnologías del Proyecto
+
+### Backend (python-cli/)
+
+| Tecnología | Versión | Uso |
+|------------|---------|-----|
+| Python | 3.13 | Backend principal |
+| OpenRouter | - | LLM API |
+| BeautifulSoup4 | - | Web scraping |
+| Cloudflare R2 | - | Object storage |
+| Qdrant | - | Vector database |
+
+### Frontend (chatbot/)
+
+| Tecnología | Versión | Uso |
+|------------|---------|-----|
+| Next.js | 16.1.1 | Framework React |
+| React | 19.0.0 | UI library |
+| TypeScript | 5.0.0 | Tipado |
+| **Bun** | **1.2.8** | **Runtime de desarrollo** |
+| Vercel AI SDK | 4.1.0 | Streaming chat |
+| Tailwind CSS | 3.4.0 | Estilos |
+
+> **Nota:** Desde v2.1, el proyecto usa **Bun** como runtime de desarrollo para mayor velocidad. Ver [CHANGELOG.md](CHANGELOG.md#-migración-a-bun-2025-01-17) para más detalles.
 
 ---
 

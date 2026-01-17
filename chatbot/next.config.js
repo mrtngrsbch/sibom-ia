@@ -9,6 +9,11 @@ const nextConfig = {
     },
   },
 
+  /** Configuración de Turbopack - silencia warning de lockfiles en directorios padre */
+  turbopack: {
+    root: __dirname,
+  },
+
   /** Configuración de imágenes */
   images: {
     remotePatterns: [

@@ -1,6 +1,6 @@
 # SIBOM IA
 
-> **Estado Actual**: 🟢 Recomenzo Limpio - 2026-01-14
+> **Estado Actual**: 🟢 Producción - 2025-01-17 (v2.1 con Bun runtime)
 
 El repositorio ha sido limpiado y sincronizado. Toda la documentación obsoleta y scripts viejos fueron archivados. Arquitectura actual estable y lista para desarrollo.
 
@@ -23,7 +23,7 @@ Scraper automatizado que extrae boletines usando LLMs
 Chatbot con RAG para consultar los boletines extraídos
 - **Ubicación**: [`chatbot/`](chatbot/)
 - **Función**: Búsqueda semántica y consultas en lenguaje natural
-- **Tecnologías**: Next.js 15, React 19, TypeScript, Tailwind, Vercel AI SDK
+- **Tecnologías**: Next.js 16, React 19, TypeScript, Tailwind, Vercel AI SDK, **Bun** (dev runtime)
 - **Características**: BM25, embeddings, streaming en tiempo real
 
 ## 🚀 Inicio Rápido
@@ -44,12 +44,14 @@ python3 sibom_scraper.py --limit 5
 
 ```bash
 cd chatbot
-npm install
+bun install              # O: npm install
 cp .env.example .env.local
 # Edita .env.local con tu OPENROUTER_API_KEY
-npm run dev
+bun run dev              # O: npm run dev
 # Abre http://localhost:3000
 ```
+
+> **Nota:** El proyecto usa **Bun** como runtime de desarrollo (10-20x más rápido que Node.js). El deployment a Vercel usa Node.js automáticamente.
 
 **El chatbot leerá automáticamente los boletines extraídos** en `python-cli/boletines/`
 

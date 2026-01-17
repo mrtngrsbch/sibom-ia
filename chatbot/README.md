@@ -11,9 +11,11 @@ Chatbot especializado en responder consultas sobre legislación, ordenanzas y de
 
 ## 📋 Requisitos
 
-- Node.js 18+
-- npm o yarn
+- **Bun 1.0+** (recomendado para desarrollo) - [Instalar Bun](https://bun.sh/install)
+- Node.js 18+ (para producción/Vercel)
 - API Key de OpenRouter (para el modelo LLM)
+
+> **Nota:** Este proyecto usa Bun como runtime de desarrollo para mayor velocidad. El deployment a Vercel usa Node.js sin cambios necesarios.
 
 ## 🛠️ Instalación
 
@@ -21,8 +23,13 @@ Chatbot especializado en responder consultas sobre legislación, ordenanzas y de
 
 ```bash
 cd chatbot
-npm install
+bun install
 ```
+
+> Si usas npm o yarn:
+> ```bash
+> npm install   # o: yarn install
+> ```
 
 ### 2. Configurar variables de entorno
 
@@ -42,8 +49,13 @@ Obtén tu API key en: [https://openrouter.ai/keys](https://openrouter.ai/keys)
 ### 3. Ejecutar en desarrollo
 
 ```bash
-npm run dev
+bun run dev
 ```
+
+> Si usas npm o yarn:
+> ```bash
+> npm run dev   # o: yarn dev
+> ```
 
 Abre [http://localhost:3000](http://localhost:3000)
 
@@ -120,14 +132,41 @@ curl http://localhost:3000/api/stats
 ## 🧪 Desarrollo
 
 ```bash
-# Modo desarrollo
-npm run dev
+# Modo desarrollo (usa Bun runtime - muy rápido)
+bun run dev
 
 # Build para producción
-npm run build
+bun run build
 
 # Ver producción localmente
-npm run start
+bun run start
+
+# Linting
+bun run lint
+
+# Tests
+bun run test
+```
+
+> Si usas npm o yarn, reemplaza `bun` con `npm` o `yarn`.
+
+## 🚀 Deployment
+
+### Vercel (Recomendado)
+
+El proyecto está configurado para deployment en Vercel. El deployment usa Node.js runtime automáticamente - sin cambios necesarios.
+
+1. Conecta tu repositorio a Vercel
+2. Configura las variables de entorno
+3. Deploy automático en cada push a `main`
+
+### Self-hosted con Bun
+
+Para usar Bun en producción:
+
+```bash
+bun run build
+bun run start
 ```
 
 ## 📄 Licencia

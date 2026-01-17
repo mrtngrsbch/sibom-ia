@@ -1,5 +1,5 @@
 #!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+set -e
 
 # Pre-commit hook for SIBOM Scraper Assistant
 # Validates data integrity before committing changes
@@ -141,7 +141,25 @@ if git diff --cached --name-only | grep -q "python-cli/\.env"; then
     echo "   Please remove python-cli/.env from staging"
     FAILED=1
 fi
-
+ 
+# 8. Validate commit message format (Conventional Commits)
+if [ -n "$(git rev-parse --verify HEAD 2>/dev/null)" ]; then
+    # Solo validar si ya hay commits en el repo (no es el primer commit)
+    echo "✨ Validating commit message format..."
+    
+    COMMIT_MSG_FILE=".git/COMMIT_EDITMSG"
+    
+    if [ -f "$COMMIT_MSG_FILE" ]; then
+        # Validar con script Python
+        if command -v python3 &> /dev/null; then
+            python3 .agents/scripts/validate_commit_message.py "$COMMIT_MSG_FILE" || FAILED=1
+        else
+            echo "⚠️  WARNING: python3 not found, skipping commit message validation"
+            echo "   Consider installing Python 3.13 for validation"
+        fi
+    fi
+fi
+ 
 # Final report
 if [ $FAILED -eq 0 ]; then
     echo "✅ Pre-commit validations passed!"

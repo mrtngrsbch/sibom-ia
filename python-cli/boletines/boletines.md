@@ -140,7 +140,7 @@
 | 114º | 07/04/2021 | 114º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5138](https://sibom.slyt.gba.gob.ar/bulletins/5138) | ❌ Error |
 | 113º | 30/03/2021 | 113º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5101](https://sibom.slyt.gba.gob.ar/bulletins/5101) | ❌ Error |
 | 112º | 29/03/2021 | 112º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5087](https://sibom.slyt.gba.gob.ar/bulletins/5087) | ❌ Error |
-| 111º | 23/03/2021 | 111º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5086](https://sibom.slyt.gba.gob.ar/bulletins/5086) | ❌ Error |
+| 111º | 16/01/2026 | 111º de Balcarce | [https://sibom.slyt.gba.gob.ar/bulletins/14180](https://sibom.slyt.gba.gob.ar/bulletins/14180) | ✅ Completado |
 | 110º | 23/03/2021 | 110º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5085](https://sibom.slyt.gba.gob.ar/bulletins/5085) | ❌ Error |
 | 109º | 16/03/2021 | 109º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5065](https://sibom.slyt.gba.gob.ar/bulletins/5065) | ❌ Error |
 | 108º | 16/03/2021 | 108º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5017](https://sibom.slyt.gba.gob.ar/bulletins/5017) | ❌ Error |

@@ -1032,8 +1032,10 @@ HTML: {html[:200000]}"""
             normas_metadata = self.parse_bulletin_content_links(bulletin_html)
 
             if not normas_metadata:
+                municipio = self._extract_municipality_name(bulletin.get('description', ''))
                 console.print(
-                    f"[yellow]⚠ Sin normas en {bulletin['number']}[/yellow]")
+                    f"[yellow]⚠ Sin normas en {bulletin['number']} - {municipio}[/yellow]")
+                console.print(f"[dim]🔗 Verificar: {bulletin_url}[/dim]")
                 no_content_result = {
                     "municipio": self._extract_municipality_name(bulletin.get('description', '')),
                     "numero_boletin": bulletin.get('number', 'N/A'),
@@ -1423,6 +1425,387 @@ HTML: {bulletin_html[:50000]}"""
 
         return results
 
+    # ========================================================================
+    # MÉTODOS PARA PROCESAMIENTO MÚLTIPLE DE CIUDADES
+    # ========================================================================
+
+    def auto_generate_city_map(self, start_id: int, end_id: int) -> Dict[str, str]:
+        """
+        Genera CITY_MAP.json consultando SIBOM para cada ciudad en el rango.
+
+        Args:
+            start_id: ID inicial de ciudad
+            end_id: ID final de ciudad
+
+        Returns:
+            Dict con el mapeo de IDs a nombres
+        """
+        city_map = {}
+
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[progress.description]{task.description}"),
+            console=console
+        ) as progress:
+            task = progress.add_task(
+                f"Generando CITY_MAP para ciudades {start_id}-{end_id}...",
+                total=end_id - start_id + 1
+            )
+
+            base_url = "https://sibom.slyt.gba.gob.ar"
+
+            for city_id in range(start_id, end_id + 1):
+                try:
+                    # Consultar la página de la ciudad
+                    url = f"{base_url}/cities/{city_id}"
+                    response = requests.get(url, headers=self.headers, timeout=10)
+
+                    if response.status_code == 200:
+                        html = response.text
+
+                        # Buscar nombre en el primer boletín
+                        # Formato: <p class="bulletin-title">XXº de [Ciudad]</p>
+                        match = re.search(
+                            r'<p[^>]*class="[^"]*bulletin-title[^"]*"[^>]*>([^<]+)</p>',
+                            html,
+                            re.IGNORECASE
+                        )
+                        if match:
+                            title = match.group(1).strip()
+                            # Formato típico: "105º de Carlos Tejedor"
+                            name_match = re.search(
+                                r'º?\s+de\s+([A-ZÁÉÍÓÚÑ][A-Za-záéíóúñÑ\s]+)',
+                                title
+                            )
+                            if name_match:
+                                name = name_match.group(1).strip()
+                                city_map[str(city_id)] = name
+                                console.print(f"[dim]  {city_id}: {name}[/dim]")
+
+                except Exception:
+                    # Silenciosamente continuar si una ciudad falla
+                    pass
+
+                progress.update(task, advance=1)
+
+        # Guardar el mapa
+        if city_map:
+            self.CITY_MAP_FILE.parent.mkdir(parents=True, exist_ok=True)
+            with self.CITY_MAP_FILE.open('w', encoding='utf-8') as f:
+                json.dump(city_map, f, indent=2, ensure_ascii=False)
+            console.print(f"[green]✓ CITY_MAP guardado: {len(city_map)} ciudades[/green]")
+        else:
+            console.print("[yellow]⚠ No se pudo generar CITY_MAP[/yellow]")
+
+        return city_map
+
+    def scrape_multiple_cities(
+        self,
+        city_ids: List[int],
+        skip_existing: bool = False,
+        parallel: int = 1
+    ) -> Dict[int, Dict[str, Any]]:
+        """
+        Scraping masivo de múltiples ciudades con TODAS las páginas.
+
+        Args:
+            city_ids: Lista de IDs de ciudades a procesar
+            skip_existing: Saltar boletines ya procesados
+            parallel: Procesamiento paralelo de boletines dentro de cada ciudad
+
+        Returns:
+            Dict con city_id -> {total_boletines, completados, errores, tiempo, nombre}
+        """
+        base_url = "https://sibom.slyt.gba.gob.ar"
+        output_dir = Path("boletines")
+        output_dir.mkdir(exist_ok=True)
+
+        # Estadísticas por ciudad
+        city_stats: Dict[int, Dict[str, Any]] = {}
+        cities_with_errors: List[tuple[int, str, str]] = []
+
+        # Mostrar panel de inicio
+        console.print(Panel.fit(
+            f"[bold cyan]SIBOM Scraper - Modo Múltiples Ciudades[/bold cyan]\n"
+            f"Total ciudades: {len(city_ids)}\n"
+            f"Rango: {min(city_ids)} - {max(city_ids)}\n"
+            f"Skip existing: {skip_existing}\n"
+            f"Paralelismo: {parallel}",
+            title="🚀 Iniciando"
+        ))
+
+        # Obtener nombres de ciudades
+        city_map = self._load_city_map()
+
+        total_start_time = time.time()
+
+        for idx, city_id in enumerate(city_ids, 1):
+            city_name = city_map.get(str(city_id), f"Ciudad {city_id}")
+            city_start_time = time.time()
+
+            console.print(f"\n[bold cyan]═══ CIUDAD {idx}/{len(city_ids)}: {city_name} (ID: {city_id}) ═══[/bold cyan]")
+
+            try:
+                # Construir URL de la ciudad
+                city_url = f"{base_url}/cities/{city_id}"
+
+                # Obtener primera página para detectar total de páginas
+                list_html = self.fetch_html(city_url)
+                total_pages = self.detect_total_pages(list_html)
+
+                # Recolectar boletines de todas las páginas
+                all_bulletins = []
+
+                if total_pages == 1:
+                    # Solo una página
+                    bulletins = self.parse_listing_page(list_html, city_url)
+                    all_bulletins.extend(bulletins)
+                else:
+                    # Múltiples páginas
+                    for page_num in range(1, total_pages + 1):
+                        if page_num == 1:
+                            bulletins = self.parse_listing_page(list_html, city_url)
+                        else:
+                            page_url = f"{city_url}?page={page_num}"
+                            page_html = self.fetch_html(page_url)
+                            bulletins = self.parse_listing_page(page_html, page_url)
+                        all_bulletins.extend(bulletins)
+                        console.print(f"[dim]    Página {page_num}/{total_pages}: {len(bulletins)} boletines[/dim]")
+
+                if not all_bulletins:
+                    console.print(f"[yellow]⚠ No se encontraron boletines para {city_name} (ID: {city_id})[/yellow]")
+                    console.print(f"[dim]🔗 Verificar: {city_url}[/dim]")
+                    city_stats[city_id] = {
+                        "nombre": city_name,
+                        "total_boletines": 0,
+                        "completados": 0,
+                        "errores": 0,
+                        "tiempo": 0
+                    }
+                    continue
+
+                console.print(f"[green]✓ Total boletines a procesar: {len(all_bulletins)}[/green]")
+
+                # Procesar boletines de esta ciudad
+                city_results = []
+                city_errors = 0
+
+                if parallel > 1:
+                    # Procesamiento paralelo
+                    with ThreadPoolExecutor(max_workers=parallel) as executor:
+                        futures = {
+                            executor.submit(
+                                self.process_bulletin,
+                                b,
+                                base_url,
+                                output_dir,
+                                skip_existing
+                            ): b for b in all_bulletins
+                        }
+
+                        with Progress(
+                            SpinnerColumn(),
+                            TextColumn("[progress.description]{task.description}"),
+                            BarColumn(),
+                            TaskProgressColumn(),
+                            console=console
+                        ) as progress:
+                            task = progress.add_task(
+                                f"[cyan]Procesando {city_name}...",
+                                total=len(all_bulletins)
+                            )
+
+                            for future in as_completed(futures):
+                                result = future.result()
+                                city_results.append(result)
+                                if result.get('status') == 'error':
+                                    city_errors += 1
+                                progress.update(task, advance=1)
+                else:
+                    # Procesamiento secuencial
+                    for bulletin in all_bulletins:
+                        result = self.process_bulletin(
+                            bulletin, base_url, output_dir, skip_existing
+                        )
+                        city_results.append(result)
+                        if result.get('status') == 'error':
+                            city_errors += 1
+
+                # Contar completados y errores
+                city_completed = sum(
+                    1 for r in city_results if r.get('status') == 'completed'
+                )
+                city_error_count = sum(
+                    1 for r in city_results if r.get('status') == 'error'
+                )
+                city_no_content = sum(
+                    1 for r in city_results if r.get('status') == 'no_content'
+                )
+                city_skipped = sum(
+                    1 for r in city_results if r.get('status') == 'skipped'
+                )
+
+                city_elapsed = time.time() - city_start_time
+
+                # Guardar estadísticas
+                city_stats[city_id] = {
+                    "nombre": city_name,
+                    "total_boletines": len(all_bulletins),
+                    "completados": city_completed,
+                    "omitidos": city_skipped,
+                    "sin_contenido": city_no_content,
+                    "errores": city_error_count,
+                    "tiempo": city_elapsed
+                }
+
+                # Resumen de ciudad
+                console.print(Panel.fit(
+                    f"[bold green]✓ {city_name} completada[/bold green]\n"
+                    f"Boletines: {len(all_bulletins)}\n"
+                    f"  Completados: {city_completed}\n"
+                    f"  Omítidos: {city_skipped}\n"
+                    f"  Sin contenido: {city_no_content}\n"
+                    f"  Errores: {city_error_count}\n"
+                    f"Tiempo: {city_elapsed:.1f}s",
+                    title=f"🏙️ {city_name}"
+                ))
+
+            except Exception as e:
+                city_elapsed = time.time() - city_start_time
+                error_msg = str(e)
+                console.print(f"[red]✗ Error procesando {city_name}: {error_msg}[/red]")
+                cities_with_errors.append((city_id, city_name, error_msg))
+                city_stats[city_id] = {
+                    "nombre": city_name,
+                    "total_boletines": 0,
+                    "completados": 0,
+                    "omitidos": 0,
+                    "sin_contenido": 0,
+                    "errores": 1,
+                    "tiempo": city_elapsed
+                }
+
+        total_elapsed = time.time() - total_start_time
+
+        # Mostrar resumen final
+        self.print_multi_city_summary(city_stats, cities_with_errors, total_elapsed)
+
+        return city_stats
+
+    def print_multi_city_summary(
+        self,
+        city_stats: Dict[int, Dict[str, Any]],
+        cities_with_errors: List[tuple[int, str, str]],
+        total_time: float
+    ):
+        """
+        Imprime resumen completo del procesamiento de múltiples ciudades.
+
+        Args:
+            city_stats: Dict con estadísticas por ciudad
+            cities_with_errors: Lista de (city_id, nombre, error)
+            total_time: Tiempo total de ejecución
+        """
+        console.print("\n")
+        console.print(Panel.fit(
+            f"[bold cyan]RESUMEN DE EJECUCIÓN[/bold cyan]",
+            title="📊"
+        ))
+
+        # Tabla de estadísticas por ciudad
+        table = Table(title=f"Estadísticas por Ciudad ({len(city_stats)} ciudades)")
+        table.add_column("ID", style="cyan", width=6)
+        table.add_column("Ciudad", style="green", width=25)
+        table.add_column("Total", justify="right", style="white")
+        table.add_column("✓", justify="right", style="green")
+        table.add_column("⊘", justify="right", style="yellow")
+        table.add_column("∅", justify="right", style="dim")
+        table.add_column("✗", justify="right", style="red")
+        table.add_column("Tiempo", justify="right", style="white")
+
+        for city_id in sorted(city_stats.keys()):
+            stats = city_stats[city_id]
+            table.add_row(
+                str(city_id),
+                stats['nombre'][:24],
+                str(stats['total_boletines']),
+                str(stats['completados']),
+                str(stats.get('omitidos', 0)),
+                str(stats.get('sin_contenido', 0)),
+                str(stats['errores']),
+                f"{stats['tiempo']:.1f}s"
+            )
+
+        console.print("\n")
+        console.print(table)
+
+        # Totales generales
+        total_boletines = sum(s['total_boletines'] for s in city_stats.values())
+        total_completados = sum(s['completados'] for s in city_stats.values())
+        total_omitidos = sum(s.get('omitidos', 0) for s in city_stats.values())
+        total_no_content = sum(s.get('sin_contenido', 0) for s in city_stats.values())
+        total_errores = sum(s['errores'] for s in city_stats.values())
+
+        console.print("\n")
+        summary_table = Table(title="Totales Generales")
+        summary_table.add_column("Métrica", style="cyan")
+        summary_table.add_column("Valor", justify="right", style="green")
+
+        summary_table.add_row("Ciudades procesadas", str(len(city_stats)))
+        summary_table.add_row("Total boletines", str(total_boletines))
+        summary_table.add_row("Completados", str(total_completados))
+        summary_table.add_row("Omitidos (existentes)", str(total_omitidos))
+        summary_table.add_row("Sin contenido", str(total_no_content))
+        summary_table.add_row("Errores", str(total_errores))
+        summary_table.add_row("Tiempo total", f"{total_time:.1f}s ({total_time/60:.1f}m)")
+
+        if total_completados > 0:
+            avg_time = total_time / total_completados
+            summary_table.add_row("Promedio por boletín", f"{avg_time:.1f}s")
+
+        console.print("\n")
+        console.print(summary_table)
+
+        # Ciudades con errores
+        if cities_with_errors:
+            console.print("\n")
+            console.print(Panel.fit(
+                f"[bold red]Ciudades con errores ({len(cities_with_errors)})[/bold red]",
+                title="⚠️"
+            ))
+            for city_id, city_name, error in cities_with_errors:
+                console.print(f"[red]  ID {city_id} ({city_name}): {error[:60]}...[/red]")
+
+
+def parse_city_ranges(ranges_str: str) -> List[int]:
+    """
+    Parsea rangos de ciudades como "1-136", "1-21,23-136", "5".
+    Retorna lista ordenada de IDs de ciudades únicos.
+
+    Args:
+        ranges_str: String con rangos separados por coma (ej: "1-5,10,15-20")
+
+    Returns:
+        Lista de IDs de ciudades como enteros
+
+    Examples:
+        >>> parse_city_ranges("1-5")
+        [1, 2, 3, 4, 5]
+        >>> parse_city_ranges("1-3,5,7-9")
+        [1, 2, 3, 5, 7, 8, 9]
+        >>> parse_city_ranges("22")
+        [22]
+    """
+    city_ids = set()
+    for part in ranges_str.split(','):
+        part = part.strip()
+        if '-' in part:
+            start, end = part.split('-')
+            city_ids.update(range(int(start), int(end) + 1))
+        else:
+            city_ids.add(int(part))
+    return sorted(city_ids)
+
 
 def main():
     parser = argparse.ArgumentParser(
@@ -1457,6 +1840,13 @@ Ejemplos de uso:
     )
 
     parser.add_argument(
+        '--cities',
+        type=str,
+        default=None,
+        help='Rangos de ciudades a escrapear (ej: "1-21,23-136")'
+    )
+
+    parser.add_argument(
         '--output',
         type=str,
         default='sibom_results.json',
@@ -1474,6 +1864,13 @@ Ejemplos de uso:
         '--skip-existing',
         action='store_true',
         help='Saltar automáticamente boletines que ya fueron procesados (no preguntar)'
+    )
+
+    parser.add_argument(
+        '--start-from',
+        type=int,
+        default=None,
+        help='ID de ciudad desde donde comenzar (para reanudar proceso interrumpido)'
     )
 
     parser.add_argument(
@@ -1498,45 +1895,77 @@ Ejemplos de uso:
 
     try:
         start_time = time.time()
-        results = scraper.scrape(
-            args.url, limit=args.limit, parallel=args.parallel, skip_existing=args.skip_existing)
-        elapsed = time.time() - start_time
 
-        # Guardar resumen consolidado (opcional)
-        output_path = Path(args.output)
-        with output_path.open('w', encoding='utf-8') as f:
-            json.dump(results, f, indent=2, ensure_ascii=False)
+        # Modo múltiples ciudades vs modo single URL
+        if args.cities:
+            # Parsear rangos de ciudades
+            city_ids = parse_city_ranges(args.cities)
 
-        # Mostrar resumen
-        completed = sum(1 for r in results if r.get('status') == 'completed')
-        errors = sum(1 for r in results if r.get('status') == 'error')
-        no_content = sum(1 for r in results if r.get('status') == 'no_content')
+            # Generar CITY_MAP si no existe
+            if not scraper.CITY_MAP_FILE.exists():
+                console.print("[yellow]⚠ CITY_MAP.json no encontrado, generando...[/yellow]")
+                scraper.auto_generate_city_map(min(city_ids), max(city_ids))
 
-        table = Table(title="📊 Resumen de Ejecución")
-        table.add_column("Métrica", style="cyan")
-        table.add_column("Valor", style="green")
+            # Aplicar start-from si se especificó
+            if args.start_from:
+                filtered_count = len([c for c in city_ids if c >= args.start_from])
+                console.print(
+                    f"[cyan]📍 Filtrando ciudades: comenzando desde ID {args.start_from}[/cyan]")
+                console.print(
+                    f"[dim]    Ciudades antes del filtro: {len(city_ids)}[/dim]")
+                console.print(
+                    f"[dim]    Ciudades después del filtro: {filtered_count}[/dim]")
+                city_ids = [c for c in city_ids if c >= args.start_from]
 
-        table.add_row("Total procesados", str(len(results)))
-        table.add_row("Completados", str(completed))
-        table.add_row("Errores", str(errors))
-        table.add_row("Sin contenido", str(no_content))
-        table.add_row("Tiempo total", f"{elapsed:.1f}s")
-        table.add_row("Tiempo por boletín",
-                      f"{elapsed/len(results):.1f}s" if len(results) > 0 else "N/A")
-        table.add_row("Carpeta boletines", "boletines/")
-        table.add_row("Resumen consolidado", str(output_path))
+            # Usar scrape_multiple_cities
+            city_stats = scraper.scrape_multiple_cities(
+                city_ids=city_ids,
+                skip_existing=args.skip_existing,
+                parallel=args.parallel
+            )
+            # No es necesario guardar resumen consolidado en modo múltiple
+            # Los archivos individuales ya se guardaron en process_bulletin
+        else:
+            # Modo existente con --url (backward compatible)
+            results = scraper.scrape(
+                args.url, limit=args.limit, parallel=args.parallel, skip_existing=args.skip_existing)
+            elapsed = time.time() - start_time
 
-        console.print("\n")
-        console.print(table)
-        console.print(
-            f"\n[bold green]✓ Boletines individuales guardados en: boletines/[/bold green]")
-        console.print(
-            f"[bold green]✓ Resumen consolidado guardado en: {output_path}[/bold green]")
+            # Guardar resumen consolidado (opcional)
+            output_path = Path(args.output)
+            with output_path.open('w', encoding='utf-8') as f:
+                json.dump(results, f, indent=2, ensure_ascii=False)
 
-        # Reproducir sonido de tarea completa
-        scraper._play_sound('complete')
+            # Mostrar resumen
+            completed = sum(1 for r in results if r.get('status') == 'completed')
+            errors = sum(1 for r in results if r.get('status') == 'error')
+            no_content = sum(1 for r in results if r.get('status') == 'no_content')
 
-        # Guardar índice de montos extraídos
+            table = Table(title="📊 Resumen de Ejecución")
+            table.add_column("Métrica", style="cyan")
+            table.add_column("Valor", style="green")
+
+            table.add_row("Total procesados", str(len(results)))
+            table.add_row("Completados", str(completed))
+            table.add_row("Errores", str(errors))
+            table.add_row("Sin contenido", str(no_content))
+            table.add_row("Tiempo total", f"{elapsed:.1f}s")
+            table.add_row("Tiempo por boletín",
+                          f"{elapsed/len(results):.1f}s" if len(results) > 0 else "N/A")
+            table.add_row("Carpeta boletines", "boletines/")
+            table.add_row("Resumen consolidado", str(output_path))
+
+            console.print("\n")
+            console.print(table)
+            console.print(
+                f"\n[bold green]✓ Boletines individuales guardados en: boletines/[/bold green]")
+            console.print(
+                f"[bold green]✓ Resumen consolidado guardado en: {output_path}[/bold green]")
+
+            # Reproducir sonido de tarea completa
+            scraper._play_sound('complete')
+
+        # Guardar índice de montos extraídos (común a ambos modos)
         if scraper.montos_acumulados:
             montos_path = Path("montos_index.json")
             scraper.monto_extractor._save_index(
@@ -1544,7 +1973,7 @@ Ejemplos de uso:
             console.print(
                 f"[bold green]✓ Índice de montos guardado: {len(scraper.montos_acumulados):,} registros[/bold green]")
 
-        # Guardar índice de normativas extraídas
+        # Guardar índice de normativas extraídas (común a ambos modos)
         if scraper.normativas_acumuladas:
             normativas_path = Path("normativas_index.json")
             normativas_compact_path = Path("normativas_index_compact.json")

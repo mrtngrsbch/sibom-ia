@@ -1,6 +1,6 @@
 | N/A | N/A | N/A | [N/A](N/A) | 🤖 Creado |
 | 225º | 25/04/2024 | 225º de Adolfo Gonzales Chaves | [https://sibom.slyt.gba.gob.ar/bulletins/10515](https://sibom.slyt.gba.gob.ar/bulletins/10515) | ⚠️ Sin contenido |
-| 130º | 17/07/2020 | 130º de Adolfo Gonzales Chaves | [https://sibom.slyt.gba.gob.ar/bulletins/3915](https://sibom.slyt.gba.gob.ar/bulletins/3915) | ⚠️ Sin contenido |
+| 130º | 09/06/2021 | 130º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5476](https://sibom.slyt.gba.gob.ar/bulletins/5476) | ✅ Completado |
 | 118º | 09/01/2020 | 118º de Adolfo Gonzales Chaves | [https://sibom.slyt.gba.gob.ar/bulletins/3131](https://sibom.slyt.gba.gob.ar/bulletins/3131) | ⚠️ Sin contenido |
 | 116º | 03/01/2020 | 116º de Adolfo Gonzales Chaves | [https://sibom.slyt.gba.gob.ar/bulletins/3109](https://sibom.slyt.gba.gob.ar/bulletins/3109) | ⚠️ Sin contenido |
 | 87º | 13/05/2019 | 87º de Adolfo Gonzales Chaves | [https://sibom.slyt.gba.gob.ar/bulletins/2218](https://sibom.slyt.gba.gob.ar/bulletins/2218) | ⚠️ Sin contenido |
@@ -84,46 +84,46 @@
 | 173º | 25/10/2021 | 173º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/6107](https://sibom.slyt.gba.gob.ar/bulletins/6107) | ✅ Completado |
 | 172º | 21/10/2021 | 172º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/6105](https://sibom.slyt.gba.gob.ar/bulletins/6105) | ✅ Completado |
 | 171º | 18/10/2021 | 171º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/6069](https://sibom.slyt.gba.gob.ar/bulletins/6069) | ✅ Completado |
-| 170º | 14/10/2021 | 170º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/6054](https://sibom.slyt.gba.gob.ar/bulletins/6054) | ❌ Error |
-| 169º | 12/10/2021 | 169º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/6044](https://sibom.slyt.gba.gob.ar/bulletins/6044) | ❌ Error |
-| 168º | 07/10/2021 | 168º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/6003](https://sibom.slyt.gba.gob.ar/bulletins/6003) | ❌ Error |
-| 167º | 23/09/2021 | 167º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5990](https://sibom.slyt.gba.gob.ar/bulletins/5990) | ❌ Error |
-| 166º | 22/09/2021 | 166º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5988](https://sibom.slyt.gba.gob.ar/bulletins/5988) | ❌ Error |
-| 165º | 22/09/2021 | 165º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5961](https://sibom.slyt.gba.gob.ar/bulletins/5961) | ❌ Error |
-| 164º | 13/09/2021 | 164º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5957](https://sibom.slyt.gba.gob.ar/bulletins/5957) | ❌ Error |
-| 163º | 07/09/2021 | 163º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5913](https://sibom.slyt.gba.gob.ar/bulletins/5913) | ❌ Error |
-| 162º | 06/09/2021 | 162º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5903](https://sibom.slyt.gba.gob.ar/bulletins/5903) | ❌ Error |
-| 161º | 02/09/2021 | 161º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5877](https://sibom.slyt.gba.gob.ar/bulletins/5877) | ❌ Error |
-| 160º | 27/08/2021 | 160º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5861](https://sibom.slyt.gba.gob.ar/bulletins/5861) | ❌ Error |
-| 159º | 25/08/2021 | 159º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5850](https://sibom.slyt.gba.gob.ar/bulletins/5850) | ❌ Error |
-| 158º | 23/08/2021 | 158º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5820](https://sibom.slyt.gba.gob.ar/bulletins/5820) | ❌ Error |
-| 157º | 17/08/2021 | 157º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5813](https://sibom.slyt.gba.gob.ar/bulletins/5813) | ❌ Error |
-| 156º | 13/08/2021 | 156º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5805](https://sibom.slyt.gba.gob.ar/bulletins/5805) | ❌ Error |
-| 155º | 12/08/2021 | 155º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5804](https://sibom.slyt.gba.gob.ar/bulletins/5804) | ❌ Error |
-| 154º | 11/08/2021 | 154º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5792](https://sibom.slyt.gba.gob.ar/bulletins/5792) | ❌ Error |
-| 153º | 06/08/2021 | 153º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5771](https://sibom.slyt.gba.gob.ar/bulletins/5771) | ❌ Error |
-| 152º | 05/08/2021 | 152º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5761](https://sibom.slyt.gba.gob.ar/bulletins/5761) | ❌ Error |
-| 151º | 04/08/2021 | 151º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5752](https://sibom.slyt.gba.gob.ar/bulletins/5752) | ❌ Error |
-| 150º | 30/07/2021 | 150º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5746](https://sibom.slyt.gba.gob.ar/bulletins/5746) | ❌ Error |
-| 149º | 30/07/2021 | 149º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5728](https://sibom.slyt.gba.gob.ar/bulletins/5728) | ❌ Error |
-| 148º | 27/07/2021 | 148º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5719](https://sibom.slyt.gba.gob.ar/bulletins/5719) | ❌ Error |
-| 147º | 22/07/2021 | 147º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5701](https://sibom.slyt.gba.gob.ar/bulletins/5701) | ❌ Error |
-| 146º | 21/07/2021 | 146º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5699](https://sibom.slyt.gba.gob.ar/bulletins/5699) | ❌ Error |
-| 145º | 20/07/2021 | 145º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5691](https://sibom.slyt.gba.gob.ar/bulletins/5691) | ❌ Error |
-| 144º | 19/07/2021 | 144º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5677](https://sibom.slyt.gba.gob.ar/bulletins/5677) | ❌ Error |
-| 143º | 15/07/2021 | 143º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5667](https://sibom.slyt.gba.gob.ar/bulletins/5667) | ❌ Error |
-| 142º | 14/07/2021 | 142º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5665](https://sibom.slyt.gba.gob.ar/bulletins/5665) | ❌ Error |
-| 141º | 13/07/2021 | 141º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5664](https://sibom.slyt.gba.gob.ar/bulletins/5664) | ❌ Error |
-| 140º | 13/07/2021 | 140º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5641](https://sibom.slyt.gba.gob.ar/bulletins/5641) | ❌ Error |
-| 139º | 08/07/2021 | 139º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5613](https://sibom.slyt.gba.gob.ar/bulletins/5613) | ❌ Error |
-| 138º | 05/07/2021 | 138º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5594](https://sibom.slyt.gba.gob.ar/bulletins/5594) | ❌ Error |
-| 137º | 01/07/2021 | 137º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5586](https://sibom.slyt.gba.gob.ar/bulletins/5586) | ❌ Error |
-| 136º | 30/06/2021 | 136º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5585](https://sibom.slyt.gba.gob.ar/bulletins/5585) | ❌ Error |
-| 135º | 30/06/2021 | 135º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5566](https://sibom.slyt.gba.gob.ar/bulletins/5566) | ❌ Error |
-| 134º | 24/06/2021 | 134º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5561](https://sibom.slyt.gba.gob.ar/bulletins/5561) | ❌ Error |
-| 133º | 23/06/2021 | 133º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5541](https://sibom.slyt.gba.gob.ar/bulletins/5541) | ❌ Error |
-| 132º | 17/06/2021 | 132º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5520](https://sibom.slyt.gba.gob.ar/bulletins/5520) | ❌ Error |
-| 131º | 14/06/2021 | 131º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5493](https://sibom.slyt.gba.gob.ar/bulletins/5493) | ❌ Error |
+| 170º | 14/10/2021 | 170º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/6054](https://sibom.slyt.gba.gob.ar/bulletins/6054) | ✅ Completado |
+| 169º | 12/10/2021 | 169º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/6044](https://sibom.slyt.gba.gob.ar/bulletins/6044) | ✅ Completado |
+| 168º | 07/10/2021 | 168º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/6003](https://sibom.slyt.gba.gob.ar/bulletins/6003) | ✅ Completado |
+| 167º | 23/09/2021 | 167º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5990](https://sibom.slyt.gba.gob.ar/bulletins/5990) | ✅ Completado |
+| 166º | 22/09/2021 | 166º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5988](https://sibom.slyt.gba.gob.ar/bulletins/5988) | ✅ Completado |
+| 165º | 22/09/2021 | 165º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5961](https://sibom.slyt.gba.gob.ar/bulletins/5961) | ✅ Completado |
+| 164º | 13/09/2021 | 164º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5957](https://sibom.slyt.gba.gob.ar/bulletins/5957) | ✅ Completado |
+| 163º | 07/09/2021 | 163º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5913](https://sibom.slyt.gba.gob.ar/bulletins/5913) | ✅ Completado |
+| 162º | 06/09/2021 | 162º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5903](https://sibom.slyt.gba.gob.ar/bulletins/5903) | ✅ Completado |
+| 161º | 02/09/2021 | 161º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5877](https://sibom.slyt.gba.gob.ar/bulletins/5877) | ✅ Completado |
+| 160º | 27/08/2021 | 160º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5861](https://sibom.slyt.gba.gob.ar/bulletins/5861) | ✅ Completado |
+| 159º | 25/08/2021 | 159º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5850](https://sibom.slyt.gba.gob.ar/bulletins/5850) | ✅ Completado |
+| 158º | 23/08/2021 | 158º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5820](https://sibom.slyt.gba.gob.ar/bulletins/5820) | ✅ Completado |
+| 157º | 17/08/2021 | 157º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5813](https://sibom.slyt.gba.gob.ar/bulletins/5813) | ✅ Completado |
+| 156º | 13/08/2021 | 156º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5805](https://sibom.slyt.gba.gob.ar/bulletins/5805) | ✅ Completado |
+| 155º | 12/08/2021 | 155º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5804](https://sibom.slyt.gba.gob.ar/bulletins/5804) | ✅ Completado |
+| 154º | 11/08/2021 | 154º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5792](https://sibom.slyt.gba.gob.ar/bulletins/5792) | ✅ Completado |
+| 153º | 06/08/2021 | 153º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5771](https://sibom.slyt.gba.gob.ar/bulletins/5771) | ✅ Completado |
+| 152º | 05/08/2021 | 152º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5761](https://sibom.slyt.gba.gob.ar/bulletins/5761) | ✅ Completado |
+| 151º | 04/08/2021 | 151º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5752](https://sibom.slyt.gba.gob.ar/bulletins/5752) | ✅ Completado |
+| 150º | 30/07/2021 | 150º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5746](https://sibom.slyt.gba.gob.ar/bulletins/5746) | ✅ Completado |
+| 149º | 30/07/2021 | 149º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5728](https://sibom.slyt.gba.gob.ar/bulletins/5728) | ✅ Completado |
+| 148º | 27/07/2021 | 148º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5719](https://sibom.slyt.gba.gob.ar/bulletins/5719) | ✅ Completado |
+| 147º | 22/07/2021 | 147º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5701](https://sibom.slyt.gba.gob.ar/bulletins/5701) | ✅ Completado |
+| 146º | 21/07/2021 | 146º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5699](https://sibom.slyt.gba.gob.ar/bulletins/5699) | ✅ Completado |
+| 145º | 20/07/2021 | 145º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5691](https://sibom.slyt.gba.gob.ar/bulletins/5691) | ✅ Completado |
+| 144º | 19/07/2021 | 144º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5677](https://sibom.slyt.gba.gob.ar/bulletins/5677) | ✅ Completado |
+| 143º | 15/07/2021 | 143º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5667](https://sibom.slyt.gba.gob.ar/bulletins/5667) | ✅ Completado |
+| 142º | 14/07/2021 | 142º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5665](https://sibom.slyt.gba.gob.ar/bulletins/5665) | ✅ Completado |
+| 141º | 13/07/2021 | 141º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5664](https://sibom.slyt.gba.gob.ar/bulletins/5664) | ✅ Completado |
+| 140º | 13/07/2021 | 140º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5641](https://sibom.slyt.gba.gob.ar/bulletins/5641) | ✅ Completado |
+| 139º | 08/07/2021 | 139º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5613](https://sibom.slyt.gba.gob.ar/bulletins/5613) | ✅ Completado |
+| 138º | 05/07/2021 | 138º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5594](https://sibom.slyt.gba.gob.ar/bulletins/5594) | ✅ Completado |
+| 137º | 01/07/2021 | 137º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5586](https://sibom.slyt.gba.gob.ar/bulletins/5586) | ✅ Completado |
+| 136º | 30/06/2021 | 136º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5585](https://sibom.slyt.gba.gob.ar/bulletins/5585) | ✅ Completado |
+| 135º | 30/06/2021 | 135º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5566](https://sibom.slyt.gba.gob.ar/bulletins/5566) | ✅ Completado |
+| 134º | 24/06/2021 | 134º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5561](https://sibom.slyt.gba.gob.ar/bulletins/5561) | ✅ Completado |
+| 133º | 23/06/2021 | 133º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5541](https://sibom.slyt.gba.gob.ar/bulletins/5541) | ✅ Completado |
+| 132º | 17/06/2021 | 132º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5520](https://sibom.slyt.gba.gob.ar/bulletins/5520) | ✅ Completado |
+| 131º | 14/06/2021 | 131º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5493](https://sibom.slyt.gba.gob.ar/bulletins/5493) | ✅ Completado |
 | 129º | 07/06/2021 | 129º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5455](https://sibom.slyt.gba.gob.ar/bulletins/5455) | ❌ Error |
 | 128º | 02/06/2021 | 128º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5443](https://sibom.slyt.gba.gob.ar/bulletins/5443) | ❌ Error |
 | 127º | 31/05/2021 | 127º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/5439](https://sibom.slyt.gba.gob.ar/bulletins/5439) | ❌ Error |

@@ -605,31 +605,25 @@ def execute_commit_with_option(options: List[Dict], option_num: int):
     print("─" * 40)
     print()
     
-    # Confirmar
-    from getpass import getpass
-    confirm = getpass("¿Confirmar commit? (presiona Enter para confirmar, Ctrl+C para cancelar): ")
+    # Añadir archivos modificados
+    result_add = subprocess.run(['git', 'add', '.'], capture_output=True, text=True)
     
-    if confirm:
-        # Añadir archivos modificados
-        subprocess.run(['git', 'add', '.'], capture_output=True)
-        
-        # Ejecutar commit
-        result = subprocess.run(
-            ['git', 'commit', '-m', commit_msg],
-            capture_output=True,
-            text=True
-        )
-        
-        if result.returncode == 0:
-            print("✅ Commit creado exitosamente!")
-            print()
-            print("Último commit:")
-            subprocess.run(['git', 'log', '-1', '--format="%h | %s"'])
-        else:
-            print("❌ Error al crear commit:")
-            print(result.stderr)
+    # Ejecutar commit
+    result_commit = subprocess.run(
+        ['git', 'commit', '-m', commit_msg],
+        capture_output=True,
+        text=True
+    )
+    
+    if result_commit.returncode == 0:
+        print("✅ Commit creado exitosamente!")
+        print()
+        print("Último commit:")
+        result_log = subprocess.run(['git', 'log', '-1', '--format="%h | %s"'], capture_output=True, text=True)
+        print(result_log.stdout)
     else:
-        print("❌ Cancelado por el usuario")
+        print("❌ Error al crear commit:")
+        print(result_commit.stderr)
 
 
 def print_commit_suggestions(options: List[Dict]):
@@ -757,10 +751,8 @@ def main():
         print(f"Seleccioná una opción (1-3) o 'n' para cancelar:")
     
     elif args.command == 'commit':
-        # Implementación de commit con opción
-        print(f"📝 Commiteando con opción {args.option}...")
-        print("⚠️  Esta funcionalidad requiere implementación adicional")
-        print("Por ahora, usá el mensaje sugerido con 'git commit -m \"mensaje\"'")
+        options = agent.suggest()
+        execute_commit_with_option(options, args.option)
     
     elif args.command == 'alerts':
         if agent.alerts_log.exists():

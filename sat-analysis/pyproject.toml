@@ -1,0 +1,57 @@
+[project]
+name = "sat-analysis"
+version = "0.1.0"
+description = "Sistema de detección de anegamiento y salinización usando imágenes satelitales Sentinel-2"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "pystac-client>=0.8",
+    "planetary-computer>=1.0",
+    "rasterio>=1.4",
+    "xarray>=2024",
+    "rioxarray>=0.15",
+    "dask[array]>=2024",
+    "scipy>=1.13",
+    "numpy>=2.0",
+    "requests>=2.32",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "typer>=0.12",
+    "structlog>=24.0",
+    "rich>=13.0",
+    "pyproj>=3.0",
+    "shapely>=2.0",
+    "matplotlib>=3.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.5",
+    "mypy>=1.10",
+]
+
+[project.scripts]
+sat-analysis = "sat_analysis.cli:app"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sat_analysis"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true

@@ -184,21 +184,25 @@ def _save_indices_images(
     # Configurar colormaps
     cmap_water = plt.cm.RdYlBu_r  # Azul para valores bajos (agua)
     cmap_veg = plt.cm.RdYlGn_r  # Verde para valores altos (vegetación)
+    cmap_salinity = plt.cm.YlOrRd  # Amarillo-Rojo para salinidad (valores altos = más sal)
 
     # Índices a guardar
+    # Formato: (nombre_archivo, titulo_mostrar, datos, cmap, vmin, vmax)
     indices_to_save = [
-        ("NDWI", indices.ndwi, cmap_water, -0.5, 0.5),
-        ("MNDWI", indices.mndwi, cmap_water, -0.5, 0.5),
-        ("NDVI", indices.ndvi, cmap_veg, -0.2, 0.9),
-        ("NDMI", indices.ndmi, cmap_veg, -0.2, 0.6),
-        ("Clasificacion", classification, plt.cm.tab10, None, None),
+        ("ndwi", "NDWI", indices.ndwi, cmap_water, -0.5, 0.5),
+        ("mndwi", "MNDWI", indices.mndwi, cmap_water, -0.5, 0.5),
+        ("ndvi", "NDVI", indices.ndvi, cmap_veg, -0.2, 0.9),
+        ("ndmi", "NDMI", indices.ndmi, cmap_veg, -0.2, 0.6),
+        ("ndsi", "NDSI", indices.ndsi, cmap_salinity, -0.3, 0.3),
+        ("swir2-nir", "SWIR2 + NIR (Salinity)", indices.salinity_index, cmap_salinity, 0.3, 0.7),
+        ("clasificacion", "Clasificacion", classification, plt.cm.tab10, None, None),
     ]
 
     # Agregar máscara si está disponible
     if parcel_mask is not None:
-        indices_to_save.append(("Mascara", parcel_mask.astype(np.uint8), plt.cm.gray_r, 0, 1))
+        indices_to_save.append(("mascara", "Mascara", parcel_mask.astype(np.uint8), plt.cm.gray_r, 0, 1))
 
-    for name, data, cmap, vmin, vmax in indices_to_save:
+    for filename_name, title_name, data, cmap, vmin, vmax in indices_to_save:
         fig, ax = plt.subplots(figsize=(10, 8))
 
         if vmin is not None:
@@ -206,11 +210,11 @@ def _save_indices_images(
         else:
             im = ax.imshow(data, cmap=cmap)
 
-        plt.colorbar(im, ax=ax, label=name)
-        ax.set_title(f"{name} - {partida} | STAC Planetary Computer | {image_date}", fontsize=10)
+        plt.colorbar(im, ax=ax, label=title_name)
+        ax.set_title(f"{title_name} - {partida} | STAC Planetary Computer | {image_date}", fontsize=10)
         ax.axis('off')
 
-        filename = f"{output_path}/{name.lower()}_{partida}_{image_date_formatted}.png"
+        filename = f"{output_path}/{filename_name}_{partida}_{image_date_formatted}.png"
         plt.savefig(filename, dpi=150, bbox_inches='tight')
         plt.close(fig)
 
@@ -219,7 +223,8 @@ def _save_indices_images(
 def analyze(
     partida: str = typer.Argument(..., help="Partida catastral ARBA (ej: 4606) o 'coords:lon,lat,lon,lat'"),
     years: int = typer.Option(2, "--years", "-y", help="Años de histórico a analizar (1-10)"),
-    max_images: int = typer.Option(10, "--max-images", "-n", help="Máximo de imágenes a procesar"),
+    samples_per_year: int = typer.Option(4, "--samples-per-year", "-s", help="Imágenes por año (1-12, default: 4 trimestral)"),
+    max_images: int = typer.Option(None, "--max-images", "-n", help="Máximo de imágenes (deprecated, usa --samples-per-year)"),
     max_clouds: int = typer.Option(20, "--max-clouds", "-c", help="Máximo % de nubes (0-100)"),
     output: str = typer.Option(None, "--output", "-o", help="Archivo JSON de salida"),
     verbose: bool = typer.Option(False, "--verbose", "-v", help="Output detallado"),
@@ -259,9 +264,26 @@ def analyze(
             console.print("[red]ERROR: --years debe estar entre 1 y 10[/red]")
             raise typer.Exit(1)
 
+        if not 1 <= samples_per_year <= 12:
+            console.print("[red]ERROR: --samples-per-year debe estar entre 1 y 12[/red]")
+            raise typer.Exit(1)
+
         if not 0 <= max_clouds <= 100:
             console.print("[red]ERROR: --max-clouds debe estar entre 0 y 100[/red]")
             raise typer.Exit(1)
+
+        # Calcular total de imágenes objetivo
+        target_images = samples_per_year * years
+
+        # Si se especifica --max-images explícitamente, usar ese valor
+        if max_images is not None:
+            console.print("[yellow]WARNING: --max-images está deprecated. Usa --samples-per-year en su lugar.[/yellow]")
+            target_images = max_images
+            samples_per_year = None  # Desactivar muestreo temporal
+
+        console.print(f"   Objetivo: {target_images} imágenes")
+        if samples_per_year:
+            console.print(f"   Muestreo: {samples_per_year} imágenes/año (distribución uniforme)")
 
         # Parsear coordenadas si se usa modo coords
         bbox = None
@@ -332,12 +354,25 @@ def analyze(
 
         try:
             stac = StacService()
-            items = stac.search_sentinel(
-                bbox=parcel_bbox,
-                date_range=date_range,
-                max_clouds=float(max_clouds),
-                limit=max_images,
-            )
+
+            # Usar muestreo temporal si se especificó samples_per_year
+            if samples_per_year:
+                items = stac.search_sentinel_sampled(
+                    bbox=parcel_bbox,
+                    date_range=date_range,
+                    max_clouds=float(max_clouds),
+                    samples_per_year=samples_per_year,
+                    start_date=start_date,
+                    end_date=end_date,
+                )
+            else:
+                # Comportamiento clásico (sin muestreo temporal)
+                items = stac.search_sentinel(
+                    bbox=parcel_bbox,
+                    date_range=date_range,
+                    max_clouds=float(max_clouds),
+                    limit=target_images,
+                )
 
             if not items:
                 console.print("[yellow]WARNING: No se encontraron imágenes[/yellow]")
@@ -353,7 +388,18 @@ def analyze(
         # 3. Procesar imágenes
         console.print(f"\n[cyan]PROCESANDO: Procesando imágenes...[/cyan]")
         results = []
-        classifier = PixelClassifier()
+
+        # Obtener configuración de umbrales
+        settings = get_settings()
+        classifier = PixelClassifier(
+            water_ndwi_threshold=settings.water_ndwi_threshold,
+            water_mndwi_threshold=settings.water_mndwi_threshold,
+            wetland_ndvi_threshold=settings.wetland_ndvi_threshold,
+            wetland_ndmi_threshold=settings.wetland_ndmi_threshold,
+            wetland_ndwi_threshold=settings.wetland_ndwi_threshold,
+            vegetation_ndvi_threshold=settings.vegetation_ndvi_threshold,
+            vegetation_ndmi_threshold=settings.vegetation_ndmi_threshold,
+        )
 
         with Progress(
             SpinnerColumn(),
@@ -400,13 +446,14 @@ def analyze(
                             coverage = pixels_inside / total_pixels * 100
                             console.print(f"[dim]   Píxeles parcela: {pixels_inside:,}/{total_pixels:,} ({coverage:.1f}%)[/dim]")
 
-                    # Calcular índices
+                    # Calcular índices (incluyendo B12 para detección de salinidad)
                     indices = classifier.calculate_indices(
                         b02=bands.b02,
                         b03=bands.b03,
                         b04=bands.b04,
                         b08=bands.b08,
                         b11=bands.b11,
+                        b12=bands.b12,
                     )
 
                     # Clasificar y calcular áreas
@@ -650,7 +697,6 @@ def main():
         sys.exit(130)
     finally:
         # Asegurar limpieza de recursos de Rich/terminal
-        try:
-            console.file.close()
-        except Exception:
-            pass
+        # No cerrar console.file explícitamente - Rich lo maneja internamente
+        # y cerrarlo puede causar errores en sys.excepthook
+        pass

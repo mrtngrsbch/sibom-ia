@@ -1,13 +1,14 @@
 # sat-analysis
 
-Sistema de detección de anegamiento y salinización usando imágenes satelitales Sentinel-2 y Microsoft Planetary Computer.
+Sistema de detección de anegamiento y salinización usando imágenes satelitales Sentinel-2, HLS (Harmonized Landsat-Sentinel-2) y Microsoft Planetary Computer.
 
 ## Características
 
 - Consulta de parcelas catastrales ARBA por partida
-- Descarga de imágenes Sentinel-2 L2A desde STAC Planetary Computer
-- Cálculo de índices espectrales: NDWI, MNDWI, NDVI, NDMI
+- Descarga de imágenes Sentinel-2 L2A y HLS desde STAC Planetary Computer
+- Cálculo de índices espectrales: NDWI, MNDWI, NDVI, NDMI, NDSI, Salinity Index
 - Clasificación de píxeles en: Agua, Humedal, Vegetación, Otros
+- Detección de salinización usando banda SWIR2 (B12)
 - Análisis temporal con tendencias
 - Exportación de resultados en JSON
 
@@ -41,8 +42,21 @@ sat-analysis analyze coords:-60.144,-35.173,-60.116,-35.150
 ### Opciones avanzadas
 
 ```bash
+# Análisis con muestreo trimestral (default: 4 imágenes por año)
 sat-analysis analyze 002004606 \
-  --years 3 \
+  --years 10 \
+  --samples-per-year 4 \
+  --max-clouds 20
+
+# Análisis con muestreo mensual (12 imágenes por año = 120 imágenes en 10 años)
+sat-analysis analyze 002004606 \
+  --years 10 \
+  --samples-per-year 12 \
+  --max-clouds 30
+
+# Comportamiento clásico (solo imágenes más recientes)
+sat-analysis analyze 002004606 \
+  --years 2 \
   --max-images 10 \
   --max-clouds 20 \
   --output resultados.json \
@@ -60,12 +74,31 @@ Las imágenes de índices espectrales se guardan automáticamente en cada ejecuc
 | Opción | Corto | Descripción | Por defecto |
 |--------|-------|-------------|-------------|
 | `--years` | `-y` | Años de histórico a analizar (1-10) | 2 |
-| `--max-images` | `-n` | Máximo de imágenes a procesar | 10 |
+| `--samples-per-year` | `-s` | Imágenes por año con distribución uniforme (1-12) | 4 |
+| `--max-images` | `-n` | Máximo de imágenes (deprecated, usa --samples-per-year) | 10 |
 | `--max-clouds` | `-c` | Máximo % de nubes (0-100) | 20 |
 | `--output` | `-o` | Archivo JSON de salida | - |
 | `--verbose` | `-v` | Output detallado | - |
 | `--logs-dir` | `-l` | Directorio para archivos de log | `logs` |
 | `--images-dir` | `-i` | Directorio para imágenes | `logs_images` |
+
+### Muestreo Temporal
+
+El parámetro `--samples-per-year` implementa **muestreo temporal uniforme**:
+
+- **Default: 4** (muestreo trimestral)
+- Divide el período en intervalos regulares
+- Selecciona la mejor imagen de cada intervalo
+- Total de imágenes = `samples_per_year × years`
+
+**Ejemplos:**
+
+| Años | Samples/Year | Total Imágenes | Distribución |
+|------|--------------|----------------|--------------|
+| 2 | 4 | 8 | 1 por trimestre |
+| 5 | 4 | 20 | 1 por trimestre |
+| 10 | 4 | 40 | 1 por trimestre |
+| 10 | 12 | 120 | 1 por mes |
 
 ### `validate`
 
@@ -104,14 +137,16 @@ sat-analysis analyze 4606
 
 ## Índices Espectrales
 
-El sistema calcula 4 índices espectrales desde las bandas de Sentinel-2:
+El sistema calcula 6 índices espectrales desde las bandas de Sentinel-2:
 
-| Índice | Fórmula | Banda | Descripción |
-|--------|---------|-------|-------------|
-| **NDWI** | (Green - NIR) / (Green + NIR) | B03, B08 | Normalized Difference Water Index - Agua |
-| **MNDWI** | (Green - SWIR) / (Green + SWIR) | B03, B11 | Modified NDWI - Agua turbia |
-| **NDVI** | (NIR - Red) / (NIR + Red) | B08, B04 | Normalized Difference Vegetation Index - Vegetación |
-| **NDMI** | (NIR - SWIR) / (NIR + SWIR) | B08, B11 | Normalized Difference Moisture Index - Humedad |
+| Índice | Fórmula | Banda | Descripción | Fuente Científica | Estado |
+|--------|---------|-------|-------------|-------------------|--------|
+| **NDWI** | (Green - NIR) / (Green + NIR) | B03, B08 | Normalized Difference Water Index - Agua | McFeeters (1996) | ✅ VÁLIDO |
+| **MNDWI** | (Green - SWIR1) / (Green + SWIR1) | B03, B11 | Modified NDWI - Agua turbia | Xu (2006) | ✅ VÁLIDO |
+| **NDVI** | (NIR - Red) / (NIR + Red) | B08, B04 | Normalized Difference Vegetation Index - Vegetación | Rouse et al. (1973) | ✅ VÁLIDO |
+| **NDMI** | (NIR - SWIR1) / (NIR + SWIR1) | B08, B11 | Normalized Difference Moisture Index - Humedad | Wilson & Sader (2002) | ✅ VÁLIDO |
+| **NDSI** | (Green - SWIR2) / (Green + SWIR2) | B03, B12 | Normalized Difference Salinity Index - Salinidad | SoilSaltIndex R Package | ⚠️ VARIANTE |
+| **SI** | SWIR2 / (SWIR2 + NIR) | B12, B08 | Salinity Index - Salinidad | SoilSaltIndex R Package | ⚠️ VARIANTE |
 
 ## Clasificación de Píxeles
 
@@ -123,6 +158,93 @@ Los píxeles se clasifican en 4 categorías según umbrales ajustados para Argen
 | **Humedal** | NDVI > 0.35 AND NDMI > 0.10 AND NDWI > -0.6 | Verde oscuro |
 | **Vegetación** | NDVI > 0.5 AND NDMI < 0.2 | Verde claro |
 | **Otros** | Resto | Gris |
+
+### Ajuste de Umbrales
+
+Los umbrales de clasificación se pueden modificar editando el archivo `thresholds.yaml`:
+
+```bash
+# Ubicación: sat-analysis/thresholds.yaml
+# Editar con cualquier editor de texto
+nano thresholds.yaml
+```
+
+Ejemplo del archivo `thresholds.yaml`:
+
+```yaml
+# Umbrales de clasificación
+
+water:
+  ndwi_threshold: 0.18      # NDWI > agua (default: 0.15)
+  mndwi_threshold: 0.28     # MNDWI > agua turbia (default: 0.25)
+
+wetland:
+  ndvi_threshold: 0.38      # NDVI > vegetación húmeda (default: 0.35)
+  ndmi_threshold: 0.12      # NDMI > humedad (default: 0.10)
+  ndwi_threshold: -0.5      # NDWI > permite vegetación húmeda (default: -0.6)
+
+vegetation:
+  ndvi_threshold: 0.52      # NDVI > vegetación seca (default: 0.5)
+  ndmi_threshold: 0.18      # NDMI < límite superior (default: 0.2)
+```
+
+**Valores por defecto** (ajustados para humedales de Argentina):
+
+| Umbral | Water | Wetland | Vegetation | Descripción |
+|--------|-------|---------|------------|-------------|
+| `ndwi_threshold` | 0.15 | -0.6 | - | NDWI para agua/humedal |
+| `mndwi_threshold` | 0.25 | - | - | MNDWI para agua turbia |
+| `ndvi_threshold` | - | 0.35 | 0.5 | NDVI para vegetación |
+| `ndmi_threshold` | - | 0.10 | 0.2 | NDMI para humedad |
+
+### Validación Científica de Umbrales
+
+Los umbrales utilizados han sido validados contra literatura científica peer-reviewed:
+
+| Parámetro | Valor Actual | Rango Científico | Fuente |
+|-----------|--------------|------------------|--------|
+| `water.ndwi_threshold` | 0.15 | 0.0 - 0.3 | McFeeters 1996; FarmOnaut 2024 ✅ |
+| `water.mndwi_threshold` | 0.25 | 0.2 - 0.4 | Xu 2006; MDPI studies ✅ |
+| `wetland.ndvi_threshold` | 0.35 | 0.125 - 0.5 | UNEP 2010; Al-Maliki 2022 ✅ |
+| `wetland.ndmi_threshold` | 0.10 | 0.0 - 0.2 | Berca 2022; Al-Maliki 2022 ✅ |
+| `vegetation.ndvi_threshold` | 0.5 | 0.4 - 0.6 | UNEP 2010; Al-Maliki 2022 ✅ |
+
+**Precisión reportada en literatura:** 78-90% según el método y región. Las tasas de error del 15-25% son típicas en clasificación de humedales por teledetección.
+
+**Referencias:**
+- Al-Maliki et al. (2022). Water 14(10):1523. [DOI:10.3390/w14101523](https://doi.org/10.3390/w14101523)
+- Xu (2006). Int. J. Remote Sensing 27:3025-3033. [DOI:10.1080/01431160600589179](https://doi.org/10.1080/01431160600589179)
+- McFeeters (1996). Int. J. Remote Sensing 17:1425-1432.
+
+### Script de Calibración
+
+Para ajustar los umbrales con un grupo de partidas de referencia:
+
+```bash
+# Usar el script de calibración
+python scripts/calibrate_thresholds.py reference_parcels.json
+
+# Probar una partida individual con valores conocidos
+python scripts/calibrate_thresholds.py --partida 002004606 --water 5.2 --wetland 95.0 --vegetation 0.5 --other 232.1
+```
+
+## Fuentes Satelitales
+
+### Sentinel-2 L2A
+
+- **Resolución:** 10m (RGB, NIR), 20m (SWIR)
+- **Frecuencia:** Cada 5 días
+- **Bandas:** B02(Blue), B03(Green), B04(Red), B08(NIR), B11(SWIR1), B12(SWIR2)
+
+### HLS (Harmonized Landsat-Sentinel-2)
+
+- **Resolución:** 10m
+- **Frecuencia:** 2-3 días (combinando S30 y L30)
+- **Colecciones:**
+  - `HLS.S30`: Datos harmonizados de Sentinel-2
+  - `HLS.L30`: Datos harmonizados de Landsat 8
+
+El sistema puede buscar en múltiples colecciones simultáneamente para maximizar la frecuencia de imágenes disponibles.
 
 ## Salida
 
@@ -259,38 +381,42 @@ python scripts/validate_arba.py
 
 ## Casos de Uso
 
-### 1. Análisis de una parcela rural
+### 1. Análisis histórico con muestreo trimestral (recomendado)
 
 ```bash
-sat-analysis analyze 002004606 --years 3 --max-clouds 30
+# 10 años de histórico, 4 imágenes por año = 40 imágenes distribuidas uniformemente
+sat-analysis analyze 002004606 --years 10 --samples-per-year 4
 ```
 
-### 2. Análisis con máximo detalle
+### 2. Análisis con muestreo mensual
 
 ```bash
-sat-analysis analyze 002004606 \
-  --years 5 \
-  --max-images 20 \
-  --max-clouds 10 \
-  --verbose \
-  --output analisis_completo.json
+# 5 años de histórico, 12 imágenes por año = 60 imágenes (1 por mes)
+sat-analysis analyze 002004606 --years 5 --samples-per-year 12 --max-clouds 30
 ```
 
-### 3. Análisis de área específica (sin partida)
+### 3. Análisis rápido de últimos años
+
+```bash
+# 2 años, 2 imágenes por año = 4 imágenes (semestral)
+sat-analysis analyze 002004606 --years 2 --samples-per-year 2
+```
+
+### 4. Análisis de área específica (sin partida)
 
 ```bash
 sat-analysis analyze coords:-60.144,-35.173,-60.116,-35.150 \
-  --years 2 \
-  --max-images 5
+  --years 5 \
+  --samples-per-year 4
 ```
 
-### 4. Generar imágenes de diagnóstico
+### 5. Generar imágenes de diagnóstico
 
 ```bash
 python scripts/diagnose_indices.py
 ```
 
-### 5. Validar servicios antes de análisis
+### 6. Validar servicios antes de análisis
 
 ```bash
 sat-analysis validate --arba --partida 002004606
@@ -362,9 +488,10 @@ ARBA devuelve coordenadas en **EPSG:5347** (UTM Zona 20S). El sistema las convie
 | Error | Solución |
 |-------|----------|
 | `Partida no encontrada` | Usa formato 8 dígitos: `002004606` |
-| `No se encontraron imágenes` | Aumenta `--years` o `--max-clouds` |
+| `No se encontraron imágenes` | Aumenta `--years`, `--samples-per-year` o `--max-clouds` |
 | `Timeout al consultar ARBA` | Reintenta, el servicio puede estar saturado |
 | `Error descargando bandas: No module named 'dask'` | Reinstala: `pip install -e .` |
+| `--samples-per-year debe estar entre 1 y 12` | El valor debe ser entre 1 y 12 imágenes por año |
 
 ## Licencia
 

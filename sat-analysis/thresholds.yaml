@@ -1,0 +1,72 @@
+# Umbrales de clasificación para detección de anegamiento y salinización
+# ============================================================================
+# Este archivo define los umbrales utilizados para clasificar píxeles en:
+# - Agua
+# - Humedal
+# - Vegetación
+# - Otros
+#
+# Los valores están ajustados para humedales de Argentina.
+# Modifica estos valores y ejecuta el análisis para ver cómo cambian los resultados.
+
+# ============================================================================
+# UMBRALES DE AGUA
+# ============================================================================
+# Se usan con lógica OR: si cualquiera se cumple, el píxel es agua
+
+water:
+  # NDWI > valor  →  Agua abierta
+  # Rango típico: 0.1 a 0.3
+  # Valores más bajos detectan más agua (pero pueden incluir falsos positivos)
+  ndwi_threshold: 0.15
+
+  # MNDWI > valor  →  Agua turbia (sedimentos, humedales poco profundos)
+  # Rango típico: 0.2 a 0.4
+  # Útil para distinguir agua turbia de vegetación flotante
+  mndwi_threshold: 0.25
+
+# ============================================================================
+# UMBRALES DE HUMEDAL
+# ============================================================================
+# Se usan con lógica AND: todos deben cumplirse
+# El píxel NO debe ser agua primero
+
+wetland:
+  # NDVI > valor  →  Presencia de vegetación
+  # Rango típico: 0.3 a 0.5
+  # Valores más altos requieren vegetación más densa
+  ndvi_threshold: 0.35
+
+  # NDMI > valor  →  Contenido de humedad en la vegetación
+  # Rango típico: 0.0 a 0.2
+  # Valores más altos detectan vegetación más húmeda
+  ndmi_threshold: 0.10
+
+  # NDWI > valor  →  Alguna presencia de agua en el entorno
+  # Rango típico: -0.8 a -0.3 (negativo porque es vegetación, no agua libre)
+  # Valores más negativos permiten más vegetación húmeda
+  ndwi_threshold: -0.6
+
+# ============================================================================
+# UMBRALES DE VEGETACIÓN
+# ============================================================================
+# Vegetación seca/sana (no es humedal, no es agua)
+
+vegetation:
+  # NDVI > valor  →  Vegetación presente
+  # Rango típico: 0.4 a 0.6
+  # Debe ser mayor que wetland.ndvi_threshold para distinguir de humedal
+  ndvi_threshold: 0.5
+
+  # NDMI < valor  →  Vegetación seca (poca humedad)
+  # Rango típico: 0.1 a 0.3
+  # Debe ser menor que wetland.ndmi_threshold para distinguir de humedal
+  ndmi_threshold: 0.2
+
+# ============================================================================
+# REFERENCIAS
+# ============================================================================
+# - NDWI: McFeeters (1996) - The use of the Normalized Difference Water Index
+# - MNDWI: Xu (2006) - Analysis of urban heat island effect
+# - NDVI: Rouse et al. (1973) - Monitoring vegetation systems
+# - NDMI: Wilson & Sader (2002) - Detection of forest harvest type

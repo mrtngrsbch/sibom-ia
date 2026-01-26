@@ -1,0 +1,20 @@
+# Core dependencies for sat-analysis web app
+# Python 3.13 required
+pystac-client>=0.8
+planetary-computer>=1.0
+rasterio>=1.4
+xarray>=2024.1.0
+rioxarray>=0.15
+dask[array]>=2024.1.0
+scipy>=1.13
+numpy>=2.0
+requests>=2.32
+pydantic>=2.0
+pydantic-settings>=2.0
+pyproj>=3.0
+shapely>=2.0
+matplotlib>=3.0
+pyyaml>=6.0
+
+# Web interface
+gradio>=4.0

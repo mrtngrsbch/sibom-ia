@@ -1,7 +1,7 @@
 """Services para sat-analysis."""
 
-from .arba import ArbaService
+from .arba import ArbaService, PartidaParser
 from .classifier import PixelClassifier
 from .stac import StacService
 
-__all__ = ["ArbaService", "StacService", "PixelClassifier"]
+__all__ = ["ArbaService", "PartidaParser", "StacService", "PixelClassifier"]

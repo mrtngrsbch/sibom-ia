@@ -14,7 +14,7 @@ import logging
 from io import StringIO
 import os
 
-from .services import ArbaService, StacService, PixelClassifier
+from .services import ArbaService, StacService, PixelClassifier, PartidaParser
 from .services.stac import get_pixel_area_m2
 from .models.schemas import AnalysisResult, ImageResult
 from .config import get_settings
@@ -221,7 +221,15 @@ def _save_indices_images(
 
 @app.command()
 def analyze(
-    partida: str = typer.Argument(..., help="Partida catastral ARBA (ej: 4606) o 'coords:lon,lat,lon,lat'"),
+    partida: str = typer.Argument(..., help=(
+        "Partida catastral ARBA. Formatos aceptados:\n"
+        "  - 002004606 (9 dígitos: partido + partida)\n"
+        "  - 00200460 (8 dígitos: partido + 5 dígitos)\n"
+        "  - 002-004606-0 (con guiones y verificador)\n"
+        "  - 002-004606 (con guiones, sin verificador)\n"
+        "  - 4606 (solo partida, usa partido por defecto)\n"
+        "  - coords:lon,lat,lon,lat (coordenadas fijas)"
+    )),
     years: int = typer.Option(2, "--years", "-y", help="Años de histórico a analizar (1-10)"),
     samples_per_year: int = typer.Option(4, "--samples-per-year", "-s", help="Imágenes por año (1-12, default: 4 trimestral)"),
     max_images: int = typer.Option(None, "--max-images", "-n", help="Máximo de imágenes (deprecated, usa --samples-per-year)"),
@@ -239,6 +247,11 @@ def analyze(
 
     Las imágenes de índices se guardan automáticamente en cada ejecución.
 
+    Formatos de partida aceptados:
+    - 002004606: Partido (002) + Partida (004606)
+    - 002-004606-0: Con dígito verificador
+    - 4606: Solo partida (usa partido 002 por defecto)
+
     Para usar coordenadas fijas en lugar de partida:
     sat-analysis analyze coords:-59.5,-35.2,-59.4,-35.1
     """
@@ -252,11 +265,11 @@ def analyze(
     execution_time = execution_datetime.strftime("%H%M%S")
     parcel_id = partida
     log_path = None
+    partida_arba = None  # Para almacenar la partida parseada
 
     try:
         # Header del log
         console.print(f"# Análisis sat-analysis - {execution_datetime.strftime('%Y-%m-%d %H:%M:%S')}")
-        console.print(f"# Partida: {partida}")
         console.print(f"# Período: {years} años")
         console.print(f"#" + "="*60)
         # Validar rangos
@@ -302,7 +315,21 @@ def analyze(
                 console.print("[dim]   Formato: coords:min_lon,min_lat,max_lon,max_lat[/dim]")
                 raise typer.Exit(1)
         else:
-            console.print(f"[cyan]> Consultando partida {partida}...[/cyan]")
+            # Modo partida: parsear usando PartidaParser
+            try:
+                parser = PartidaParser()
+                partida_arba = parser.parse(partida)
+                console.print(f"[cyan]> Partida:[/cyan] {partida_arba.formato_completo}")
+                console.print(f"[cyan]> Partido:[/cyan] {partida_arba.codigo_partido} - {partida_arba.nombre_partido}")
+                console.print(f"[cyan]> Parcela:[/cyan] {partida_arba.partida_individual}")
+            except ValueError as e:
+                console.print(f"[red]ERROR: {e}[/red]")
+                console.print("[dim]   Formatos válidos:[/dim]")
+                console.print("[dim]   - 002004606 (partido + partida)[/dim]")
+                console.print("[dim]   - 00200460 (8 dígitos)[/dim]")
+                console.print("[dim]   - 002-004606-0 (con verificador)[/dim]")
+                console.print("[dim]   - 4606 (solo partida, usa partido por defecto)[/dim]")
+                raise typer.Exit(1)
 
         # 1. Obtener geometría de parcela desde ARBA (o usar coords fijas)
         parcel_bbox = None
@@ -321,10 +348,12 @@ def analyze(
             parcel_geometry = None
             try:
                 arba = ArbaService()
-                parcel = arba.get_parcel_geometry(partida)
+                # Pasar partida_arba (PartidaARBA) o partida (string legacy)
+                parcel = arba.get_parcel_geometry(partida_arba if partida_arba else partida)
 
                 if parcel is None:
-                    console.print(f"[red]ERROR: Partida {partida} no encontrada[/red]")
+                    partida_display = partida_arba.formato_completo if partida_arba else partida
+                    console.print(f"[red]ERROR: Partida {partida_display} no encontrada[/red]")
                     console.print("[dim]   Verifica que el número sea correcto[/dim]")
                     console.print("[dim]   También puedes usar coords:min_lon,min_lat,max_lon,max_lat[/dim]")
                     raise typer.Exit(1)
@@ -339,7 +368,7 @@ def analyze(
 
             except ArbaError as e:
                 console.print(f"[red]ERROR: Error consultando ARBA: {e}[/red]")
-                console.print("[yellow]TIP: Tip: Puedes usar coordenadas fijas en lugar de partida:[/yellow]")
+                console.print("[yellow]TIP: Puedes usar coordenadas fijas en lugar de partida:[/yellow]")
                 console.print("[dim]   sat-analysis analyze coords:-59.5,-35.2,-59.4,-35.1[/dim]")
                 raise typer.Exit(1)
 

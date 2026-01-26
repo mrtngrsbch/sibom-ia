@@ -2,6 +2,10 @@
 
 Sistema de detección de anegamiento y salinización usando imágenes satelitales Sentinel-2, HLS (Harmonized Landsat-Sentinel-2) y Microsoft Planetary Computer.
 
+**Dos modos de uso:**
+- 🖥️ **CLI** - Línea de comandos para análisis local
+- 🌐 **Web** - Interfaz Gradio para deploy en la nube
+
 ## Características
 
 - Consulta de parcelas catastrales ARBA por partida
@@ -12,7 +16,11 @@ Sistema de detección de anegamiento y salinización usando imágenes satelitale
 - Análisis temporal con tendencias
 - Exportación de resultados en JSON
 
-## Instalación
+---
+
+## 🌐 Interfaz Web (Gradio)
+
+### Instalación con dependencias web
 
 ```bash
 # Crear entorno virtual
@@ -29,9 +37,36 @@ pip install -e .
 
 ### Analizar una partida catastral
 
+El sistema ahora soporta múltiples formatos de partida ARBA:
+
 ```bash
+# Formato completo (9 dígitos: partido + partida)
 sat-analysis analyze 002004606
+
+# Formato con guiones y verificador
+sat-analysis analyze 002-004606-0
+
+# Formato con guiones sin verificador
+sat-analysis analyze 002-004606
+
+# Formato legacy (solo partida, usa partido por defecto 002)
+sat-analysis analyze 4606
+
+# Otros partidos (ej: La Plata = 055)
+sat-analysis analyze 055123456
 ```
+
+### Formatos de Partida Aceptados
+
+| Formato | Ejemplo | Descripción |
+|---------|---------|-------------|
+| `002004606` | 9 dígitos sin separadores | Partido (002) + Partida (004606) |
+| `00200460` | 8 dígitos sin separadores | Partido (002) + Partida (00460, se completa a 004606) |
+| `002-004606-0` | Con guiones y verificador | Partido + Partida + Dígito verificador |
+| `002-004606` | Con guiones sin verificador | Partido + Partida |
+| `4606` | Solo partida (legacy) | Usa partido por defecto (002 Alberti) |
+
+> **Nota técnica:** El servicio WFS de ARBA almacena el número de partida en un campo único `pda` con **9 dígitos** (partido + partida). Por ejemplo, la partida `017001378` se compone del partido `017` (Carlos Tejedor) y la partida individual `001378`.
 
 ### Usar coordenadas fijas (sin ARBA)
 
@@ -492,6 +527,69 @@ ARBA devuelve coordenadas en **EPSG:5347** (UTM Zona 20S). El sistema las convie
 | `Timeout al consultar ARBA` | Reintenta, el servicio puede estar saturado |
 | `Error descargando bandas: No module named 'dask'` | Reinstala: `pip install -e .` |
 | `--samples-per-year debe estar entre 1 y 12` | El valor debe ser entre 1 y 12 imágenes por año |
+
+---
+
+## 🚀 Deploy en Railway
+
+La interfaz web con Gradio puede hacer deploy directamente en Railway.
+
+### Paso 1: Preparar el repositorio
+
+Asegúrate de tener estos archivos en la raíz del proyecto `sat-analysis/`:
+
+```
+sat-analysis/
+├── app.py              # Interfaz Gradio
+├── requirements.txt    # Dependencias para Railway
+└── src/sat_analysis/   # Código del proyecto
+```
+
+### Paso 2: Crear servicio en Railway
+
+1. Ve a [railway.app](https://railway.app/)
+2. Crea un nuevo proyecto
+3. Selecciona "Deploy from GitHub repo"
+4. Elige el repositorio `sibom-ia`
+5. Configura:
+   - **Root Directory:** `sat-analysis`
+   - **Python Version:** `3.13`
+   - **Start Command:** `python app.py`
+
+### Paso 3: Variables de entorno
+
+No se requieren variables de entorno para el funcionamiento básico.
+
+### Paso 4: Deploy
+
+Railway detectará automáticamente `requirements.txt` e instalará las dependencias.
+
+### Ejecutar localmente
+
+```bash
+# Instalar dependencias web
+pip install -e ".[web]"
+
+# O desde requirements.txt
+pip install -r requirements.txt
+
+# Ejecutar la app
+python app.py
+```
+
+La interfaz estará disponible en `http://localhost:7860`
+
+### Roadmap - Fase 2 (FastAPI + Frontend)
+
+Para una versión más avanzada, se planea:
+
+- **Backend:** FastAPI con endpoints REST
+- **Frontend:** Next.js + React
+- **Autenticación:** Usuarios protegidos
+- **Base de datos:** Historial de análisis
+- **Mapas interactivos:** Leaflet/MapLibre
+
+---
 
 ## Licencia
 

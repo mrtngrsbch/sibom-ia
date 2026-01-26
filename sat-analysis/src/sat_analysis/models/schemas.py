@@ -8,6 +8,26 @@ from datetime import datetime
 from typing import Any
 
 
+class PartidaARBA(BaseModel):
+    """Partida catastral ARBA parseada en sus componentes."""
+
+    codigo_partido: str = Field(description="Código de partido (3 dígitos)")
+    nombre_partido: str = Field(description="Nombre del partido")
+    partida_individual: str = Field(description="Partida individual (6 dígitos)")
+    verificador: str | None = Field(default=None, description="Dígito verificador")
+    formato_completo: str = Field(description="Formato normalizado para display")
+
+    @property
+    def partida_completa(self) -> str:
+        """Retorna partida completa sin verificador (9 dígitos)."""
+        return f"{self.codigo_partido}{self.partida_individual}"
+
+    @property
+    def cql_filter(self) -> str:
+        """Retorna filtro CQL para consultar ARBA WFS."""
+        return f"partido='{self.codigo_partido}' AND pda='{self.partida_individual}'"
+
+
 class ParcelData(BaseModel):
     """Datos de una parcela catastral."""
 

@@ -4,9 +4,13 @@ Cliente del servicio WFS de ARBA.
 Permite obtener la geometría de una parcela catastral a partir
 de su número de partida.
 """
+from __future__ import annotations
+
+import json
 import requests
 from typing import Any
 from dataclasses import dataclass
+from pathlib import Path
 from pyproj import Transformer
 
 
@@ -28,6 +32,146 @@ class ArbaError(Exception):
         self.status_code = status_code
 
 
+class PartidaParser:
+    """
+    Parser para partidas ARBA en múltiples formatos.
+
+    Soporta los siguientes formatos:
+    - 002004606 (9 dígitos: partido + partida)
+    - 002-004606-0 (con guiones y verificador)
+    - 0020046060 (10 dígitos: incluye verificador)
+    - 002-004606 (sin verificador)
+    - 00200460 (8 dígitos: partido + 5 dígitos, se completa a 6)
+    - 4606 (solo partida, usa partido por defecto 002)
+    """
+
+    # Partido por defecto (Alberti)
+    DEFAULT_PARTIDO = "002"
+
+    def __init__(self, json_path: str | Path | None = None):
+        """
+        Inicializa el parser cargando los códigos de partidos.
+
+        Args:
+            json_path: Ruta al JSON de códigos de partidos.
+                      Si es None, busca en sat-analysis/codigos_partidos_arba.json
+        """
+        self._partidos = self._load_partidos(json_path)
+
+    def _load_partidos(self, json_path: str | Path | None) -> dict[str, str]:
+        """Carga el diccionario de códigos de partidos desde JSON."""
+        if json_path is None:
+            # Buscar en sat-analysis/ (directorio padre del src/)
+            try:
+                # Primero intentar desde la ubicación del script
+                script_dir = Path(__file__).parent.parent.parent.parent
+                json_path = script_dir / "codigos_partidos_arba.json"
+            except Exception:
+                # Fallback a ruta relativa
+                json_path = Path("codigos_partidos_arba.json")
+
+        try:
+            with open(json_path, encoding="utf-8") as f:
+                data = json.load(f)
+                return data.get("partidos", {})
+        except FileNotFoundError:
+            # Si no existe el JSON, retornar diccionario vacío
+            # (fallback a comportamiento legacy)
+            return {}
+        except json.JSONDecodeError:
+            return {}
+
+    def parse(self, partida_input: str) -> "PartidaARBA":
+        """
+        Parsea una partida en cualquier formato aceptado.
+
+        Args:
+            partida_input: "002004606", "002-004606-0", "4606", etc.
+
+        Returns:
+            PartidaARBA con componentes parseados
+
+        Raises:
+            ValueError: Si el formato es inválido o el código de partido no existe
+        """
+        from ..models.schemas import PartidaARBA
+
+        # Limpiar guiones y espacios
+        limpia = partida_input.replace("-", "").strip().upper()
+
+        # Validar que sean solo dígitos
+        if not limpia.isdigit():
+            raise ValueError(f"Partida inválida: {partida_input}. Debe contener solo dígitos.")
+
+        # Caso 1: Solo partida individual (legacy, 1-6 dígitos)
+        if len(limpia) <= 6:
+            # Usar partido por defecto (002 Alberti)
+            partida = limpia.zfill(6)
+            codigo_partido = self.DEFAULT_PARTIDO
+            verificador = None
+
+        # Caso 2: 8 dígitos (partido + partida de 5 dígitos, completar a 6)
+        elif len(limpia) == 8:
+            codigo_partido = limpia[:3]
+            partida = limpia[3:8].zfill(6)  # Completar a 6 dígitos
+            verificador = None
+
+        # Caso 3: 9 dígitos (partido + partida, sin verificador)
+        elif len(limpia) == 9:
+            codigo_partido = limpia[:3]
+            partida = limpia[3:9]
+            verificador = None
+
+        # Caso 4: 10 dígitos (partido + partida + verificador)
+        elif len(limpia) == 10:
+            codigo_partido = limpia[:3]
+            partida = limpia[3:9]
+            verificador = limpia[9]
+
+        else:
+            raise ValueError(
+                f"Longitud inválida: {len(limpia)}. "
+                "Debe ser 1-6 (partida), 8 (partido+5dígitos), 9 (partido+partida), o 10 dígitos."
+            )
+
+        # Validar código de partido si tenemos el JSON cargado
+        if self._partidos and codigo_partido not in self._partidos:
+            partidos_validos = ", ".join(list(self._partidos.keys())[:5])
+            raise ValueError(
+                f"Código de partido inválido: {codigo_partido}. "
+                f"Use un código válido (ej: {self.DEFAULT_PARTIDO} para Alberti). "
+                f"Ejemplos: {partidos_validos}, ..."
+            )
+
+        nombre_partido = self._partidos.get(codigo_partido, f"Partido {codigo_partido}")
+
+        # Formato completo para display
+        verif_str = verificador if verificador else "?"
+        formato_completo = f"{codigo_partido}-{partida}-{verif_str}"
+
+        return PartidaARBA(
+            codigo_partido=codigo_partido,
+            nombre_partido=nombre_partido,
+            partida_individual=partida,
+            verificador=verificador,
+            formato_completo=formato_completo,
+        )
+
+    def set_default_partido(self, codigo: str) -> None:
+        """
+        Establece partido por defecto para partidas sin código.
+
+        Args:
+            codigo: Código de partido de 3 dígitos
+
+        Raises:
+            ValueError: Si el código de partido no existe
+        """
+        if self._partidos and codigo not in self._partidos:
+            raise ValueError(f"Código de partido inválido: {codigo}")
+        self.DEFAULT_PARTIDO = codigo
+
+
 class ArbaService:
     """Cliente del servicio WFS de ARBA."""
 
@@ -41,26 +185,64 @@ class ArbaService:
         self.wfs_url = wfs_url
         self.timeout = 15
 
-    def get_parcel_geometry(self, partida: str) -> ParcelData | None:
+    def get_parcel_geometry(self, partida: str | "PartidaARBA") -> ParcelData | None:
         """
         Obtiene la geometría de una parcela desde ARBA WFS.
 
         Args:
-            partida: Número de partida catastral (ej: "4606")
+            partida: Número de partida catastral (ej: "4606", "002004606")
+                     o PartidaARBA parseado con codigo_partido + partida_individual
 
         Returns:
             ParcelData con la geometría y bbox, o None si no se encuentra
 
         Raises:
             ArbaError: Si hay un error en la consulta
+
+        Nota:
+            El campo 'pda' en ARBA WFS almacena 9 dígitos: partido (3) + partida (6).
+            El campo 'partido' NO existe como propiedad filtrable en el WFS.
+            Ejemplo: pda='016001605' donde 016 es el partido y 001605 la partida.
         """
+        from ..models.schemas import PartidaARBA
+
+        # Si viene un string, intentar parsear para extraer componentes
+        partida_9_digitos = None  # Formato: PPPSSSSSS (partido + partida)
+        partida_str = partida
+
+        if isinstance(partida, str):
+            # Intentar parsear para validar formato
+            parser = PartidaParser()
+            try:
+                partida_arba = parser.parse(partida)
+                # ARBA espera pda con 9 dígitos: partido (3) + partida (6)
+                partida_9_digitos = partida_arba.partida_completa
+                partida_str = partida_arba.formato_completo
+            except ValueError:
+                # Si falla el parseo, usar directamente (legacy)
+                # Asumir formato de 9 dígitos o completar con partido default
+                limpia = partida.replace("-", "").strip()
+                if len(limpia) == 9:
+                    partida_9_digitos = limpia
+                elif len(limpia) <= 6:
+                    # Usar partido default (002 Alberti)
+                    partida_9_digitos = f"002{limpia.zfill(6)}"
+                else:
+                    partida_9_digitos = limpia[:9]
+                partida_str = partida_9_digitos
+        elif isinstance(partida, PartidaARBA):
+            partida_9_digitos = partida.partida_completa
+            partida_str = partida.formato_completo
+
+        # ARBA WFS espera el campo 'pda' con 9 dígitos (partido + partida)
+        # El campo 'partido' no existe como propiedad filtrable
         params = {
             "service": "WFS",
             "version": "2.0.0",
             "request": "GetFeature",
             "typeName": "idera:Parcela",
             "outputFormat": "application/json",
-            "CQL_FILTER": f"pda='{partida}'",
+            "CQL_FILTER": f"pda='{partida_9_digitos}'",
         }
 
         try:
@@ -69,7 +251,7 @@ class ArbaService:
             )
             response.raise_for_status()
         except requests.Timeout:
-            raise ArbaError(f"Timeout al consultar ARBA para partida {partida}")
+            raise ArbaError(f"Timeout al consultar ARBA para partida {partida_str}")
         except requests.HTTPError as e:
             raise ArbaError(
                 f"Error HTTP al consultar ARBA: {e.response.status_code}",
@@ -95,7 +277,7 @@ class ArbaService:
         properties = feature.get("properties", {})
 
         if not geometry:
-            raise ArbaError(f"Feature sin geometría para partida {partida}")
+            raise ArbaError(f"Feature sin geometría para partida {partida_str}")
 
         # Extraer CRS de la respuesta
         crs = data.get("crs")
@@ -131,7 +313,7 @@ class ArbaService:
             area_hectares = self._calculate_approx_area(geometry)
 
         return ParcelData(
-            partida=partida,
+            partida=partida_str,
             geometry=geometry_wgs84,
             bbox=bbox,
             area_approx_hectares=area_hectares,

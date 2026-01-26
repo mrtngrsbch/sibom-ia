@@ -84,3 +84,23 @@ chatbot/*.tsbuildinfo
 .kilocode/
 .obsidian/
 .claude/
+
+# Sat-analysis output files
+sat-analysis/web_output/
+sat-analysis/logs_images/
+sat-analysis/logs/*.log
+sat-analysis/*.png
+sat-analysis/*.jpg
+sat-analysis/*.jpeg
+sat-analysis/venv/
+
+# Test outputs
+tests/
+*.geojson
+
+# Temporary user notes
+Notas de martin.md
+adsad.md
+
+# Python CLI backups
+python-cli/boletines_index*.json

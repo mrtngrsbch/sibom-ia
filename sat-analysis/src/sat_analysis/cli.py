@@ -13,6 +13,7 @@ from pathlib import Path
 import logging
 from io import StringIO
 import os
+import numpy as np
 
 from .services import ArbaService, StacService, PixelClassifier, PartidaParser
 from .services.stac import get_pixel_area_m2
@@ -164,6 +165,7 @@ def _save_indices_images(
         import matplotlib
         matplotlib.use('Agg')  # Non-interactive backend
         import matplotlib.pyplot as plt
+        from matplotlib.colors import ListedColormap
         import numpy as np
     except ImportError:
         console.print("[yellow]WARNING: matplotlib no instalado, no se guardarán imágenes[/yellow]")
@@ -186,6 +188,11 @@ def _save_indices_images(
     cmap_veg = plt.cm.RdYlGn_r  # Verde para valores altos (vegetación)
     cmap_salinity = plt.cm.YlOrRd  # Amarillo-Rojo para salinidad (valores altos = más sal)
 
+    # Colormap personalizado para clasificación
+    # 0 = Otros (gris), 1 = Agua (azul), 2 = Humedal (verde oscuro), 3 = Vegetación (verde claro)
+    colors_class = ['#9E9E9E', '#2196F3', '#2E7D32', '#8BC34A']
+    cmap_class = ListedColormap(colors_class)
+
     # Índices a guardar
     # Formato: (nombre_archivo, titulo_mostrar, datos, cmap, vmin, vmax)
     indices_to_save = [
@@ -195,7 +202,7 @@ def _save_indices_images(
         ("ndmi", "NDMI", indices.ndmi, cmap_veg, -0.2, 0.6),
         ("ndsi", "NDSI", indices.ndsi, cmap_salinity, -0.3, 0.3),
         ("swir2-nir", "SWIR2 + NIR (Salinity)", indices.salinity_index, cmap_salinity, 0.3, 0.7),
-        ("clasificacion", "Clasificacion", classification, plt.cm.tab10, None, None),
+        ("clasificacion", "Clasificacion", classification, cmap_class, 0, 3),
     ]
 
     # Agregar máscara si está disponible
@@ -258,6 +265,14 @@ def analyze(
     # Iniciar captura de log
     log_capture = LogCapture()
     log_capture.start()
+
+    # Configurar logging para diagnóstico
+    log_level = logging.DEBUG if verbose else logging.WARNING
+    logging.basicConfig(
+        level=log_level,
+        format='%(levelname)s - %(name)s - %(message)s',
+        force=True  # Forzar reconfiguración si ya existe
+    )
 
     # Variables para el log (definidas antes del try para usar en finally)
     execution_datetime = datetime.now()
@@ -458,9 +473,9 @@ def analyze(
                     if verbose:
                         console.print(f"[dim]   Área píxel: {pixel_area:.1f} m²[/dim]")
 
-                    # Crear máscara de la parcela (solo si tenemos geometría)
+                    # Crear máscara de la parcela (si tenemos geometría)
                     parcel_mask = None
-                    if bbox is None and 'parcel_geometry' in locals() and parcel_geometry is not None:
+                    if parcel_geometry is not None:
                         parcel_mask = stac.create_parcel_mask(
                             shape=bands.b02.shape,
                             geometry=parcel_geometry,
@@ -489,6 +504,7 @@ def analyze(
                     result = classifier.classify_with_areas(indices, pixel_area_m2=pixel_area)
 
                     # Aplicar máscara de parcela si está disponible
+                    classification_for_image = result.classification
                     if parcel_mask is not None:
                         result = classifier.apply_mask(
                             classification=result.classification,
@@ -496,6 +512,12 @@ def analyze(
                             mask=parcel_mask,
                             pixel_area_m2=pixel_area
                         )
+
+                        # También modificar la clasificación visualmente para la imagen
+                        # Píxeles fuera de la parcela se muestran como "Otros" (categoría 0 = gris)
+                        classification_masked = result.classification.copy()
+                        classification_masked[~parcel_mask] = 0  # "Otros" fuera de parcela
+                        classification_for_image = classification_masked
 
                     # Extraer áreas (ya corregidas por la máscara si se aplicó)
                     water_ha = result.areas_hectares.get(1, 0)
@@ -507,7 +529,7 @@ def analyze(
                     image_date_str = item.datetime[:10]  # YYYY-MM-DD
                     _save_indices_images(
                         indices=indices,
-                        classification=result.classification,
+                        classification=classification_for_image,
                         partida=partida,
                         image_date=image_date_str,
                         output_dir=images_dir,

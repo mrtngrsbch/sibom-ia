@@ -223,8 +223,29 @@ class StacService:
                 if not items:
                     continue  # No hay imágenes en este intervalo
 
+                # Filtrar imágenes que cubren completamente el BBOX de la parcela
+                # Esto es necesario porque las parcelas cerca del borde de un tile
+                # de Sentinel-2 pueden quedar recortadas
+                items_fully_covering = []
+                for item in items:
+                    item_bbox = item.bbox  # [min_lon, min_lat, max_lon, max_lat]
+                    # Verificar que el tile cubre completamente nuestro BBOX
+                    fully_covers = (
+                        item_bbox[0] <= bbox[0] and  # min_lon
+                        item_bbox[1] <= bbox[1] and  # min_lat
+                        item_bbox[2] >= bbox[2] and  # max_lon
+                        item_bbox[3] >= bbox[3]      # max_lat
+                    )
+                    if fully_covers:
+                        items_fully_covering.append(item)
+
+                # Si ninguna imagen cubre completamente, usar la mejor de las disponibles
+                # (pero esto puede causar recortes en la parcela)
+                if not items_fully_covering:
+                    items_fully_covering = items
+
                 # Seleccionar la imagen con menos nubes del intervalo
-                best_item = min(items, key=lambda x: x.properties.get("eo:cloud_cover", 100))
+                best_item = min(items_fully_covering, key=lambda x: x.properties.get("eo:cloud_cover", 100))
 
                 results.append(
                     SatelliteImage(
@@ -372,9 +393,31 @@ class StacService:
             first_ds = rioxarray.open_rasterio(first_href, masked=True)
             image_crs = first_ds.rio.crs
 
+            # Agregar margen de seguridad al BBOX para evitar recortar la parcela
+            # Esto asegura que toda la geometría esté dentro de la imagen descargada
+            # El margen debe ser generoso porque la conversión de coordenadas y
+            # el alineamiento de la grilla de píxeles pueden causar recortes
+            clip_bbox = bbox
+            if bbox is not None:
+                # Margen del 30% para asegurar que la parcela completa esté en la imagen
+                # Esto compensa errores de conversión CRS y alineación de píxeles
+                margin = 0.30  # 30%
+                lon_width = bbox[2] - bbox[0]
+                lat_height = bbox[3] - bbox[1]
+
+                lon_margin = lon_width * margin
+                lat_margin = lat_height * margin
+
+                clip_bbox = [
+                    bbox[0] - lon_margin,  # min_lon
+                    bbox[1] - lat_margin,  # min_lat
+                    bbox[2] + lon_margin,  # max_lon
+                    bbox[3] + lat_margin,  # max_lat
+                ]
+
             # Convertir bbox de WGS84 a UTM si es necesario
-            utm_bbox = bbox
-            if bbox is not None and image_crs is not None:
+            utm_bbox = clip_bbox
+            if clip_bbox is not None and image_crs is not None:
                 # El bbox está en WGS84, convertir al CRS de la imagen (UTM)
                 bbox_crs = CRS.from_epsg(4326)  # WGS84
                 image_crs_obj = CRS.from_user_input(image_crs)
@@ -384,9 +427,10 @@ class StacService:
                     transformer = Transformer.from_crs(
                         bbox_crs, image_crs_obj, always_xy=True
                     )
-                    # Transformar las 4 esquinas del bbox
-                    min_x, min_y = transformer.transform(bbox[0], bbox[1])
-                    max_x, max_y = transformer.transform(bbox[2], bbox[3])
+                    # IMPORTANTE: Usar clip_bbox (con margen) NO bbox original
+                    # Transformar las 4 esquinas del bbox expandido
+                    min_x, min_y = transformer.transform(clip_bbox[0], clip_bbox[1])
+                    max_x, max_y = transformer.transform(clip_bbox[2], clip_bbox[3])
                     utm_bbox = [min_x, min_y, max_x, max_y]
 
             # Cerrar el primer dataset
@@ -560,19 +604,36 @@ class StacService:
             entre diferentes zonas UTM.
             Este método puede ser lento para imágenes grandes (~70k píxeles).
         """
+        import logging
+        logger = logging.getLogger(__name__)
         from shapely.geometry import Point, shape as shapely_shape
 
         # Si no hay geometría, retornar máscara completa (True)
         if geometry is None:
+            logger.warning("🔶 create_parcel_mask: geometry is None, retornando máscara completa")
             return np.ones(shape, dtype=bool)
 
         try:
             height, width = shape
             rows, cols = np.indices((height, width))
 
+            # LOG: Mostrar información de la imagen
+            logger.info(f"📐 Image shape: {shape}, CRS: {image_crs}")
+            logger.info(f"📐 Affine transform: {list(transform)[:6]}")
+            logger.info(f"📐 BBOX recibido: {bbox}")
+
+            # LOG: Mostrar bounds de la geometría
+            geom_wgs84 = shapely_shape(geometry)
+            geom_bounds = geom_wgs84.bounds
+            logger.info(f"📐 Geometría bounds (WGS84): {geom_bounds}")
+
             # Paso 1: Convertir coordenadas de píxel a UTM (CRS de la imagen)
             x_coords_utm = transform[2] + cols * transform[0]
             y_coords_utm = transform[5] + rows * transform[4]
+
+            # LOG: Mostrar esquinas de la imagen en UTM
+            logger.info(f"📐 Esquinas UTM: TL=({x_coords_utm[0,0]:.2f}, {y_coords_utm[0,0]:.2f}) "
+                       f"BR=({x_coords_utm[-1,-1]:.2f}, {y_coords_utm[-1,-1]:.2f})")
 
             # Paso 2: Convertir coordenadas UTM a WGS84
             image_crs_obj = CRS.from_user_input(image_crs)
@@ -585,9 +646,9 @@ class StacService:
                 x_coords_utm.flatten(), y_coords_utm.flatten()
             )
 
-            # Paso 3: Crear máscara usando contains directamente
-            # La geometría ya debería estar en WGS84
-            geom_wgs84 = shapely_shape(geometry)
+            # LOG: Mostrar esquinas de la imagen en WGS84
+            logger.info(f"📐 Esquinas WGS84: TL=({lons_flat[0]:.6f}, {lats_flat[0]:.6f}) "
+                       f"BR=({lons_flat[-1]:.6f}, {lats_flat[-1]:.6f})")
 
             # Crear array booleano para la máscara
             mask_flat = np.zeros(len(lons_flat), dtype=bool)
@@ -598,9 +659,16 @@ class StacService:
                 point = Point(float(lons_flat[i]), float(lats_flat[i]))
                 mask_flat[i] = geom_wgs84.contains(point)
 
+            # LOG: Estadísticas de la máscara
+            pixels_inside = np.sum(mask_flat)
+            total_pixels = len(mask_flat)
+            percentage = (pixels_inside / total_pixels) * 100
+            logger.info(f"📊 Máscara: {pixels_inside}/{total_pixels} píxeles dentro ({percentage:.1f}%)")
+
             return mask_flat.reshape(shape).astype(bool)
 
         except Exception as e:
+            logger.error(f"❌ Error en create_parcel_mask: {e}")
             # En caso de error, retornar máscara completa (no filtrar)
             # Esto permite que el análisis continúe aunque la máscara falle
             return np.ones(shape, dtype=bool)

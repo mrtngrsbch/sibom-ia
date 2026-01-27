@@ -330,12 +330,23 @@ class ArbaService:
         Returns:
             Nueva geometría GeoJSON con coordenadas en WGS84
         """
+        import logging
+        logger = logging.getLogger(__name__)
+
         # Si no hay CRS especificado o no es EPSG:5347, retornar original
         if not crs or "5347" not in crs:
+            logger.warning(f"🔶 CRS no es EPSG:5347: {crs}, retornando geometría original")
             return geometry
 
         geom_type = geometry.get("type")
         coordinates = geometry.get("coordinates", [])
+
+        # LOG: Mostrar primeras coordenadas originales (UTM)
+        if geom_type == "Polygon" and coordinates:
+            first_ring = coordinates[0]
+            if first_ring:
+                orig_x, orig_y = first_ring[0][0], first_ring[0][1]
+                logger.info(f"🔍 ARBA UTM orig: x={orig_x:.2f}, y={orig_y:.2f} (CRS: {crs})")
 
         try:
             # Crear transformador de UTM zona 20S a WGS84
@@ -368,12 +379,20 @@ class ArbaService:
 
             transformed_coords = transform_coords_recursive(coordinates, geom_type)
 
+            # LOG: Mostrar primeras coordenadas transformadas (WGS84)
+            if geom_type == "Polygon" and transformed_coords:
+                first_ring = transformed_coords[0]
+                if first_ring:
+                    trans_lon, trans_lat = first_ring[0][0], first_ring[0][1]
+                    logger.info(f"✅ ARBA WGS84 trans: lon={trans_lon:.6f}, lat={trans_lat:.6f}")
+
             return {
                 "type": geom_type,
                 "coordinates": transformed_coords
             }
 
-        except Exception:
+        except Exception as e:
+            logger.error(f"❌ Error transformando geometría: {e}")
             # Si falla la conversión, retornar geometría original
             return geometry
 

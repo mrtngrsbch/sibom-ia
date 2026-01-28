@@ -12,7 +12,8 @@ from dataclasses import dataclass
 from typing import Any
 import numpy as np
 from pyproj import Transformer, CRS
-from shapely.geometry import shape
+from shapely.geometry import shape as shapely_shape
+from rasterio.features import geometry_mask
 
 
 @dataclass(frozen=True)
@@ -600,13 +601,10 @@ class StacService:
 
         Nota:
             Si no hay geometría, retorna máscara completa (todos True).
-            La verificación se hace en WGS84 para evitar problemas de conversión
-            entre diferentes zonas UTM.
-            Este método puede ser lento para imágenes grandes (~70k píxeles).
+            Versión optimizada usando rasterio.features.geometry_mask.
         """
         import logging
         logger = logging.getLogger(__name__)
-        from shapely.geometry import Point, shape as shapely_shape
 
         # Si no hay geometría, retornar máscara completa (True)
         if geometry is None:
@@ -614,64 +612,137 @@ class StacService:
             return np.ones(shape, dtype=bool)
 
         try:
+            from shapely.ops import transform as shapely_transform
+
             height, width = shape
-            rows, cols = np.indices((height, width))
 
             # LOG: Mostrar información de la imagen
             logger.info(f"📐 Image shape: {shape}, CRS: {image_crs}")
             logger.info(f"📐 Affine transform: {list(transform)[:6]}")
             logger.info(f"📐 BBOX recibido: {bbox}")
 
-            # LOG: Mostrar bounds de la geometría
+            # Convertir geometría WGS84 a objeto shapely
             geom_wgs84 = shapely_shape(geometry)
             geom_bounds = geom_wgs84.bounds
             logger.info(f"📐 Geometría bounds (WGS84): {geom_bounds}")
 
-            # Paso 1: Convertir coordenadas de píxel a UTM (CRS de la imagen)
-            x_coords_utm = transform[2] + cols * transform[0]
-            y_coords_utm = transform[5] + rows * transform[4]
-
-            # LOG: Mostrar esquinas de la imagen en UTM
-            logger.info(f"📐 Esquinas UTM: TL=({x_coords_utm[0,0]:.2f}, {y_coords_utm[0,0]:.2f}) "
-                       f"BR=({x_coords_utm[-1,-1]:.2f}, {y_coords_utm[-1,-1]:.2f})")
-
-            # Paso 2: Convertir coordenadas UTM a WGS84
-            image_crs_obj = CRS.from_user_input(image_crs)
+            # Crear transformador de WGS84 al CRS de la imagen (UTM)
             wgs84_crs = CRS.from_epsg(4326)
+            image_crs_obj = CRS.from_user_input(image_crs)
+            transformer_to_utm = Transformer.from_crs(wgs84_crs, image_crs_obj, always_xy=True)
 
-            transformer_to_wgs84 = Transformer.from_crs(image_crs_obj, wgs84_crs, always_xy=True)
+            # Transformar geometría de WGS84 a UTM
+            geom_utm = shapely_transform(transformer_to_utm.transform, geom_wgs84)
 
-            # Transformar todas las coordenadas (flatten para transformar)
-            lons_flat, lats_flat = transformer_to_wgs84.transform(
-                x_coords_utm.flatten(), y_coords_utm.flatten()
+            # Usar rasterio.geometry_mask para crear máscara vectorizada
+            # invert=True significa True para píxeles DENTRO de la geometría
+            mask = geometry_mask(
+                [geom_utm],
+                transform=transform,
+                invert=True,
+                out_shape=shape
             )
 
-            # LOG: Mostrar esquinas de la imagen en WGS84
-            logger.info(f"📐 Esquinas WGS84: TL=({lons_flat[0]:.6f}, {lats_flat[0]:.6f}) "
-                       f"BR=({lons_flat[-1]:.6f}, {lats_flat[-1]:.6f})")
-
-            # Crear array booleano para la máscara
-            mask_flat = np.zeros(len(lons_flat), dtype=bool)
-
-            # Verificar contención punto por punto
-            # Note: Esto es lento pero preciso. Para 68k píxeles toma ~2-3 segundos.
-            for i in range(len(lons_flat)):
-                point = Point(float(lons_flat[i]), float(lats_flat[i]))
-                mask_flat[i] = geom_wgs84.contains(point)
-
             # LOG: Estadísticas de la máscara
-            pixels_inside = np.sum(mask_flat)
-            total_pixels = len(mask_flat)
+            pixels_inside = np.sum(mask)
+            total_pixels = mask.size
             percentage = (pixels_inside / total_pixels) * 100
             logger.info(f"📊 Máscara: {pixels_inside}/{total_pixels} píxeles dentro ({percentage:.1f}%)")
 
-            return mask_flat.reshape(shape).astype(bool)
+            return mask.astype(bool)
 
         except Exception as e:
             logger.error(f"❌ Error en create_parcel_mask: {e}")
             # En caso de error, retornar máscara completa (no filtrar)
             # Esto permite que el análisis continúe aunque la máscara falle
             return np.ones(shape, dtype=bool)
+
+    def verify_mask_coverage(
+        self,
+        mask: np.ndarray,
+        expected_area_hectares: float | None = None,
+        min_coverage_threshold: float = 90.0,
+        pixel_area_m2: float = 100.0,
+    ) -> dict[str, Any]:
+        """
+        Verifica la cobertura de la máscara y retorna información detallada.
+
+        Este método implementa FIX-001: Verificación de cobertura real post-descarga.
+        Detecta cuando una parcela está parcialmente fuera de la imagen descargada
+        y emite advertencias según umbrales configurables.
+
+        Args:
+            mask: Máscara booleana de la parcela (True = dentro)
+            expected_area_hectares: Área esperada de la parcela en hectáreas
+            min_coverage_threshold: Umbral mínimo de cobertura (%) para considerar suficiente
+            pixel_area_m2: Área de cada píxel en metros cuadrados
+
+        Returns:
+            Diccionario con:
+                - pixels_inside: Número de píxeles dentro de la parcela
+                - total_pixels: Total de píxeles en la imagen
+                - coverage_percentage: Porcentaje de píxeles dentro
+                - calculated_area_hectares: Área calculada desde la máscara
+                - expected_area_hectares: Área esperada (si se proporcionó)
+                - area_ratio: Ratio área calculada / área esperada
+                - has_sufficient_coverage: True si cobertura >= umbral
+                - should_warn: True si se debe advertir al usuario
+
+        Ejemplo:
+            >>> mask = stac.create_parcel_mask(...)
+            >>> coverage = stac.verify_mask_coverage(mask, expected_area_hectares=500.0)
+            >>> if coverage["should_warn"]:
+            ...     logger.warning(f"⚠️ Cobertura baja: {coverage['coverage_percentage']:.1f}%")
+        """
+        import logging
+        logger = logging.getLogger(__name__)
+
+        pixels_inside = int(mask.sum())
+        total_pixels = int(mask.size)
+        coverage_percentage = (pixels_inside / total_pixels * 100) if total_pixels > 0 else 0.0
+
+        # Calcular área desde la máscara
+        calculated_area_m2 = pixels_inside * pixel_area_m2
+        calculated_area_hectares = calculated_area_m2 / 10000
+
+        # Determinar si la cobertura es suficiente
+        has_sufficient_coverage = coverage_percentage >= min_coverage_threshold
+
+        # Determinar si se debe advertir
+        should_warn = not has_sufficient_coverage
+
+        area_ratio = None
+        if expected_area_hectares is not None and expected_area_hectares > 0:
+            area_ratio = calculated_area_hectares / expected_area_hectares
+            # Advertencia adicional si el área calculada difiere mucho de la esperada
+            if area_ratio < 0.5:
+                logger.warning(
+                    f"⚠️ Área calculada ({calculated_area_hectares:.1f} ha) es "
+                    f"menor al 50% del área esperada ({expected_area_hectares:.1f} ha)"
+                )
+
+        if should_warn:
+            logger.warning(
+                f"⚠️ Cobertura de parcela baja: {coverage_percentage:.1f}% "
+                f"({pixels_inside}/{total_pixels} píxeles). "
+                f"Umbral mínimo: {min_coverage_threshold}%"
+            )
+        else:
+            logger.info(
+                f"✅ Cobertura de parcela OK: {coverage_percentage:.1f}% "
+                f"({pixels_inside}/{total_pixels} píxeles)"
+            )
+
+        return {
+            "pixels_inside": pixels_inside,
+            "total_pixels": total_pixels,
+            "coverage_percentage": coverage_percentage,
+            "calculated_area_hectares": calculated_area_hectares,
+            "expected_area_hectares": expected_area_hectares,
+            "area_ratio": area_ratio,
+            "has_sufficient_coverage": has_sufficient_coverage,
+            "should_warn": should_warn,
+        }
 
 
 def get_pixel_area_m2(transform: Any, crs: Any, lat: float = -35.0) -> float:

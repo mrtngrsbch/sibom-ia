@@ -153,3 +153,13 @@ export interface TokenUsage {
   completion: number;
   total: number;
 }
+
+/**
+ * Mensaje del chat
+ */
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  createdAt?: number;
+}

@@ -4,26 +4,57 @@ import { useRef, useEffect, useState, useMemo } from 'react';
 import { useChat } from 'ai/react';
 import { Send, Bot, User, Sparkles, Loader2 } from '@/lib/icons';
 import { clsx } from 'clsx';
-// @ts-ignore - CommonJS require para compatibilidad con Next.js 15 + React 19
-const ReactMarkdown = require('react-markdown').default;
-// @ts-ignore - CommonJS require
-const remarkGfm = require('remark-gfm').default;
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import type { Components } from 'react-markdown';
 import { Citations } from './Citations';
-import type { ChatFilters } from '@/lib/types';
+import type { ChatFilters, ChatMessage, Source } from '@/lib/types';
 import { TokenUsage } from './TokenUsage';
 import { extractFiltersFromQuery } from '@/lib/query-filter-extractor';
 import type { SearchOptions } from '@/lib/rag/retriever';
+
+// Tipos para los datos del stream
+interface StreamDataSource {
+  type: 'sources';
+  sources: Source[];
+}
+
+interface StreamDataUsage {
+  type: 'usage';
+  usage: {
+    promptTokens: number;
+    completionTokens: number;
+    totalTokens: number;
+    model: string;
+  };
+}
+
+type StreamData = StreamDataSource | StreamDataUsage;
+
+// Helper para extraer sources del stream data
+function extractSourcesFromData(data: unknown): Source[] {
+  if (!Array.isArray(data)) return [];
+  const sourcesItem = data.find((d): d is StreamDataSource => d?.type === 'sources');
+  return sourcesItem?.sources || [];
+}
+
+// Helper para extraer usage del stream data
+function extractUsageFromData(data: unknown): { promptTokens: number; completionTokens: number; totalTokens: number; model: string } | undefined {
+  if (!Array.isArray(data)) return undefined;
+  const usageItem = data.find((d): d is StreamDataUsage => d?.type === 'usage');
+  return usageItem?.usage;
+}
 
 /**
  * Función de debounce para reducir frecuencia de ejecución
  * @param func Función a ejecutar
  * @param wait Milisegundos de espera
  */
-function debounce<T extends (...args: any[]) => void>(
+function debounce<T extends (...args: unknown[]) => void>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout;
+  let timeout: ReturnType<typeof setTimeout>;
   return (...args: Parameters<T>) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => func(...args), wait);
@@ -67,28 +98,28 @@ export function ChatContainer({ filters, municipalities, onClearHistory, onFilte
 
   // Memoizar componentes de ReactMarkdown para evitar recrearlos en cada render
   // Mejora esperada: 70% más rápido en mensajes largos
-  const markdownComponents = useMemo(() => ({
-    a: ({ node, ...props }: any) => (
+  const markdownComponents = useMemo((): Components => ({
+    a: ({ node, ...props }) => (
       <a {...props} target="_blank" rel="noopener noreferrer" />
     ),
-    table: ({ node, ...props }: any) => (
+    table: ({ node, ...props }) => (
       <div className="overflow-x-auto my-4">
         <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700 border border-slate-200 dark:border-slate-700 rounded-lg" {...props} />
       </div>
     ),
-    thead: ({ node, ...props }: any) => (
+    thead: ({ node, ...props }) => (
       <thead className="bg-slate-100 dark:bg-slate-800" {...props} />
     ),
-    tbody: ({ node, ...props }: any) => (
+    tbody: ({ node, ...props }) => (
       <tbody className="bg-white dark:bg-slate-900 divide-y divide-slate-200 dark:divide-slate-700" {...props} />
     ),
-    tr: ({ node, ...props }: any) => (
+    tr: ({ node, ...props }) => (
       <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors" {...props} />
     ),
-    th: ({ node, ...props }: any) => (
+    th: ({ node, ...props }) => (
       <th className="px-4 py-3 text-left text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider" {...props} />
     ),
-    td: ({ node, ...props }: any) => (
+    td: ({ node, ...props }) => (
       <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400 whitespace-nowrap" {...props} />
     ),
   }), []);
@@ -97,7 +128,11 @@ export function ChatContainer({ filters, municipalities, onClearHistory, onFilte
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault(); // Prevenir el salto de línea por defecto
-      handleFormSubmit(e as any); // Enviar el formulario
+      // Crear un evento de formulario sintético
+      const syntheticEvent = {
+        preventDefault: () => {},
+      } as React.FormEvent;
+      handleFormSubmit(syntheticEvent); // Enviar el formulario
     }
     // Si es Shift+Enter, dejar que el textarea maneje el salto de línea normalmente
   };
@@ -120,7 +155,7 @@ export function ChatContainer({ filters, municipalities, onClearHistory, onFilte
   // Función de guardado con debounce (500ms)
   // Reducción esperada: 95% en escrituras (200 → 10 por respuesta)
   const debouncedSaveHistory = useMemo(
-    () => debounce((msgs: any[]) => {
+    () => debounce((msgs: ChatMessage[]) => {
       localStorage.setItem('chat-history', JSON.stringify(msgs));
     }, 500),
     []
@@ -204,9 +239,15 @@ export function ChatContainer({ filters, municipalities, onClearHistory, onFilte
         (extractedFilters.dateTo && extractedFilters.dateTo !== filters.dateTo);
 
       if (hasNewFilters) {
+        // Asegurar que el tipo sea válido para ChatFilters
+        const validOrdinanceType: ChatFilters['ordinanceType'] =
+          extractedFilters.type === 'all' || !extractedFilters.type
+            ? filters.ordinanceType
+            : extractedFilters.type as ChatFilters['ordinanceType'];
+
         onFiltersChange({
           municipality: extractedFilters.municipality || filters.municipality,
-          ordinanceType: (extractedFilters.type as any) || filters.ordinanceType,
+          ordinanceType: validOrdinanceType,
           dateFrom: extractedFilters.dateFrom || filters.dateFrom,
           dateTo: extractedFilters.dateTo || filters.dateTo,
         });
@@ -309,17 +350,8 @@ export function ChatContainer({ filters, municipalities, onClearHistory, onFilte
 
                   {/* Mostrar Citations y TokenUsage para mensajes del asistente */}
                   {(() => {
-                    const sourcesData = Array.isArray(data)
-                      ? (data as any[])
-                          .filter(d => d.type === 'sources')
-                          .pop()?.sources || []
-                      : [];
-
-                    const usageData = Array.isArray(data)
-                      ? (data as any[])
-                          .filter(d => d.type === 'usage')
-                          .pop()?.usage
-                      : undefined;
+                    const sourcesData = extractSourcesFromData(data);
+                    const usageData = extractUsageFromData(data);
 
                     // Solo mostrar en mensajes del asistente que tienen contenido
                     if (message.role === 'assistant' && message.content) {

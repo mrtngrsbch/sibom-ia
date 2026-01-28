@@ -102,14 +102,19 @@ export interface SearchOptions {
  */
 export interface SearchResult {
   context: string;
-  sources: Array<{
-    title: string;
-    url: string;
-    municipality: string;
-    type: string;
-    status?: string;
-    documentTypes?: Array<'ordenanza' | 'decreto' | 'boletin' | 'resolucion' | 'disposicion' | 'convenio' | 'licitacion'>;
-  }>;
+  sources: Source[];
+}
+
+/**
+ * Fuente de documento legal
+ */
+export interface Source {
+  title: string;
+  url: string;
+  municipality: string;
+  type: string;
+  status?: string;
+  documentTypes?: Array<'ordenanza' | 'decreto' | 'boletin' | 'resolucion' | 'disposicion' | 'convenio' | 'licitacion'>;
 }
 
 /**

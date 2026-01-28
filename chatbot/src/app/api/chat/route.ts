@@ -74,7 +74,7 @@ export async function POST(req: Request) {
       apiKey: apiKey,
       baseURL: 'https://openrouter.ai/api/v1',
       headers: {
-        'HTTP-Referer': 'https://github.com/sibom-scraper-assistant',
+        'HTTP-Referer': 'https://github.com/mrtngrsbch/sibom-ia',
         'X-Title': 'SIBOM Scraper Assistant',
       }
     });

@@ -20,6 +20,8 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+python-cli/.env.local
+python-cli/.env
 
 # Virtual Environment
 venv/
@@ -104,3 +106,4 @@ adsad.md
 
 # Python CLI backups
 python-cli/boletines_index*.json
+

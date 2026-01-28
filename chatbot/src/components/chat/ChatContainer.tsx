@@ -57,7 +57,7 @@ function debounce<T extends (...args: unknown[]) => void>(
   let timeout: ReturnType<typeof setTimeout>;
   return (...args: Parameters<T>) => {
     clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
+    timeout = setTimeout(() => func(...args as Parameters<T>), wait);
   };
 }
 
@@ -155,7 +155,7 @@ export function ChatContainer({ filters, municipalities, onClearHistory, onFilte
   // Función de guardado con debounce (500ms)
   // Reducción esperada: 95% en escrituras (200 → 10 por respuesta)
   const debouncedSaveHistory = useMemo(
-    () => debounce((msgs: ChatMessage[]) => {
+    () => debounce((msgs: unknown) => {
       localStorage.setItem('chat-history', JSON.stringify(msgs));
     }, 500),
     []

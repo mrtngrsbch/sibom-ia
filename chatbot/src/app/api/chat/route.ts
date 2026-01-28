@@ -441,13 +441,23 @@ NOTA CRÍTICA: Los municipios listados arriba son los ÚNICOS que tienen informa
 
     // Crear StreamData para enviar metadatos (fuentes) al frontend
     const data = new StreamData();
-    
+
     // Enviar las fuentes como metadatos
     try {
+      // Convertir Source[] a un formato compatible con StreamData
+      const sourcesPlain = retrievedContext.sources.map(s => ({
+        title: s.title,
+        url: s.url,
+        municipality: s.municipality,
+        type: s.type,
+        status: s.status,
+        documentTypes: s.documentTypes
+      }));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data.append({
         type: 'sources',
-        sources: retrievedContext.sources
-      });
+        sources: sourcesPlain
+      } as any);
     } catch (appendError) {
       console.error('[ChatAPI] Error al añadir fuentes a StreamData:', appendError);
     }

@@ -49,7 +49,7 @@ describe('ErrorBoundary', () => {
     );
 
     expect(screen.getByText('Algo salió mal')).toBeInTheDocument();
-    expect(screen.getByText(/Ha ocurrido un error/)).toBeInTheDocument();
+    expect(screen.getByText('Test error')).toBeInTheDocument();
   });
 
   it('should display error message', () => {

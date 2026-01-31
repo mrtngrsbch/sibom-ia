@@ -18,8 +18,9 @@
 import { createOpenAI } from '@ai-sdk/openai';
 import { streamText, convertToCoreMessages, StreamData, tool } from 'ai';
 import { z } from 'zod';
-import { retrieveContext, getDatabaseStats } from '@/lib/rag/retriever';
+import { retrieveContext, getDatabaseStats, type Source } from '@/lib/rag/retriever';
 import { retrieveWithComputation, type ComputationalSearchResult } from '@/lib/rag/computational-retriever';
+import { rerankSources, filterByRelevance, isSpecificSearch } from '@/lib/rag/reranker';
 import {
   needsRAGSearch,
   calculateOptimalLimit,
@@ -38,6 +39,16 @@ import {
 import { generateDataCatalog, generateConciseCatalog } from '@/lib/data-catalog';
 import fs from 'fs/promises';
 import path from 'path';
+
+// SQLite retriever (opcional, solo disponible si better-sqlite3 está instalado)
+let sqliteRetriever: {
+  retrieveFromSQLite: (query: string, options: any) => Promise<any>;
+  getSQLiteStats: () => Promise<any>;
+  isSQLiteAvailable: () => boolean;
+} | null = null;
+
+// Intentar cargar SQLite de forma lazy (solo si está disponible)
+const USE_SQLITE = process.env.USE_SQLITE === 'true';
 
 // Type guard para verificar si es un resultado computacional
 function isComputationalResult(result: any): result is ComputationalSearchResult {
@@ -116,7 +127,29 @@ export async function POST(req: Request) {
     }
 
     // Obtener estadísticas primero (necesitamos municipalityList para extracción)
-    const stats = await getDatabaseStats();
+    // Intentar usar SQLite si está disponible y está habilitado
+    let stats;
+    if (USE_SQLITE) {
+      try {
+        // Cargar SQLite de forma lazy
+        if (!sqliteRetriever) {
+          const sqliteModule = await import('@/lib/rag/sqlite-retriever');
+          sqliteRetriever = sqliteModule;
+        }
+        if (sqliteRetriever.isSQLiteAvailable()) {
+          console.log('[ChatAPI] 🗄️ Usando SQLite para estadísticas');
+          stats = await sqliteRetriever.getSQLiteStats();
+        } else {
+          console.log('[ChatAPI] ⚠️ SQLite no disponible, usando JSON');
+          stats = await getDatabaseStats();
+        }
+      } catch (error) {
+        console.error('[ChatAPI] Error cargando SQLite, usando JSON:', error);
+        stats = await getDatabaseStats();
+      }
+    } else {
+      stats = await getDatabaseStats();
+    }
 
     // Construir opciones de búsqueda con todos los filtros (UI + extraídos de query)
     const uiFilters = {
@@ -177,19 +210,56 @@ export async function POST(req: Request) {
     // Recuperar contexto con los filtros mejorados
     let retrievedContext;
     if (shouldSearch && !isSQLComparison) {
-      // Queries normales: usar RAG
-      console.log('[ChatAPI] 📄 Usando retrieveContext normal');
-      retrievedContext = await retrieveContext(query, searchOptions);
+      // Intentar usar SQLite primero si está disponible
+      if (USE_SQLITE && sqliteRetriever && sqliteRetriever.isSQLiteAvailable()) {
+        console.log('[ChatAPI] 🗄️ Usando SQLite retriever');
+        retrievedContext = await sqliteRetriever.retrieveFromSQLite(query, searchOptions);
+      } else {
+        // Fallback a JSON
+        console.log('[ChatAPI] 📄 Usando retrieveContext (JSON)');
+        retrievedContext = await retrieveContext(query, searchOptions);
+      }
     } else if (shouldSearch && isSQLComparison && !sqlComparisonResult?.success) {
       // SQL falló: fallback a RAG
-      console.log('[ChatAPI] 📄 Fallback a retrieveContext (SQL falló)');
-      retrievedContext = await retrieveContext(query, searchOptions);
+      if (USE_SQLITE && sqliteRetriever && sqliteRetriever.isSQLiteAvailable()) {
+        console.log('[ChatAPI] 🗄️ Fallback a SQLite retriever');
+        retrievedContext = await sqliteRetriever.retrieveFromSQLite(query, searchOptions);
+      } else {
+        console.log('[ChatAPI] 📄 Fallback a retrieveContext (SQL falló)');
+        retrievedContext = await retrieveContext(query, searchOptions);
+      }
     } else {
       retrievedContext = { context: '', sources: [] };
     }
 
-    // Log de fuentes recuperadas (después de inicializar retrievedContext)
-    console.log(`[ChatAPI] 📊 Fuentes recuperadas: ${retrievedContext.sources?.length || 0}`);
+    // ============================================================================
+    // 🎯 RE-RANKING - Mejora de precisión (técnica MIT RAG-end2end)
+    // ============================================================================
+    // Aplicar re-ranking para mejorar Top-5/Top-20 accuracy y reducir alucinaciones
+    if (retrievedContext.sources.length > 0 && shouldSearch) {
+      const beforeRerank = retrievedContext.sources.length;
+      const queryIsSpecific = isSpecificSearch(query);
+
+      if (queryIsSpecific) {
+        // Para búsquedas específicas, ser más estricto con el filtro
+        const { relevant, irrelevant } = filterByRelevance(retrievedContext.sources, query, 30);
+        retrievedContext.sources = rerankSources(relevant, query);
+
+        console.log(`[ChatAPI] 🎯 Re-ranking específico: ${beforeRerank} → ${retrievedContext.sources.length} fuentes (${irrelevant.length} filtradas por baja relevancia)`);
+
+        // Si después del filtro no quedan fuentes relevantes, dejar warning
+        if (retrievedContext.sources.length === 0) {
+          console.log(`[ChatAPI] ⚠️ Todas las fuentes fueron filtradas por baja relevancia en búsqueda específica`);
+        }
+      } else {
+        // Para búsquedas generales, solo re-rankear sin filtrar
+        retrievedContext.sources = rerankSources(retrievedContext.sources, query);
+        console.log(`[ChatAPI] 🎯 Re-ranking general: ${beforeRerank} fuentes re-rankeadas`);
+      }
+    }
+
+    // Log de fuentes recuperadas (después de re-ranking)
+    console.log(`[ChatAPI] 📊 Fuentes finales (post-rerank): ${retrievedContext.sources?.length || 0}`);
 
     // ============================================================================
     // 🗄️ SQL COMPARISON - BYPASS COMPLETO DEL LLM (ÚNICO BYPASS PERMITIDO)
@@ -348,9 +418,37 @@ TOTAL DE DOCUMENTOS DISPONIBLES: ${stats.totalDocuments}
 NOTA CRÍTICA: Los municipios listados arriba son los ÚNICOS que tienen información disponible en la base de datos. El resto de los municipios (${135 - stats.municipalities}) NO tienen datos scrapeados aún.`
         : '';
 
+      // 🚨 WARNING: Verificar si hay fuentes relevantes para evitar alucinaciones
+      // Si no hay fuentes, agregar un warning explícito en el prompt
+      const hasRelevantSources = retrievedContext.sources.length > 0;
+
+      // Para búsquedas específicas (por número o tema), verificar si hay resultados
+      const isSpecificSearch = /\d{2,5}\/\d{2,4}/.test(query) ||  // Busca número específico
+                               /ordenanza \d+|decreto \d+/i.test(query) ||
+                               /impositiva|tasa vial|sueldos|habilitación/i.test(query); // Búsqueda por contenido
+
+      let noSourcesWarning = '';
+      if (!hasRelevantSources && isSpecificSearch) {
+        noSourcesWarning = `\n\n🚨🚨🚨 ADVERTENCIA CRÍTICA - NO SE ENCONTRARON FUENTES 🚨🚨🚨\n\n` +
+          `La búsqueda "${query.slice(0, 50)}..." NO arrojó resultados en la base de datos.\n\n` +
+          `REGLAS ABSOLUTAS:\n` +
+          `1. ❌ NO INVENTAR normativas, números o fechas\n` +
+          `2. ❌ NO MENCIONAR ordenanzas o decretos que no estén en {{sources}}\n` +
+          `3. ✅ DECIR CLARAMENTE: "No encontré información específica sobre..."\n` +
+          `4. ✅ OFRECER alternativas: buscarse por otros criterios\n\n` +
+          `Respuesta esperada:\n` +
+          `"No encontré ${/ordenanza|decreto/i.test(query) ? 'esa ' + (query.match(/ordenanza/i) ? 'ordenanza' : 'decreto') : 'información específica'} ` +
+          `en ${enhancedFilters.municipality || 'los documentos disponibles'}. ` +
+          `${enhancedFilters.municipality ? `Podés intentar:` : ''}"\n`;
+        if (enhancedFilters.municipality) {
+          noSourcesWarning += `- Buscar sin filtrar por municipio\n- Usar otros términos de búsqueda\n- Verificar el número o año\n`;
+        }
+        console.log(`[ChatAPI] ⚠️ No hay fuentes para búsqueda específica - agregando warning anti-alucinación`);
+      }
+
       // ✅ FIX: Para listados masivos (>50), NO enviar todas las sources al LLM
       // Solo enviar resumen agregado para ahorrar tokens
-      const sourcesText = retrievedContext.sources.length > 0
+      const sourcesText = hasRelevantSources
         ? (retrievedContext.sources.length > 50
             ? `RESUMEN: ${retrievedContext.sources.length} normativas encontradas (listado completo disponible en UI)`
             : retrievedContext.sources.map((s: any) => {
@@ -395,8 +493,11 @@ NOTA CRÍTICA: Los municipios listados arriba son los ÚNICOS que tienen informa
    - Línea 2 (opcional): Mencionar rango de números si es relevante
    - Línea 3: "La lista completa con enlaces está disponible en la sección 'Fuentes Consultadas' más abajo."
 
+**IMPORTANTE:** El contexto arriba SOLO muestra las primeras 100 normativas como referencia.
+Pero hay ${retrievedContext.sources.length} resultados EN TOTAL que el usuario puede ver en "Fuentes Consultadas".
+
 **EJEMPLO CORRECTO:**
-"Se encontraron 1,249 decretos de Carlos Tejedor del año 2025. La lista completa con enlaces está disponible en la sección 'Fuentes Consultadas' más abajo."
+"Se encontraron ${retrievedContext.sources.length} decretos de Carlos Tejedor del año ${new Date(enhancedFilters.dateFrom || '').getFullYear() || '2025'}. La lista completa con enlaces está disponible en la sección 'Fuentes Consultadas' más abajo."
 
 **EJEMPLO INCORRECTO (NO HACER):**
 "Encontré 100 decretos de Carlos Tejedor en 2025:
@@ -410,7 +511,11 @@ NOTA CRÍTICA: Los municipios listados arriba son los ÚNICOS que tienen informa
       systemPrompt = systemPromptTemplate
         .replace('{{stats}}', statsText)
         .replace('{{context}}', contextToUse)
-        .replace('{{sources}}', sourcesText) + filtersApplied + massiveListingInstruction;
+        .replace('{{sources}}', sourcesText) + noSourcesWarning + filtersApplied + massiveListingInstruction;
+
+      // Log para debug de consumo de tokens
+      console.log(`[ChatAPI] 📊 System Prompt size: ${systemPrompt.length} chars (~${Math.round(systemPrompt.length / 3)} tokens est.)`);
+      console.log(`[ChatAPI] 📊 Context size: ${contextToUse.length} chars, Sources: ${sourcesText.length} chars`);
     }
     // Para off-topic, systemPrompt ya está completo (no necesita contexto RAG)
 
@@ -445,7 +550,7 @@ NOTA CRÍTICA: Los municipios listados arriba son los ÚNICOS que tienen informa
     // Enviar las fuentes como metadatos
     try {
       // Convertir Source[] a un formato compatible con StreamData
-      const sourcesPlain = retrievedContext.sources.map(s => ({
+      const sourcesPlain = retrievedContext.sources.map((s: Source) => ({
         title: s.title,
         url: s.url,
         municipality: s.municipality,

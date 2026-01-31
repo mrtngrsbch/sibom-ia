@@ -35,7 +35,7 @@ const gunzipAsync = promisify(gunzip);
 /**
  * Tipos de documentos
  */
-export type DocumentType = 'ordenanza' | 'decreto' | 'boletin' | 'resolucion' | 'disposicion' | 'convenio' | 'licitacion';
+export type DocumentType = 'ordenanza' | 'decreto' | 'boletin' | 'resolucion' | 'disposicion' | 'convenio' | 'licitacion' | 'balances' | 'presupuestos' | 'concursos' | 'licitaciones';
 
 export interface Document {
   id: string;
@@ -57,14 +57,14 @@ export interface Document {
 export interface IndexEntry {
   id: string;
   municipality: string;
-  type: 'ordenanza' | 'decreto' | 'boletin';
+  type: DocumentType;
   number: string;
   title: string;
   date: string;
   url: string;
   status: string;
   filename: string;
-  documentTypes?: Array<'ordenanza' | 'decreto' | 'boletin' | 'resolucion' | 'disposicion' | 'convenio' | 'licitacion'>;
+  documentTypes?: Array<'ordenanza' | 'decreto' | 'boletin' | 'resolucion' | 'disposicion' | 'convenio' | 'licitacion' | 'balances' | 'presupuestos' | 'concursos' | 'licitaciones'>;
 }
 
 /**
@@ -114,7 +114,7 @@ export interface Source {
   municipality: string;
   type: string;
   status?: string;
-  documentTypes?: Array<'ordenanza' | 'decreto' | 'boletin' | 'resolucion' | 'disposicion' | 'convenio' | 'licitacion'>;
+  documentTypes?: Array<'ordenanza' | 'decreto' | 'boletin' | 'resolucion' | 'disposicion' | 'convenio' | 'licitacion' | 'balances' | 'presupuestos' | 'concursos' | 'licitaciones'>;
 }
 
 /**
@@ -566,21 +566,58 @@ async function readLocalFile(filename: string): Promise<any> {
   const boletinesPath = path.join(basePath, 'boletines');
   const filePath = path.join(boletinesPath, filename);
 
-  const stats = await fs.stat(filePath);
-  if (!stats.isFile()) {
-    throw new Error(`${filename} no es un archivo regular`);
+  // Intentar leer el archivo normalmente
+  try {
+    const stats = await fs.stat(filePath);
+    if (!stats.isFile()) {
+      throw new Error(`${filename} no es un archivo regular`);
+    }
+
+    const content = await fs.readFile(filePath, 'utf-8');
+    const data = JSON.parse(content);
+
+    // Guardar en cache
+    fileCache.set(filename, {
+      content: data,
+      timestamp: Date.now()
+    });
+
+    return data;
+  } catch (err) {
+    // Si no se encontró, buscar en subdirectorios (para documentos de transparencia)
+    // Los archivos de transparencia están en: boletines/{Municipio}/{Archivo}.json
+    try {
+      const dirs = await fs.readdir(boletinesPath, { withFileTypes: true });
+      for (const dir of dirs) {
+        if (dir.isDirectory()) {
+          const subPath = path.join(boletinesPath, dir.name, `${filename}.json`);
+          try {
+            const stats = await fs.stat(subPath);
+            if (stats.isFile()) {
+              const content = await fs.readFile(subPath, 'utf-8');
+              const data = JSON.parse(content);
+
+              // Guardar en cache
+              fileCache.set(filename, {
+                content: data,
+                timestamp: Date.now()
+              });
+
+              return data;
+            }
+          } catch {
+            // Continuar al siguiente directorio
+            continue;
+          }
+        }
+      }
+    } catch {
+      // Ignorar errores en la búsqueda en subdirectorios
+    }
+
+    // Si no se encontró en ningún lado, lanzar el error original
+    throw new Error(`Archivo no encontrado: ${filename}`);
   }
-
-  const content = await fs.readFile(filePath, 'utf-8');
-  const data = JSON.parse(content);
-
-  // Guardar en cache
-  fileCache.set(filename, {
-    content: data,
-    timestamp: Date.now()
-  });
-
-  return data;
 }
 
 /**
@@ -779,12 +816,26 @@ async function retrieveContextFromNormativas(
   const contentLimit = calculateContentLimit(query);
   const isMetadataOnly = contentLimit <= 200;
 
+  // Para listados masivos, limitar el contexto para no explotar los tokens del LLM
+  // Si hay más de 100 resultados, solo incluir un resumen en el contexto
+  const MAX_CONTEXT_ENTRIES = 100;
+
   let context: string;
   if (isMetadataOnly) {
     // Modo listado: solo metadatos (eficiente para queries de conteo)
-    context = resultNormativas
-      .map(n => `[${n.m}] ${n.t.toUpperCase()} N° ${n.n}/${n.y} - ${n.d} - ${n.ti}`)
-      .join('\n');
+    if (resultNormativas.length > MAX_CONTEXT_ENTRIES) {
+      // Listado masivo: solo resumen, no incluir todos los entries
+      context = `LISTADO MASIVO: Se encontraron ${resultNormativas.length} normativas.
+Las primeras ${MAX_CONTEXT_ENTRIES} se muestran abajo como referencia:
+` +
+      resultNormativas.slice(0, MAX_CONTEXT_ENTRIES)
+        .map(n => `[${n.m}] ${n.t.toUpperCase()} N° ${n.n}/${n.y} - ${n.d}`)
+        .join('\n');
+    } else {
+      context = resultNormativas
+        .map(n => `[${n.m}] ${n.t.toUpperCase()} N° ${n.n}/${n.y} - ${n.d} - ${n.ti}`)
+        .join('\n');
+    }
   } else {
     // Modo detallado: incluir extracto de contenido
     context = resultNormativas
@@ -814,7 +865,10 @@ Contenido: ${contentChunk}...`;
   }));
 
   const duration = Date.now() - startTime;
-  console.log(`[RAG] ✅ Query completada en ${duration}ms - ${resultNormativas.length} normativas`);
+  const contextEntries = isMetadataOnly && resultNormativas.length > MAX_CONTEXT_ENTRIES
+    ? MAX_CONTEXT_ENTRIES
+    : resultNormativas.length;
+  console.log(`[RAG] ✅ Query completada en ${duration}ms - ${resultNormativas.length} normativas recuperadas, ${contextEntries} en contexto`);
 
   return {
     context: context || `No se encontró información específica para: "${query}"`,

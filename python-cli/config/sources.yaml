@@ -1,0 +1,58 @@
+# Fuentes de datos para SIBOM Scraper Assistant
+# Cada fuente define cómo extraer normativas de un origen específico
+
+sources:
+  # =============================================================================
+  # SIBOM - Fuente primaria (ya implementada)
+  # =============================================================================
+  - name: "SIBOM"
+    type: "sibom"
+    enabled: true
+    base_url: "https://sibom.slyt.gba.gob.ar"
+    municipalities: 135  # Todos los municipios de PBA
+    description: "Boletín Oficial de la Provincia de Buenos Aires"
+
+  # =============================================================================
+  # Municipios individuales - Sitios web oficiales
+  # =============================================================================
+  - name: "Carlos Tejedor"
+    type: "wordpress"
+    enabled: false  # Cambiar a true para activar
+    base_url: "https://hcdtejedor.gob.ar"
+    url_patterns:
+      - "/normativa/ordenanzas/"
+      - "/normativa/decretos/"
+      - "/ordenanzas/"
+      - "/wp-content/uploads/**/*.pdf"
+    document_types:
+      - "ordenanza"
+      - "decreto"
+      - "resolucion"
+    description: "Municipio de Carlos Tejedor - PBA"
+
+  - name: "Merlo"
+    type: "wordpress"
+    enabled: false
+    base_url: "https://hcdmerlo.gob.ar"
+    url_patterns:
+      - "/normativa/"
+      - "/ordenanzas/"
+      - "/decretos/"
+      - "/wp-content/uploads/**/*.pdf"
+
+  - name: "General Pueyrredón"
+    type: "generic"
+    enabled: false
+    base_url: "https://hcdgp.gob.ar"
+    url_patterns:
+      - "/normativa/"
+      - "/ordenanzas/**/*.pdf"
+      - "/decretos/**/*.pdf"
+
+  # =============================================================================
+  # Estrategias de scraping soportadas
+  # =============================================================================
+  # - sibom:      Scraping de boletines ya implementado
+  # - wordpress:  Busca en sitios WordPress comunes de municipios
+  # - generic:    Estrategia genérica para detectar PDFs/normativas
+  # - manual:     URLs especificas manualmente proveídas

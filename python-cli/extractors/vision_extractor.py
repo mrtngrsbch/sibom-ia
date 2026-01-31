@@ -21,6 +21,15 @@ console = Console()
 
 
 # ============================================================================
+# EXCEPCIONES
+# ============================================================================
+
+class CreditExhaustedError(Exception):
+    """Excepción lanzada cuando se detecta error de crédito/rate limit."""
+    pass
+
+
+# ============================================================================
 # CONFIGURACIÓN
 # ============================================================================
 
@@ -235,6 +244,36 @@ class VisionExtractor:
             return content
 
         except Exception as e:
+            error_str = str(e).lower()
+            error_msg = str(e)
+
+            # Detectar errores de crédito/limite de OpenRouter
+            credit_error_patterns = [
+                "insufficient", "credit", "quota", "balance",
+                "429", "rate limit", "limit", "exceeded"
+            ]
+
+            if any(p in error_str for p in credit_error_patterns):
+                console.print("\n[bold red]⚠️⚠️⚠️ ERROR DE CRÉDITO/RATE LIMIT DETECTADO ⚠️⚠️⚠️[/bold red]\n")
+                console.print(f"[red]Error: {error_msg}[/red]")
+
+                # Emitir beep persistente (macOS/Linux)
+                try:
+                    import sys
+                    if sys.platform == "darwin":
+                        # macOS: afplay para beep continuo
+                        import subprocess
+                        for _ in range(5):
+                            subprocess.run(["tput", "bel"])
+                    else:
+                        # Linux/Windows: print bell character
+                        print('\a\a\a\a\a')
+                except Exception:
+                    print('\a\a\a\a\a')  # Fallback
+
+                # Lanzar excepción específica para detener el scraper
+                raise CreditExhaustedError(f"CRÉDITOS AGOTADOS: {error_msg}")
+
             console.print(f"[red]Error en página: {e}[/red]")
             return ""
 

@@ -25,6 +25,15 @@ from rich.panel import Panel
 console = Console()
 
 
+# Importar excepción de crédito agotado
+try:
+    from extractors.vision_extractor import CreditExhaustedError
+except ImportError:
+    class CreditExhaustedError(Exception):
+        """Fallback si no se puede importar."""
+        pass
+
+
 # ============================================================================
 # COMANDOS SIBOM
 # ============================================================================
@@ -348,8 +357,12 @@ def cmd_transparency(args):
                             except Exception as sqlite_err:
                                 console.print(f"[yellow]  ⚠ SQLite: {sqlite_err}[/yellow]")
 
-                            processed_urls.add(url)
-                            save_progress()  # Guardar progreso después de cada PDF
+                            # FIX: Solo guardar progreso si la extracción fue exitosa (contenido > 1000)
+                            if content and len(content) > 1000:
+                                processed_urls.add(url)
+                                save_progress()  # Guardar progreso después de cada PDF exitoso
+                            else:
+                                console.print(f"[yellow]  ⚠ Contenido vacío/corto, NO se guarda progreso[/yellow]")
 
                             success_count += 1
                             console.print(f"[green]✓ Extraído: {title[:50]}...[/green]")
@@ -360,8 +373,23 @@ def cmd_transparency(args):
                             console.print(f"[yellow]⚠ No se pudo extraer contenido[/yellow]")
 
                 except KeyboardInterrupt:
-                    # Usuario canceló con Ctrl+C
+                    # Usuario canceló con Ctrl+C - GUARDAR PROGRESO ANTES DE SALIR
                     console.print("\n[yellow]⚠️ Cancelado por usuario (Ctrl+C)[/yellow]")
+                    console.print("[dim]Guardando progreso...[/dim]")
+                    save_progress()
+                    console.print(f"[green]✓ Progreso guardado: {len(processed_urls)} PDFs[/green]")
+                    break
+                except CreditExhaustedError as credit_err:
+                    # Error de crédito/rate limit - DETENER INMEDIATAMENTE
+                    console.print("\n[bold red]⛔ DETENIENDO SCRAPER POR FALTA DE CRÉDITOS ⛔[/bold red]")
+                    console.print(f"[red]{credit_err}[/red]")
+                    console.print("\n[yellow]💡 Solución:[/yellow]")
+                    console.print("  1. Agrega créditos a tu cuenta de OpenRouter")
+                    console.print("  2. El progreso se guardó automáticamente")
+                    console.print("  3. Vuelve a ejecutar el mismo comando para continuar")
+                    # Guardar progreso antes de salir
+                    save_progress()
+                    console.print(f"[green]✓ Progreso guardado: {len(processed_urls)} PDFs[/green]")
                     break
                 except Exception as e:
                     console.print(f"[red]Error: {e}[/red]")
@@ -380,7 +408,15 @@ def cmd_transparency(args):
                 console.print(f"\n[green]✓ Progreso guardado en {progress_file.name}[/green]")
                 console.print("[dim]Usa --skip-existing para retomar donde dejaste[/dim]")
 
-    asyncio.run(run_transparency())
+    try:
+        asyncio.run(run_transparency())
+    except KeyboardInterrupt:
+        console.print("\n[yellow]⚠️ Proceso interrumpido[/yellow]")
+        console.print("[dim]El progreso se guardó automáticamente[/dim]")
+    except Exception as e:
+        console.print(f"\n[red]Error inesperado: {e}[/red]")
+        console.print("[dim]El progreso se guardó hasta el último PDF exitoso[/dim]")
+        raise  # Re-lanzar para mostrar traceback si es necesario
 
 
 # ============================================================================

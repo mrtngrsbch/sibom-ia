@@ -20,6 +20,7 @@ from .models import (
     TaskStatus,
     AnalyzeResponse,
     ImageResultDTO,
+    ImageUrls,
     AnalysisSummary,
 )
 
@@ -180,7 +181,9 @@ async def run_analysis_task(
         )
 
         results = []
+        image_urls_list = []
         total_items = len(items)
+        partida_clean = partida.replace('coords:', 'c').replace(':', '_')
 
         # 5. Procesar imágenes
         for i, item in enumerate(items):
@@ -203,6 +206,7 @@ async def run_analysis_task(
                 result = classifier.classify_with_areas(indices, pixel_area_m2=pixel_area)
 
                 # Crear y aplicar máscara específica para esta imagen
+                parcel_mask = None
                 if parcel_geometry is not None:
                     parcel_mask = stac.create_parcel_mask(
                         shape=bands.b02.shape,
@@ -223,6 +227,18 @@ async def run_analysis_task(
                 vegetation_ha = result.areas_hectares.get(3, 0)
                 other_ha = result.areas_hectares.get(0, 0)
 
+                # Generar y guardar imágenes de visualización
+                date_str = item.datetime[:10].replace('-', '')
+                img_urls = _save_per_image_visualizations(
+                    bands=bands,
+                    indices=indices,
+                    classification=result.classification,
+                    parcel_mask=parcel_mask,
+                    partida_clean=partida_clean,
+                    date_str=date_str,
+                    output_dir=output_dir,
+                )
+
                 results.append(ImageResult(
                     date=item.datetime,
                     water_ha=round(water_ha, 2),
@@ -231,9 +247,11 @@ async def run_analysis_task(
                     other_ha=round(other_ha, 2),
                     cloud_cover=item.cloud_cover,
                 ))
+                image_urls_list.append(img_urls)
 
             except StacError as e:
                 logger.warning(f"Error procesando imagen {i}: {e}")
+                image_urls_list.append(None)
                 continue
 
         if not results:
@@ -258,6 +276,7 @@ async def run_analysis_task(
             response.progress = 1.0
             response.message = "Análisis completado exitosamente"
             response.total_images = len(results)
+            # Incluir las URLs de las imágenes en cada resultado
             response.results = [
                 ImageResultDTO(
                     date=r.date,
@@ -266,8 +285,9 @@ async def run_analysis_task(
                     vegetation_ha=r.vegetation_ha,
                     other_ha=r.other_ha,
                     cloud_cover=r.cloud_cover,
+                    images=image_urls_list[i] if i < len(image_urls_list) else None,
                 )
-                for r in results
+                for i, r in enumerate(results)
             ]
             response.summary = summary
 
@@ -396,6 +416,137 @@ async def _save_indices_images_async(
         logger.warning(f"Error guardando imágenes: {e}")
 
     return saved_paths
+
+
+def _save_per_image_visualizations(
+    bands,
+    indices,
+    classification: "np.ndarray",
+    parcel_mask: "np.ndarray | None",
+    partida_clean: str,
+    date_str: str,
+    output_dir: Path
+) -> ImageUrls:
+    """
+    Genera y guarda visualizaciones de índices espectrales para una imagen.
+
+    Retorna un objeto ImageUrls con las rutas relativas a /images/.
+
+    Args:
+        bands: Bandas descargadas (con b02, b03, b04, etc.)
+        indices: Índices espectrales calculados
+        classification: Array de clasificación de píxeles
+        parcel_mask: Máscara de la parcela (opcional)
+        partida_clean: Partida limpiada para nombres de archivo
+        date_str: Fecha en formato YYYYMMDD
+        output_dir: Directorio de salida
+
+    Returns:
+        ImageUrls con las rutas de las imágenes generadas
+    """
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from matplotlib.colors import ListedColormap
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    urls = ImageUrls()
+
+    # Configurar colormaps
+    cmap_water = plt.cm.RdYlBu_r
+    cmap_veg = plt.cm.RdYlGn_r
+    cmap_salinity = plt.cm.YlOrRd
+
+    # Colormap para clasificación
+    colors_class = ['#9E9E9E', '#2196F3', '#2E7D32', '#8BC34A']
+    cmap_class = ListedColormap(colors_class)
+
+    # Índices a guardar (misma estructura que en app.py)
+    indices_to_save = [
+        ("ndwi", "NDWI", indices.ndwi, cmap_water, -0.5, 0.5),
+        ("mndwi", "MNDWI", indices.mndwi, cmap_water, -0.5, 0.5),
+        ("ndvi", "NDVI", indices.ndvi, cmap_veg, -0.2, 0.9),
+        ("ndmi", "NDMI", indices.ndmi, cmap_veg, -0.2, 0.6),
+        ("ndsi", "NDSI", indices.ndsi, cmap_salinity, -0.3, 0.3),
+        ("swir2-nir", "SWIR2+NIR", indices.salinity_index, cmap_salinity, 0.3, 0.7),
+        ("clasificacion", "Clasificacion", classification, cmap_class, 0, 3),
+    ]
+
+    for filename_key, title_name, data, cmap, vmin, vmax in indices_to_save:
+        try:
+            fig, ax = plt.subplots(figsize=(10, 8))
+
+            if vmin is not None:
+                im = ax.imshow(data, cmap=cmap, vmin=vmin, vmax=vmax)
+            else:
+                im = ax.imshow(data, cmap=cmap)
+
+            plt.colorbar(im, ax=ax, label=title_name)
+            ax.set_title(f"{title_name} - {partida_clean} | {date_str}",
+                        fontsize=10, fontweight='bold')
+            ax.axis('off')
+
+            filename = f"{filename_key}_{partida_clean}_{date_str}.png"
+            img_path = output_dir / filename
+            plt.savefig(img_path, dpi=150, bbox_inches='tight', facecolor='white')
+            plt.close(fig)
+
+            # Set URL path (relativa a /images/)
+            setattr(urls, filename_key, f"/images/{filename}")
+
+        except Exception as e:
+            logger.warning(f"Error guardando {filename_key}: {e}")
+
+    # Generar imagen RGB si tenemos las bandas necesarias
+    try:
+        if hasattr(bands, 'b04') and hasattr(bands, 'b03') and hasattr(bands, 'b02'):
+            # Crear composición RGB
+            rgb = np.stack([bands.b04, bands.b03, bands.b02], axis=-1)
+
+            # Realce de contraste (percentile stretch)
+            valid_pixels = rgb[rgb > 0]
+            if valid_pixels.size > 0:
+                p2, p98 = np.percentile(valid_pixels, [2, 98])
+                rgb = np.clip((rgb - p2) / (p98 - p2), 0, 1)
+
+            # Aplicar máscara si está disponible
+            if parcel_mask is not None:
+                mask_3d = np.stack([parcel_mask] * 3, axis=-1)
+                rgb_masked = np.where(mask_3d, rgb, rgb * 0.3)
+            else:
+                rgb_masked = rgb
+
+            fig, axes = plt.subplots(1, 2, figsize=(16, 7))
+
+            # Panel izquierdo: imagen completa
+            axes[0].imshow(rgb)
+            axes[0].set_title(f"Sentinel-2 RGB - {date_str}", fontsize=11, fontweight='bold')
+            axes[0].axis('off')
+
+            # Panel derecho: parcela destacada
+            axes[1].imshow(rgb_masked)
+            if parcel_mask is not None:
+                contour_mask = parcel_mask.astype(float)
+                axes[1].contour(contour_mask, levels=[0.5], colors=['#FF5722'], linewidths=1.5)
+            axes[1].set_title(f"Parcela {partida_clean} - {date_str}", fontsize=11, fontweight='bold')
+            axes[1].axis('off')
+
+            plt.suptitle(f"Sentinel-2 True Color | {date_str}", fontsize=13, fontweight='bold', y=1.02)
+            plt.tight_layout()
+
+            rgb_filename = f"rgb_{partida_clean}_{date_str}.png"
+            rgb_path = output_dir / rgb_filename
+            plt.savefig(rgb_path, dpi=150, bbox_inches='tight', facecolor='white')
+            plt.close(fig)
+
+            urls.rgb = f"/images/{rgb_filename}"
+
+    except Exception as e:
+        logger.warning(f"Error generando imagen RGB: {e}")
+
+    return urls
 
 
 def load_partidos() -> dict[str, str]:

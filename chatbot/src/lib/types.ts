@@ -174,6 +174,20 @@ export interface ChatMessage {
 export type TaskStatus = 'pending' | 'processing' | 'completed' | 'failed';
 
 /**
+ * URLs de imágenes generadas para una fecha específica.
+ */
+export interface ImageUrls {
+  clasificacion?: string;
+  ndwi?: string;
+  mndwi?: string;
+  ndvi?: string;
+  ndmi?: string;
+  ndsi?: string;
+  swir2_nir?: string;
+  rgb?: string;
+}
+
+/**
  * Resultado de análisis de una imagen satelital
  */
 export interface SatelliteImageResult {
@@ -183,6 +197,7 @@ export interface SatelliteImageResult {
   vegetation_ha: number;
   other_ha: number;
   cloud_cover?: number;
+  images?: ImageUrls;
 }
 
 /**

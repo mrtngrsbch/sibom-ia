@@ -12,6 +12,20 @@ const SAT_API_URL = process.env.NEXT_PUBLIC_SAT_API_URL || process.env.SAT_API_U
 export type TaskStatus = 'pending' | 'processing' | 'completed' | 'failed';
 
 /**
+ * URLs de imágenes generadas para una fecha específica.
+ */
+export interface ImageUrls {
+  clasificacion?: string;
+  ndwi?: string;
+  mndwi?: string;
+  ndvi?: string;
+  ndmi?: string;
+  ndsi?: string;
+  swir2_nir?: string;
+  rgb?: string;
+}
+
+/**
  * Resultado de análisis de una imagen individual
  */
 export interface SatelliteImageResult {
@@ -21,6 +35,7 @@ export interface SatelliteImageResult {
   vegetation_ha: number;
   other_ha: number;
   cloud_cover?: number;
+  images?: ImageUrls;
 }
 
 /**
@@ -177,6 +192,36 @@ export class SatAnalysisClient {
 
       poll();
     });
+  }
+
+  /**
+   * Descarga un ZIP con todas las imágenes del análisis
+   * @param taskId ID de la tarea completada
+   * @returns URL del blob para descargar
+   */
+  async downloadImagesZip(taskId: string): Promise<string> {
+    const response = await fetch(`${this.baseUrl}/api/analyze/${taskId}/zip`);
+    if (!response.ok) {
+      throw new Error(`Error descargando ZIP: ${response.statusText}`);
+    }
+    const blob = await response.blob();
+    return URL.createObjectURL(blob);
+  }
+
+  /**
+   * Descarga un ZIP con todas las imágenes del análisis (dispara descarga directa)
+   * @param taskId ID de la tarea completada
+   * @param filename Nombre del archivo (opcional)
+   */
+  async downloadImagesZipDirect(taskId: string, filename?: string): Promise<void> {
+    const url = await this.downloadImagesZip(taskId);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename || `analisis_satelital_${taskId}.zip`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   }
 }
 

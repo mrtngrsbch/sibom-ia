@@ -44,6 +44,18 @@ class AnalyzeRequest(BaseModel):
     )
 
 
+class ImageUrls(BaseModel):
+    """URLs de imágenes generadas para una fecha."""
+    clasificacion: Optional[str] = Field(None, description="Imagen de clasificación de uso de suelo")
+    ndwi: Optional[str] = Field(None, description="Índice NDWI")
+    ndvi: Optional[str] = Field(None, description="Índice NDVI")
+    ndmi: Optional[str] = Field(None, description="Índice NDMI")
+    mndwi: Optional[str] = Field(None, description="Índice MNDWI")
+    ndsi: Optional[str] = Field(None, description="Índice NDSI")
+    swir2_nir: Optional[str] = Field(None, description="Ratio SWIR2/NIR")
+    rgb: Optional[str] = Field(None, description="Imagen color real (RGB)")
+
+
 class ImageResultDTO(BaseModel):
     """Resultado del análisis de una imagen (DTO para API)."""
     date: str = Field(..., description="Fecha de la imagen ISO 8601")
@@ -52,6 +64,7 @@ class ImageResultDTO(BaseModel):
     vegetation_ha: float = Field(..., description="Área de vegetación en hectáreas")
     other_ha: float = Field(default=0.0, description="Área de otros en hectáreas")
     cloud_cover: Optional[float] = Field(None, description="Porcentaje de nubes")
+    images: Optional[ImageUrls] = Field(None, description="URLs de imágenes generadas")
 
     class Config:
         """Configuración Pydantic."""

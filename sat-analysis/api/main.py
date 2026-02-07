@@ -12,6 +12,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from sat_analysis.config import get_settings
 
@@ -58,7 +59,9 @@ app.add_middleware(
 )
 
 # Directorio de salida para imágenes
-OUTPUT_DIR = Path(os.getenv("OUTPUT_DIR", "/app/data/web_output"))
+# Usar path local por defecto para desarrollo, /app/data para producción
+default_output = Path(__file__).parent.parent / "web_output"
+OUTPUT_DIR = Path(os.getenv("OUTPUT_DIR", str(default_output)))
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Obtener versión del paquete
@@ -250,6 +253,91 @@ async def delete_task(task_id: str):
                 del task_store.tasks[task_id]
 
     return {"message": f"Tarea {task_id} eliminada"}
+
+
+@app.get("/api/analyze/{task_id}/zip", tags=["Analysis"])
+async def download_images_zip(task_id: str):
+    """
+    Genera y descarga un ZIP con todas las imágenes del análisis.
+
+    Args:
+        task_id: ID de la tarea completada
+
+    Returns:
+        FileResponse con el ZIP containing todas las imágenes generadas
+
+    Raises:
+        HTTPException 404: Si el task_id no existe o no está completado
+    """
+    from fastapi.responses import FileResponse
+    import zipfile
+    import io
+
+    response = await task_store.get(task_id)
+
+    if response is None:
+        raise HTTPException(status_code=404, detail=f"Tarea {task_id} no encontrada")
+
+    if response.status != "completed":
+        raise HTTPException(
+            status_code=400,
+            detail=f"La tarea debe estar completada para descargar. Estado actual: {response.status}"
+        )
+
+    if not response.results:
+        raise HTTPException(status_code=404, detail="No hay imágenes para descargar")
+
+    # Crear ZIP en memoria
+    zip_buffer = io.BytesIO()
+    added_files = set()
+
+    with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for result in response.results:
+            if result.images:
+                # Agregar todas las imágenes disponibles
+                image_attrs = [
+                    ('rgb', result.images.rgb),
+                    ('clasificacion', result.images.clasificacion),
+                    ('ndwi', result.images.ndwi),
+                    ('mndwi', result.images.mndwi),
+                    ('ndvi', result.images.ndvi),
+                    ('ndmi', result.images.ndmi),
+                    ('ndsi', result.images.ndsi),
+                    ('swir2_nir', result.images.swir2_nir),
+                ]
+                for img_type, url in image_attrs:
+                    if url and url not in added_files:
+                        # Extraer filename de URL (/images/xxx.png -> xxx.png)
+                        filename = url.split('/')[-1]
+                        file_path = OUTPUT_DIR / filename
+
+                        if file_path.exists():
+                            zip_file.write(file_path, filename)
+                            added_files.add(url)
+
+        # Agregar gráfico de evolución si existe
+        partida_clean = response.partida.replace('coords:', 'c').replace(':', '_')
+        chart_path = OUTPUT_DIR / f"grafico_{partida_clean}.png"
+        if chart_path.exists():
+            zip_file.write(chart_path, f"grafico_{partida_clean}.png")
+
+    # Crear un nuevo BytesIO para leer el contenido
+    zip_bytes = io.BytesIO(zip_buffer.getvalue())
+
+    # Nombre del archivo ZIP
+    zip_filename = f"analisis_satelital_{response.partida}.zip"
+
+    return FileResponse(
+        io.BytesIO(zip_bytes.getvalue()),
+        media_type="application/zip",
+        headers={
+            "Content-Disposition": f'attachment; filename="{zip_filename}"'
+        }
+    )
+
+
+# Servir imágenes generadas como archivos estáticos
+app.mount("/images", StaticFiles(directory=str(OUTPUT_DIR)), name="images")
 
 
 # Startup event

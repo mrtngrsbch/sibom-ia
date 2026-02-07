@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -12,10 +13,14 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { Droplets, Cloud, Leaf, TrendingUp, TrendingDown, Minus } from '@/lib/icons';
+import { ImagesPanel } from './ImagesPanel';
+import { ImageThumbnail } from './ImageThumbnail';
+import { ImageModal } from './ImageModal';
 import type { AnalyzeResponse, SatelliteImageResult } from '@/lib/types';
 
 interface ResultsPanelProps {
   analysis: AnalyzeResponse;
+  taskId?: string | null;
 }
 
 /**
@@ -31,8 +36,22 @@ const COLORS = {
 /**
  * Panel de resultados del análisis satelital
  */
-export function ResultsPanel({ analysis }: ResultsPanelProps) {
-  const { status, progress, message, summary, results } = analysis;
+export function ResultsPanel({ analysis, taskId }: ResultsPanelProps) {
+  const { status, progress, message, summary, results, partida } = analysis;
+
+  // State para el modal de imágenes
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalImageUrl, setModalImageUrl] = useState<string | null>(null);
+
+  const openImageModal = (url: string) => {
+    setModalImageUrl(url);
+    setModalOpen(true);
+  };
+
+  const closeImageModal = () => {
+    setModalOpen(false);
+    setModalImageUrl(null);
+  };
 
   // Estado de carga
   if (status === 'pending' || status === 'processing') {
@@ -184,11 +203,12 @@ export function ResultsPanel({ analysis }: ResultsPanelProps) {
         </Card>
       )}
 
-      {/* Tabs con gráfico y tabla */}
+      {/* Tabs con gráfico, tabla e imágenes */}
       <Tabs defaultValue="chart" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
+        <TabsList className="grid w-full max-w-md grid-cols-3">
           <TabsTrigger value="chart">Gráfico de Evolución</TabsTrigger>
           <TabsTrigger value="table">Tabla de Datos</TabsTrigger>
+          <TabsTrigger value="images">Imágenes</TabsTrigger>
         </TabsList>
 
         <TabsContent value="chart" className="mt-4">
@@ -248,6 +268,7 @@ export function ResultsPanel({ analysis }: ResultsPanelProps) {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-20">Vista</TableHead>
                     <TableHead>Fecha</TableHead>
                     <TableHead className="text-right">Agua (ha)</TableHead>
                     <TableHead className="text-right">Humedal (ha)</TableHead>
@@ -264,6 +285,16 @@ export function ResultsPanel({ analysis }: ResultsPanelProps) {
 
                     return (
                       <TableRow key={i}>
+                        <TableCell>
+                          <ImageThumbnail
+                            images={r.images}
+                            date={r.date}
+                            water_ha={r.water_ha}
+                            wetland_ha={r.wetland_ha}
+                            total_ha={total}
+                            onOpenModal={openImageModal}
+                          />
+                        </TableCell>
                         <TableCell className="font-medium">
                           {new Date(r.date).toLocaleDateString('es-AR')}
                         </TableCell>
@@ -290,7 +321,23 @@ export function ResultsPanel({ analysis }: ResultsPanelProps) {
             </CardContent>
           </Card>
         </TabsContent>
+
+        {/* Tab de imágenes */}
+        <TabsContent value="images" className="mt-4">
+          <ImagesPanel results={results || []} partida={partida} taskId={taskId} />
+        </TabsContent>
       </Tabs>
+
+      {/* Modal para visualización de imágenes */}
+      {modalImageUrl && (
+        <ImageModal
+          isOpen={modalOpen}
+          onClose={closeImageModal}
+          imageUrl={modalImageUrl}
+          title="Imagen Satelital"
+          description="Clasificación de uso de suelo"
+        />
+      )}
     </div>
   );
 }

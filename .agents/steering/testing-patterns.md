@@ -1,19 +1,5 @@
-# testing-patterns
-
-## ⚠️ BASE EDITABLE
-
-Este archivo fue copiado desde: `.kiro/steering/testing-patterns.md`
-
-**Puedes EDITAR este archivo** para agregar reglas específicas para agentes AI.
-
-Para regenerar desde .kiro/:
-```bash
-python .agents/hooks/sync_from_kiro.py
-```
-
----
-
-# Patrones de Testing y Validación - SIBOM Scraper Assistant
+# Patrones de Testing y Validación — SIBOM Scraper Assistant
+<!-- Creado: 2025-01-16 | Modificado: 2026-02-06 -->
 
 ## Estrategia de Testing Implementada
 

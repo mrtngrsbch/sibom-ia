@@ -163,3 +163,75 @@ export interface ChatMessage {
   content: string;
   createdAt?: number;
 }
+
+/**
+ * Tipos para análisis satelital
+ */
+
+/**
+ * Estados posibles de una tarea de análisis satelital
+ */
+export type TaskStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
+/**
+ * Resultado de análisis de una imagen satelital
+ */
+export interface SatelliteImageResult {
+  date: string;
+  water_ha: number;
+  wetland_ha: number;
+  vegetation_ha: number;
+  other_ha: number;
+  cloud_cover?: number;
+}
+
+/**
+ * Resumen estadístico del análisis satelital
+ */
+export interface AnalysisSummary {
+  partida: string;
+  total_area_ha?: number;
+  date_range: string;
+  images_analyzed: number;
+  max_water_ha: number;
+  max_wetland_ha: number;
+  avg_water_ha: number;
+  avg_wetland_ha: number;
+  max_affected_date: string;
+  max_affected_area_ha: number;
+  trend_water: 'up' | 'down' | 'stable';
+  trend_wetland: 'up' | 'down' | 'stable';
+}
+
+/**
+ * Respuesta del endpoint de análisis satelital
+ */
+export interface AnalyzeResponse {
+  task_id: string;
+  partida: string;
+  status: TaskStatus;
+  progress: number;
+  message: string;
+  total_images: number;
+  results?: SatelliteImageResult[];
+  summary?: AnalysisSummary;
+  error?: string;
+}
+
+/**
+ * Request para análisis satelital
+ */
+export interface AnalyzeRequest {
+  partida: string;
+  years: number;
+  samples_per_year: number;
+  max_clouds: number;
+}
+
+/**
+ * Información de un partido ARBA
+ */
+export interface PartidoInfo {
+  codigo: string;
+  nombre: string;
+}

@@ -53,7 +53,7 @@ CATEGORIES = {
         ]
     },
     "presupuestos": {
-        "url": f"{BASE_URL}/transparencia/presupuestos/",
+        "url": f"{BASE_URL}/presupuestos/",
         "name": "Carlos Tejedor - Presupuestos",
         "categories": ["presupuestos"],
         "document_types": [
@@ -68,19 +68,19 @@ CATEGORIES = {
         ]
     },
     "concursos": {
-        "url": f"{BASE_URL}/transparencia/concursosdeprecios/",
+        "url": f"{BASE_URL}/concursodeprecios/",
         "name": "Carlos Tejedor - Concursos",
         "categories": ["concursos"],
         "document_types": ["concurso_precios"]
     },
     "licitaciones_privadas": {
-        "url": f"{BASE_URL}/transparencia/licitaciones-privadas/",
+        "url": f"{BASE_URL}/licitacionesprivadas/",
         "name": "Carlos Tejedor - Licitaciones Privadas",
         "categories": ["licitaciones"],
         "document_types": ["licitacion_privada"]
     },
     "licitaciones_publicas": {
-        "url": f"{BASE_URL}/transparencia/licitaciones-publicas/",
+        "url": f"{BASE_URL}/licitacionespublicas/",
         "name": "Carlos Tejedor - Licitaciones Públicas",
         "categories": ["licitaciones"],
         "document_types": ["licitacion_publica"]

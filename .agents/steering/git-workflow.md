@@ -1,6 +1,7 @@
-# Git Workflow - Manual de Uso
+# Git Workflow — Manual de Uso
+<!-- Creado: 2025-01-16 | Modificado: 2026-02-06 -->
 
-## 🚀 QUICKSTART (Léeme primero)
+## QUICKSTART
 
 ### ¿Qué hace este archivo?
 Define las reglas de commits para tu proyecto.

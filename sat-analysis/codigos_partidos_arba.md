@@ -1,5 +1,3 @@
-  # Códigos de Partidos ARBA - Provincia de Buenos Aires
-
 ## 📋 Formato del Número de Partida
 
 ### Estructura General
@@ -14,11 +12,11 @@ Ejemplo completo: 002-004606-0
 
 ### Componentes
 
-| Componente | Longitud | Descripción | Ejemplo |
-|------------|----------|-------------|---------|
-| **Código de Partido** | 3 dígitos | Identifica el municipio/partido | `002` = Alberti |
-| **Partida Individual** | 6 dígitos | Número único del inmueble en el partido | `004606` |
-| **Dígito Verificador** | 1 dígito | Control de validación (calculado por ARBA) | `0` |
+| Componente             | Longitud  | Descripción                                | Ejemplo         |
+| ---------------------- | --------- | ------------------------------------------ | --------------- |
+| **Código de Partido**  | 3 dígitos | Identifica el municipio/partido            | `002` = Alberti |
+| **Partida Individual** | 6 dígitos | Número único del inmueble en el partido    | `004606`        |
+| **Dígito Verificador** | 1 dígito  | Control de validación (calculado por ARBA) | `0`             |
 
 ### Formatos Aceptados
 
@@ -37,11 +35,11 @@ La partida inmobiliaria puede escribirse de varias formas:
 
 ### Total de Entidades
 
-| Categoría | Cantidad | Rango de Códigos |
-|-----------|----------|------------------|
-| Partidos/Municipios | 135 | 001-137 (con gaps) |
-| Islas del Delta | 8 | 309-399 |
-| **TOTAL** | **143** | - |
+| Categoría           | Cantidad | Rango de Códigos   |
+| ------------------- | -------- | ------------------ |
+| Partidos/Municipios | 135      | 001-137 (con gaps) |
+| Islas del Delta     | 8        | 309-399            |
+| **TOTAL**           | **143**  | -                  |
 
 ### Gaps en la Numeración
 
@@ -105,15 +103,15 @@ Formato extendido: 002-004606-0-UF-001
 
 Los siguientes partidos fueron creados por leyes posteriores a 1990:
 
-| Código | Partido | Año de Creación | Ley |
-|--------|---------|-----------------|-----|
-| 130 | Ezeiza | 1994 | 11.550 |
-| 131 | San Miguel | 1994 | 11.551 |
-| 132 | José C. Paz | 1994 | 11.551 |
-| 133 | Malvinas Argentinas | 1994 | 11.551 |
-| 134 | Punta Indio | 1994 | - |
-| 135 | Hurlingham | 1994 | - |
-| 136 | Ituzaingó | 1995 | - |
+| Código | Partido             | Año de Creación | Ley    |
+| ------ | ------------------- | --------------- | ------ |
+| 130    | Ezeiza              | 1994            | 11.550 |
+| 131    | San Miguel          | 1994            | 11.551 |
+| 132    | José C. Paz         | 1994            | 11.551 |
+| 133    | Malvinas Argentinas | 1994            | 11.551 |
+| 134    | Punta Indio         | 1994            | -      |
+| 135    | Hurlingham          | 1994            | -      |
+| 136    | Ituzaingó           | 1995            | -      |
 
 ### 6. Islas del Delta
 

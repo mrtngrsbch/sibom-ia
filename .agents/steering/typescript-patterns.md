@@ -1,24 +1,10 @@
-# typescript-patterns
-
-## ⚠️ BASE EDITABLE
-
-Este archivo fue copiado desde: `.kiro/steering/typescript-patterns.md`
-
-**Puedes EDITAR este archivo** para agregar reglas específicas para agentes AI.
-
-Para regenerar desde .kiro/:
-```bash
-python .agents/hooks/sync_from_kiro.py
-```
-
----
+# TypeScript Engineering Patterns — SIBOM Frontend
+<!-- Creado: 2025-01-16 | Modificado: 2026-02-06 -->
 
 ---
 inclusion: fileMatch
 fileMatchPattern: '**/*.{ts,tsx}'
 ---
-
-# TypeScript Engineering Patterns - SIBOM Frontend
 
 ## Type System Architecture
 
@@ -373,8 +359,8 @@ describe('ActiveFilters', () => {
 // Environment variable schema with validation
 const envSchema = z.object({
   OPENROUTER_API_KEY: z.string().min(1, 'OpenRouter API key is required'),
-  LLM_MODEL_PRIMARY: z.string().default('anthropic/claude-3.5-sonnet'),
-  LLM_MODEL_ECONOMIC: z.string().default('google/gemini-flash-1.5'),
+  LLM_MODEL_PRIMARY: z.string().default('gemini-3-flash'),
+  LLM_MODEL_ECONOMIC: z.string().default('glm-4.7'),
   GITHUB_DATA_REPO: z.string().optional(),
   GITHUB_DATA_BRANCH: z.string().default('main'),
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
@@ -435,6 +421,54 @@ src/
 
 ---
 
+### 11. Next.js Backend Patterns
+
+**API Routes vs Server Actions:**
+```typescript
+// ✅ CORRECTO - Usar API routes en app/api/
+// archivo: app/api/search/route.ts
+import { NextResponse } from 'next/server';
+
+export async function POST(request: Request) {
+  const body = await request.json();
+  const results = await performSearch(body.query);
+  return NextResponse.json({ results });
+}
+
+// ❌ INCORRECTO - No usar Server Actions
+// 'use server' // NO USAR
+export async function serverAction() {
+  // Esta función NO debe usarse
+}
+```
+
+**Server-Side Logic with 'use server':**
+```typescript
+// ✅ CORRECTO - Lógica de servidor en Componentes Server o API Routes
+// Componente Server Component (sin 'use client')
+export default async function ServerComponent() {
+  const data = await fetchData(); // Llamada de lado del servidor
+  return <div>{data}</div>;
+}
+
+// ❌ INCORRECTO - Client Component con fetch innecesario
+'use client';
+export default function ClientComponent() {
+  useEffect(() => {
+    fetch('/api/data').then(...); // INNECESARIO - usar Server Component
+  }, []);
+}
+```
+
+**Backend Implementation Standards:**
+- **API Routes Obligatorias:** Toda lógica de backend debe implementarse como API Routes en `app/api/`
+- **Server Components:** Utilizar Server Components por defecto para recuperar datos en renderizado
+- **No Server Actions:** Prohibido usar Server Actions ('use server') para cualquier funcionalidad backend
+- **Type Safety en APIs:** Definir tipos de request/response para todas las API routes
+- **Validación de Input:** Utilizar Zod para validar todos los inputs de API routes
+
+---
+
 ## Implementation Checklist
 
 When implementing new TypeScript modules in this project:
@@ -449,3 +483,6 @@ When implementing new TypeScript modules in this project:
 - [ ] Implement type-safe API clients with proper error handling
 - [ ] Use branded types for domain-specific identifiers
 - [ ] Add accessibility attributes and test keyboard navigation
+- [ ] ✅ **NEVER use `any` type** - always specify types explicitly
+- [ ] ✅ **Use API Routes** - never use Server Actions for backend logic
+- [ ] ✅ **Use Server Components** - prefer 'use server' logic for data fetching

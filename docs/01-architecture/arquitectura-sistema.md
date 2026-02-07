@@ -1,8 +1,11 @@
 # Arquitectura con Function Calling - LLM + Tools
 
 **Date:** 2026-01-10  
+**Updated:** 2026-02-06  
 **Status:** 📋 Propuesta  
 **Goal:** Permitir que el LLM decida cuándo usar SQL vs búsqueda de contenido
+
+> **Stack real:** LLM: Gemini 3 Flash (principal), GLM 4.7 (alternativo) | Vector DB: Qdrant | Embeddings: text-embedding-3-small
 
 ## Problema Actual
 
@@ -145,7 +148,7 @@ import { z } from 'zod';
 
 // En el streamText
 const result = streamText({
-  model: openrouter(modelId),
+  model: openrouter(modelId), // TODO: actualizar a Gemini 3 Flash / GLM 4.7 via OpenRouter
   system: systemPrompt,
   messages: coreMessages,
   temperature: 0.3,

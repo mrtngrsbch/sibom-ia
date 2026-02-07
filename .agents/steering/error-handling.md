@@ -1,19 +1,5 @@
-# error-handling
-
-## ⚠️ BASE EDITABLE
-
-Este archivo fue copiado desde: `.kiro/steering/error-handling.md`
-
-**Puedes EDITAR este archivo** para agregar reglas específicas para agentes AI.
-
-Para regenerar desde .kiro/:
-```bash
-python .agents/hooks/sync_from_kiro.py
-```
-
----
-
-# Estrategias de Manejo de Errores - SIBOM Scraper Assistant
+# Estrategias de Manejo de Errores — SIBOM Scraper Assistant
+<!-- Creado: 2025-01-16 | Modificado: 2026-02-06 -->
 
 ## Arquitectura de Manejo de Errores
 

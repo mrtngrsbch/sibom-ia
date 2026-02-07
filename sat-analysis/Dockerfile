@@ -1,70 +1,52 @@
-# Dockerfile para sat-analysis en Railway
-# Multi-stage build para optimizar tamaño de imagen
+# Dockerfile para sat-analysis FastAPI backend
+# Optimizado para ARM64 (Apple Silicon) y AMD64
 
-# Stage 1: Builder - compilar dependencias que necesitan compilación
-FROM python:3.13-slim-bookworm AS builder
+FROM python:3.13-slim-bookworm
 
-# Instalar dependencias de compilación para rasterio y otras librerías geoespaciales
+# Instalar dependencias básicas
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
     build-essential \
-    gdal-bin \
-    libgdal-dev \
-    libproj-dev \
-    libgeos-dev \
+    libexpat1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Crear entorno virtual
-RUN python -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+# Crear usuario no-root para seguridad
+RUN useradd -m -u 1000 appuser
 
-# Copiar requirements e instalar dependencias
 WORKDIR /app
+
+# Copiar requirements primero para caché de Docker
 COPY requirements.txt .
+
+# Instalar dependencias Python (rasterio se compila desde fuente si no hay wheel)
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
     pip install --no-cache-dir -r requirements.txt
 
-# Stage 2: Runtime - imagen final más ligera
-FROM python:3.13-slim-bookworm
-
-# Instalar solo dependencias runtime necesarias
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gdal-bin \
-    libgdal3 \
-    libproj25 \
-    libgeos-c1v5 \
-    libgomp1 \
-    && rm -rf /var/lib/apt/lists/*
-
-# Crear usuario no-root para Gradio
-RUN useradd -m -u 1000 appuser
-
-# Copiar entorno virtual del builder
-COPY --from=builder /opt/venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH" \
-    PYTHONUNBUFFERED=1 \
-    GRADIO_SERVER_NAME="0.0.0.0"
-
-# Crear directorios de trabajo
-WORKDIR /app
-RUN mkdir -p /app/web_output /app/logs && \
-    chown -R appuser:appuser /app
-
 # Copiar código fuente
 COPY --chown=appuser:appuser src/ /app/src/
-COPY --chown=appuser:appuser app.py /app/
-COPY --chown=appuser:appuser codigos_partidos_arba.json /app/
-COPY --chown=appuser:appuser thresholds.yaml /app/
+COPY --chown=appuser:appuser api/ /app/api/
+COPY --chown=appuser:appserver codigos_partidos_arba.json .
+COPY --chown=appuser:appserver thresholds.yaml .
+
+# Crear directorios de datos
+RUN mkdir -p /app/data/web_output /app/logs && \
+    chown -R appuser:appuser /app
 
 # Cambiar a usuario no-root
 USER appuser
 
-# Exponer puerto que Railway espera
-ENV GRADIO_SERVER_PORT=7860
-EXPOSE 7860
+# Variables de entorno
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    OUTPUT_DIR=/app/data/web_output \
+    PYTHONPATH=/app/src
 
-# Health check
+# Exponer puerto FastAPI
+EXPOSE 8001
+
+# Health check (usar python en vez de curl para no depender de curl)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:7860')"
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8001/api/health')" || exit 1
 
-# Comando de inicio
-CMD ["python", "app.py"]
+# Comando de inicio (1 worker para no tener problemas con multiprocessing)
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8001", "--workers", "1"]

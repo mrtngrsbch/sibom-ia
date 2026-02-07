@@ -26,6 +26,9 @@ const nextConfig = {
 
   /** Transpile packages para compatibilidad con React 19 */
   transpilePackages: ['react-markdown', 'remark-gfm'],
+
+  /** Output standalone para Docker */
+  output: 'standalone',
 };
 
 module.exports = nextConfig;

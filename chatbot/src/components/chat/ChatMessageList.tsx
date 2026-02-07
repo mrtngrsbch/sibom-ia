@@ -12,7 +12,7 @@ import { clsx } from 'clsx';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { Components } from 'react-markdown';
-import type { Message } from 'ai';
+import type { Message } from '@ai-sdk/react';
 import type { Source } from '@/lib/types';
 import { Citations } from './Citations';
 import { TokenUsage } from './TokenUsage';

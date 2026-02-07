@@ -1,10 +1,12 @@
 # Migración Completa: Gemini → OpenRouter + CLI Python
 
+> **Nota (2026-02-06):** Stack actual: **Gemini 3 Flash** (principal) + **GLM 4.7** (alternativo). Ver `.agents/README.md`.
+
 ## 🎯 Resumen de Tareas Completadas
 
 ### ✅ Tarea 1: Migración React de Claude a OpenRouter
 
-La aplicación React ha sido migrada exitosamente de **Anthropic Claude** a **OpenRouter con Google Gemini 2.5 Flash**.
+La aplicación React ha sido migrada exitosamente de **Anthropic Claude** a **OpenRouter con Google Gemini** (inicialmente 2.5 Flash, actualmente **Gemini 3 Flash**).
 
 **Archivos modificados:**
 - [package.json](package.json) - Cambiado `@anthropic-ai/sdk` por `openai`

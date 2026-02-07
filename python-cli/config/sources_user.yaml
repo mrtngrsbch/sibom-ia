@@ -1,6 +1,6 @@
 # Fuentes de datos personalizadas - Carlos Tejedor
 # Generado automáticamente por scripts/discover_carlos_tejedor.py
-# Fecha: 859215.404984666
+# Fecha: 1406602.973379583
 #
 # Para activar una fuente, cambia enabled: false → enabled: true
 #
@@ -192,3 +192,255 @@ sources:
   - situacion_economica
   - stock_deuda
   description: Carlos Tejedor - Balances
+- name: Carlos Tejedor - Presupuestos
+  type: manual
+  enabled: true
+  base_url: https://carlostejedor.gob.ar/presupuestos/
+  categories:
+  - presupuestos
+  url_patterns:
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Calculo-de-Recursos-por-Caracter-Economico-2026.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Calculo-de-Recursos-por-Procedencia-2026.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Calculo-de-Recursos-por-Rubro-2026.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Calculo-de-Recursos_Por-Caracter-Economico-2025.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Calculo-de-Recursos_Por-Rubros-2025.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Calculo-de-Recursos_Por-su-Procedencia-2025.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Caracter-2020.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Caracter-Economico-2022.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Caracter-Economico-2023.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Caracter-Economico-2024.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Categoria-Programatica-202.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Categoria-Programatica-2023.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Categoria-Programatica-2024.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Estructura-2020.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Finalidad-y-Funcion-2020.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Finalidad-y-Funcion-2022.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Finalidad-y-Funcion-2023.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Finalidad-y-Funcion-2024.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Fuente-2020.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Fuente-de-F-2022.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Fuente-de-Financiamiento-2023.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Fuente-de-Financiamiento-2024.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Jurisdiccion-Estructura-Fuente-y-Objeto-2020.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Jurisdiccion-Estructura-y-Objeto-2020.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Jurisdiccion-Fuente-e-Inciso-2020.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Objeto-2020.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Objeto-2022.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Objeto-2023.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Objeto-del-Gasto-2024.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Presupuesto-de-Gastos-por-Caracter-Economico-2026.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Presupuesto-de-Gastos-por-Categoria-Programatica-2026.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Presupuesto-de-Gastos-por-Finalidad-y-Funcion-2026.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Presupuesto-de-Gastos-por-Fuente-de-Financiamiento-2026.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Presupuesto-de-Gastos-por-Gastos-por-Objeto-2026.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Presupuesto-de-Gastos_Por-Caracter-Economico-2025.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Presupuesto-de-Gastos_Por-Categoria-Programatica-2025.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Presupuesto-de-Gastos_Por-Finalidad-y-Funcion-2025.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Presupuesto-de-Gastos_Por-Fuente-de-Financiamiento-2025.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Presupuesto-de-Gastos_Por-Gastos-Por-Objeto-2025.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Recursos-por-Caracter-2020.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Recursos-por-Caracter-Economico-2022.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Recursos-por-Caracter-Economico-2023.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Recursos-por-Caracter-Economico-2024.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Recursos-por-Procedencia-2020.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Recursos-por-Procedencia-2022.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Recursos-por-Procedencia-2023.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Recursos-por-Procedencia-2024.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Recursos-por-Rubro-2020.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Recursos-por-Rubro-2022.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Recursos-por-Rubro-2023.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Recursos-por-Rubro-2024.pdf
+  document_types:
+  - gastos_por_caracter
+  - gastos_por_categoria
+  - gastos_por_finalidad
+  - gastos_por_fuente
+  - gastos_por_objeto
+  - recursos_por_caracter
+  - recursos_por_procedencia
+  - recursos_por_rubro
+  description: Carlos Tejedor - Presupuestos
+- name: Carlos Tejedor - Concursos
+  type: manual
+  enabled: true
+  base_url: https://carlostejedor.gob.ar/concursodeprecios/
+  categories:
+  - concursos
+  url_patterns:
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/AMPLICACION-RE-DE-GAS-NATURAL-BBICENTENARIO-SEGU_251209_102514.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/CONCURSO-DE-PRECIOS-5-COMPLETO.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/CONCURSO-DE-PRECIOS-N°1-2026-JM.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-424-2.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-1-21.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-1-22-2.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-1-23-Contratacion-de-sonido-iluminacion-techo-de-escenario-estructura-areas-de-trabajo-y-pantallas-2.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-10-22-Adquisicion-de-desmalezadora.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-2-21.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-2-23-Contratacion-de-sonido-iluminacion-techo-de-escenario-estructura-areas-de-trabajo-y-pantallas-2.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-3-21.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-3-22-Adquisicion-de-un-tractor-radio-de-giro-cero-1.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-3-23-Adquisicion-de-maquina-montada_1.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-4-21.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-4-22-Adquisicion-de-Camion.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-4-23-Adquisicion-de-bloquera-de-alta-vibracion.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-5-22-Compra-de-indumentaria.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-5-23-Completo.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-6-21-1.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-6-22-Compra-de-compresores-secador-filtros-y-tanques-1.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-6-23-Adquisicion-de-un-camion-tractor.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-7-22-Requerimientos-Tecnicos.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-7-23-Adquisicion-maquina-montada-segundo-llamado.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-8-22-Contratacion-de-sonido-iluminacion-techo-de-escenario-estructura-areas-de-trabajo-y-pantallas-2-1.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-8-23-Contratacion-de-sonido-iluminacion-techo-de-escenario-estructura-areas-de-trabajo-y-pantallas.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°-9-22-Contratacion-de-sonido-iluminacion-techo-de-escenario-estructura-areas-de-trabajo-y-pantallas-2.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°1-24-Adquisicion-de-580m2-de-losetas.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°1-25-Adquisicion-de-materiales-para-distrubucion-de-red-de-agua-Barrio-Sauco.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°10-23-Adquisicion-de-Camas-ortopedicas-electricas.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°10-24-Adquirir-un-tanque-de-fibra-segundo-llamado.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°11-23-Contratacion-de-sonido-iluminacion-techo-de-escenario-estructura-areas-de-trabajo-y-pantallas.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°11-24-Adquisicion-de-550m2-de-losetas.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°12-23-Adquisicion-de-2-columnas-solares.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°12-24-Compra-de-600-listones-de-madera-plastica-2.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°13-23-Adquisicion-de-280m2-de-adoquines.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°13-24-Venta-de-un-camion-Mercedes-Benz-Modelo-LK1418R-dominio-DPW375.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°14-23-Contratacion-de-sonido-iluminacion-techo-de-escenario-estructura-areas-de-trabajo-y-pantallas-2.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°14-24-Adquisicion-de-maquina-fumigadora.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°15-24-Venta-de-un-camion-Mercedes-Benz-Modelo-LK1418R-dominio-DPW375-segundo-llamado.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°16-24-Adquisicion-de-servidores-switch-rackeable.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°2-22-Adquisicion-de-Camioneta.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°2-24-Adquisicion-de-580m2-de-losetas-segundo-llamado.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°2-25-Adquisicion-de-400m2-de-losetas.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°3-24-Contratacion-de-sonido-iluminacion-techo-de-escenario-estructura-areas-de-trabajo-y-pantallas-2.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°3-25-Adquisicion-de-20-luminarias.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°5-25-Adquisicion-de-20-NOTEBOOK.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°6-25-Adquisicion-de-MOBILIARIO.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°7-25-Adquisicion-de-equipamiento-tecnologico-centro-universitario-Carlos-Tejedor.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°8-24-Adquisicion-de-moldes-cordon-cuneta-34-rectos-y-un-molde-de-cuatro-tramos-cordon-curvo-radio-seis.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-N°9-23-Contratacion-de-sonido-iluminacion-techo-de-escenario-estructura-areas-de-trabajo-y-pantallas.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso-de-precios-N°4-25-Venta-de-bienes.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Concurso62024.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/concurso-de-precios-5-2024-completo.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/concurso-de-precios-JTA.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/concurso1724.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/concurso724.pdf
+  document_types:
+  - concurso_precios
+  description: Carlos Tejedor - Concursos
+- name: Carlos Tejedor - Licitaciones Privadas
+  type: manual
+  enabled: true
+  base_url: https://carlostejedor.gob.ar/licitacionesprivadas/
+  categories:
+  - licitaciones
+  url_patterns:
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/AMPLIACION-JARDIN-TRES-ALGARROBOS-COMPLETO.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/COMPLETO-Lic-Privada-N°-1-25-Colocacion-cielorraso-e-instalacion-electrica-SUM-Club-los-11-Colonia-Sere_pdf-2.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/CentroIntegral.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/ESCUELA-COCINA-COMPLETO.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LIC-PRIVADA-5.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LICITACION-PLAYON_merged-1.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LICITACION-PRIVADA-7_250819_124311.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LICPRIVADA1023.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LICPRIVADA1123.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LICPRIVADA7.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LICPRIVADA8.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LICPRIVADA9.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LP6.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-PRIV-6-Camioneta.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-124.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-1-23-Adquisicion-de-un-acoplado-cisterna.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-1-26-Adquisicion-de-un-auto-v2.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-14-23-Adquisicion-de-juegos-de-plaza-Barrio-Norte.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-2-22-Adquisicion-de-Camion.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-2-23-Adquisicion-de-dos-modulos-vestuarios.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-2-24-Adquisicion-de-un-auto.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-3-22-Adquisicion-de-juegos-de-plaza.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-3-23-Adquisicion-de-mesa-de-cirugia-hospitalaria.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-3-24-Adquisicion-de-un-auto-segundo-llamado.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-3-25-Adquisicion-de-un-auto.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-4-22-Adquisicion-de-juegos-de-plaza-Tres-Algarrobos.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-4-23-Adquisicion-de-un-camion-tractor.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-4-25-Adquisicion-de-un-auto-segundo-llamado.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-5-22-Adquisicion-de-juegos-acuaticos-Carlos-Tejedor.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-5-23-Adquisicion-de-un-acoplado-cisterna-segundo-llamado.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-6-23-Adquisicion-de-un-camion-tractor-segundo-llamado.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-6-24-Construccion-de-playon-deportivo-en-escuela-secundaria-N°2-Manuel-Belgrano-de-Colonia-Sere.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-6-25-Adquisicion-de-un-analizador-quimicoNN.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-7-24-Adquisicion-de-un-auto-tercer-llamado.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Privada-N°-9-25-Adquisicion-de-notebooks.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic122023.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LicPriv132023.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Licitacion-19-21-1.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Licitacion-19-21-2.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Licitacion-19-21-3.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Licitacion-Privada-N10.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Licitacion-Privada-N8-COMPLETO.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/PLIEGO120.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/PLIEGO121.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Pliegocamioneta1.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/RED-GAS-COMPLETO-TRES-ALGARROBOS.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/cocina-escuela-3-segundo-llamado-completo.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/licitacion-pliego-SUM-Esc-25.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/licitacion-privada-9-completo.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/licprivada825.pdf
+  document_types:
+  - licitacion_privada
+  description: Carlos Tejedor - Licitaciones Privadas
+- name: Carlos Tejedor - Licitaciones Públicas
+  type: manual
+  enabled: true
+  base_url: https://carlostejedor.gob.ar/licitacionespublicas/
+  categories:
+  - licitaciones
+  url_patterns:
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/CALLE-3-DE-ENERO-COMPLETO.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/CLOACAS-FEDERAL-COMPLETA.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/COMPLETO-CORDON-CUNETA-LICITACION-TRES-ALGARROBOS-OOPP.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/CURARU-CORDON-CUNETA-COMPLETO.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/JARDINMATERNALPLIEGOSPLANOSCOMPLETO.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LIC-PUBLICA-6-2023.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LICITACION-PLIEGO-PAVIMENTO-BARRIO-BICENTENARIO.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LICUBLICA123.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LIC_-CAMARA-FRIGORIFICA-WEB.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LIC_-PUBLICA-TRES-ALGARROBOS-PLIEGO-PLACA.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LIICITACION-N4-2025-COMPRAS-OBRAS-PUBLICAS.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Pub-15-contratacion-local-de-terminal-de-TA.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Pub-18-Ambulancia-1.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Publica-N°-1-24-contratacion-local-de-terminal-de-TA-2.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Publica-N°-2-24-contratacion-local-de-terminal-de-CT.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Publica-N°-3-25-contratacion-local-de-terminal-de-CT.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Publica-N°-4-22-Adquisicion-de-Motoniveladora.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Publica-N°-6-22-Adquisicion-de-Motoniveladora-segundo-llamado-1.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Publica-N°-7-23-contratacion-local-de-terminal-de-CT-1.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Lic-Publica-N°-9-22-Adquisicion-de-Camioneta.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LicPubN3.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LicPubN42023.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/LicPublica223.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Licitacion-16-OP_merged.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Licitacion-Publica-17.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Licitacion-Publica-7.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Licitacion-Publica-N8.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/PLIEGO-COMPLETO-CORDON-CUNETA-CURARU.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/PLIEGO-PLANO-2-ETAPA-BARRIO-KIRCHNER-EDITADO.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/PLIEGOPLANOSLICITACIONPAVIMIENTOSERE.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Pavimentacion-Carlos-Tejedor-2da-etapa.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Pliego-Adquisicion-Camiones-volcadores.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Viviendas.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/ilovepdf_merged-18.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/licitacion-pliego-CALLE-ERRAMOSUPE.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/licitacion-publica-12-segundo-llamado.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/licitacion-publica-13.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/licitacion-publica-1422.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/licitacion-publica-16-21.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/licitacion-publica-2-_19.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/licitacion-publica-2.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/licitacion1122.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/licitacion15_1.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/licitacionobrasplanoNUEVO.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/licitacionpublica121.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/licitacionpublica221.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/licitacionpublica5.pdf
+  - https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/pliego-licitacion-14-32-vivendas-cuenca.pdf
+  document_types:
+  - licitacion_publica
+  description: Carlos Tejedor - Licitaciones Publicas

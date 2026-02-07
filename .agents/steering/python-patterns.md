@@ -1,24 +1,10 @@
-# python-patterns
-
-## ⚠️ BASE EDITABLE
-
-Este archivo fue copiado desde: `.kiro/steering/python-patterns.md`
-
-**Puedes EDITAR este archivo** para agregar reglas específicas para agentes AI.
-
-Para regenerar desde .kiro/:
-```bash
-python .agents/hooks/sync_from_kiro.py
-```
-
----
+# Python Engineering Patterns — SIBOM Scraper
+<!-- Creado: 2025-01-16 | Modificado: 2026-02-06 -->
 
 ---
 inclusion: fileMatch
 fileMatchPattern: '**/*.py'
 ---
-
-# Python Engineering Patterns - SIBOM Scraper
 
 ## Code Architecture Principles
 
@@ -204,7 +190,7 @@ class ScraperConfig:
     rate_limit_delay: int = 3
     max_retries: int = 3
     parallel_workers: int = 3
-    model_name: str = "google/gemini-3-flash-preview"
+    model_name: str = "gemini-3-flash"  # Modelo principal
     
     @classmethod
     def from_env(cls) -> 'ScraperConfig':

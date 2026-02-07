@@ -411,7 +411,8 @@ async def extract_bulletin_with_vision(
         (title, content, quality) o None si falla o se alcanza el límite diario
     """
     if not VISION_SUPPORT:
-        console.print("[dim]ℹ️ Vision API no disponible (instala openai)[/dim]")
+        console.print(
+            "[dim]ℹ️ Vision API no disponible (instala openai)[/dim]")
         return None
 
     # Verificar rate limit
@@ -423,7 +424,8 @@ async def extract_bulletin_with_vision(
         console.print(
             f"[red]❌ Límite diario de Vision API alcanzado ({stats['today']}/{stats['limit']})[/red]"
         )
-        console.print("[yellow]💡 Intenta de nuevo mañana o usa una API key con más límite[/yellow]")
+        console.print(
+            "[yellow]💡 Intenta de nuevo mañana o usa una API key con más límite[/yellow]")
         return None
 
     # Verificar API key
@@ -437,7 +439,8 @@ async def extract_bulletin_with_vision(
     # Convertir PDF a imágenes
     images = await _pdf_to_images(content)
     if not images:
-        console.print("[yellow]⚠️ No se pudieron convertir las páginas a imágenes[/yellow]")
+        console.print(
+            "[yellow]⚠️ No se pudieron convertir las páginas a imágenes[/yellow]")
         return None
 
     # Procesar TODAS las páginas (sin límite para boletines)
@@ -489,16 +492,19 @@ async def extract_bulletin_with_vision(
             )
 
             page_text = response.choices[0].message.content or ""
-            total_tokens += response.usage.total_tokens if hasattr(response, 'usage') else 0
+            total_tokens += response.usage.total_tokens if hasattr(
+                response, 'usage') else 0
 
             # Solo marcar página si hay contenido significativo
             if len(page_text) > 50:
                 full_text.append(page_text)
             else:
-                console.print(f"[dim]    Página {i + 1}: poco contenido ({len(page_text)} chars)[/dim]")
+                console.print(
+                    f"[dim]    Página {i + 1}: poco contenido ({len(page_text)} chars)[/dim]")
 
         except Exception as e:
-            console.print(f"[yellow]  ⚠️ Error en página {i + 1}: {e}[/yellow]")
+            console.print(
+                f"[yellow]  ⚠️ Error en página {i + 1}: {e}[/yellow]")
             continue
 
     await client.close()
@@ -525,7 +531,8 @@ async def extract_bulletin_with_vision(
     console.print(
         f"[green]✓ Extraídos {len(complete_text):,} caracteres ({quality['confidence']:.1%} calidad)[/green]"
     )
-    console.print(f"[dim]  Vision API hoy: {stats['today']}/{stats['limit']} requests[/dim]")
+    console.print(
+        f"[dim]  Vision API hoy: {stats['today']}/{stats['limit']} requests[/dim]")
 
     return title, complete_text, quality
 
@@ -582,38 +589,59 @@ async def _pdf_to_images(content: bytes) -> List[str]:
 # Modelos de visión analizados por precio y capacidad OCR para fallback de PDFs.
 # Cambia VISION_MODEL_ID para usar otro modelo.
 #
-# ┌────────────────────────────────────────────────────────────────────────────┐
-# │ MEJORES MODELOS DE VISIÓN PARA OCR (OpenRouter)                           │
-# ├────────────────────────────────────────────────────────────────────────────┤
-# │                                                                            │
-# │ 🏆 GRATIS Y EXCELENTE:                                                     │
-# │   nvidia/nemotron-nano-12b-v2-vl:free                                     │
-# │   - Precio: GRATIS                                                         │
-# │   - OCR: Excelente (60%)                                                   │
-# │   - Contexto: 128,000 tokens                                               │
-# │                                                                            │
-# │ ⭐ MEJOR OCR (PAGA):                                                       │
-# │   qwen/qwen3-vl-235b-a22b-instruct                                        │
-# │   - Precio: ~$1.2000 / 1M tokens                                          │
-# │   - OCR: Excelente (90%)                                                   │
-# │   - Contexto: 262,144 tokens                                               │
-# │                                                                            │
-# │ 🆓 OTRAS OPCIONES GRATIS:                                                  │
-# │   - google/gemini-2.0-flash-exp:free       (Alta: 50%, 1M ctx)           │
-# │   - qwen/qwen-2.5-vl-7b-instruct:free     (Alta: 50%, 32K ctx)           │
-# │   - mistralai/mistral-small-3.1-24b-instruct:free  (Media: 35%)           │
-# │                                                                            │
-# │ 💰 MEJOR RELACIÓN CALIDAD-PRECIO:                                         │
-# │   mistralai/pixtral-12b                    ($0.0000, Media: 35%)          │
-# │   mistralai/pixtral-large-2411             ($6.0000, Excelente: 65%)      │
-# │                                                                            │
-# │ 🔗 Para ver lista completa:                                                │
-# │   https://openrouter.ai/models?fmt=cards&input_modalities=image            │
-# │                                                                            │
-# └────────────────────────────────────────────────────────────────────────────┘
+# Modelos a probar - ordenados del más económico al más caro
+# models:
+#  - name: "Google: Gemini 2.5 Flash Lite Preview 09-2025"
+#    id: "google/gemini-2.5-flash-lite-preview-09-2025"
+#    input_price: 0.10
+#    output_price: 0.40
+#    notes: "by google | 1,05M context | $0,10/M input tokens | $0,40/M output tokens | $0,30/M audio tokens"
+#    calidad: "Excelente. Escanea hasta datos de contexto !"
+
+# Modelo actual (referencia) - MUY CARO
+#  - name: "Qwen3-VL 235B (actual)"
+#    id: "qwen/qwen3-vl-235b-a22b-instruct"
+#    input_price: 0.20
+#    output_price: 1.20
+#    notes: "Modelo actual, muy caro ($0.20/$1.20 por millón)"
+#    calidad: "Excelente"
+
+#  - name: "Mistral: Mistral Small 3.1 24B (free)"
+#    id: "mistralai/mistral-small-3.1-24b-instruct:free"
+#    provider:
+#      only: ["chutes"]
+#      quantizations: ["bf16"]
+#    input_price: 0.000
+#    output_price: 0.000
+#    notes: "by mistralai | 128K context | $0/M input tokens | $0/M output tokens"
+#    calidad: "Muy bueno, pero cambia '.' por ',' en numeros"
+
+#  - name: "ByteDance Seed: Seed 1.6 Flash"
+#    id: "bytedance-seed/seed-1.6-flash"
+#    input_price: 0.075
+#    output_price: 0.30
+#    notes: "by bytedance-seed | 262K context | $0,075/M input tokens | $0,30M output tokens"
+#    calidad: "Muy bueno, a veces no pone los '.' separadores de miles"
+
+#  - name: "Mistral: Mistral Small 3.2 24B"
+#    id: "mistralai/mistral-small-3.2-24b-instruct"
+#    input_price: 0.06
+#    output_price: 0.18
+#    notes: "by mistralai | 131K context | $0,06/M input tokens | $0,18/M output tokens"
+#    calidad: "Muy bueno, crear varias tablas y no guarda el titulo padre de la categoria"
+
+#  - name: "Mistral: Mistral Small 3.1 24B"
+#    id: "mistralai/mistral-small-3.1-24b-instruct"
+#    provider:
+#      only: ["chutes"]
+#      quantizations: ["bf16"]
+#   input_price: 0.000
+#   output_price: 0.000
+#   notes: "by mistralai | 128K context | $0/M input tokens | $0/M output tokens"
+
 
 # Modelo activo para fallback de PDFs (cambiar según necesidad)
-VISION_MODEL_ID = "qwen/qwen3-vl-235b-a22b-instruct"  # Mejor OCR - TOP !
+VISION_MODEL_ID = "google/gemini-2.5-flash-lite-preview-09-2025"  # Mejor OCR !
 
 # Umbral de calidad para activar fallback (0.0-1.0)
 # Si pdfplumber obtiene confidence < este valor, se usa Vision API

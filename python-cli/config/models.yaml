@@ -1,0 +1,373 @@
+# ============================================================================
+# CONFIGURACIÓN DE MODELOS LLM/VISION
+# ============================================================================
+# Archivo centralizado para TODA la configuración de modelos.
+#
+# - active: true  → Modelo en uso actualmente
+# - free: true    → Modelo gratuito
+# - vision: true  → Modelo con capacidades Vision API
+#
+# USO:
+#   1. Cambiar active: true/false para alternar entre modelos
+#   2. Ver precios actualizados en https://openrouter.ai/models
+#   3. Documentar pruebas de calidad en "calidad" y "notes"
+# ============================================================================
+
+# Modelos por defecto
+defaults:
+  vision: "google/gemini-2.5-flash-lite-preview-09-2025"
+  llm: "zai/glm-4.7"
+
+# ============================================================================
+# MODELOS VISION API (para OCR de PDFs, tablas, boletines)
+# ============================================================================
+models:
+  # --------------------------------------------------------------------------
+  # GOOGLE GEMINI - Vision API
+  # --------------------------------------------------------------------------
+  - id: "google/gemini-2.5-flash-lite-preview-09-2025"
+    name: "Gemini 2.5 Flash Lite"
+    type: vision
+    active: true
+    free: false
+    provider: openrouter
+    context: 1050000 # 1.05M tokens
+    input_price_usd: 0.10
+    output_price_usd: 0.40
+    # Pruebas:
+    test_date: "2025-02-01"
+    test_pdf: "Gastos por Finalidad y Función 1o Trimestre 2021"
+    tablas_extraidas: 4
+    calidad: "Excelente. Escanea datos de contexto"
+    notes: "Mejor relación calidad/precio. Recomendado para producción."
+    tags: ["vision", "ocr", "tablas", "recomendado", "producción"]
+
+  - id: "google/gemini-2.0-flash-exp:free"
+    name: "Gemini 2.0 Flash Exp (Free)"
+    type: vision
+    active: false
+    free: true
+    provider: openrouter
+    context: 1000000
+    input_price_usd: 0.00
+    output_price_usd: 0.00
+    # Pruebas:
+    test_date: "pendiente"
+    tablas_extraidas: "?"
+    calidad: "?"
+    notes: "Versión gratuita experimental."
+    tags: ["vision", "gratis", "experimental"]
+
+  # --------------------------------------------------------------------------
+  # QWEN VISION - Modelos chinos muy capaces
+  # --------------------------------------------------------------------------
+  - id: "qwen/qwen3-vl-235b-a22b-instruct"
+    name: "Qwen3-VL 235B"
+    type: vision
+    active: false
+    free: false
+    provider: openrouter
+    context: 0
+    input_price_usd: 0.20
+    output_price_usd: 1.20
+    # Pruebas:
+    test_date: "2025-01-31"
+    test_pdf: "Gastos por Finalidad y Función 1o Trimestre 2021"
+    tablas_extraidas: 2
+    calidad: "Excelente"
+    notes: "MUY CARO ($1.20/M output). Solo como referencia histórica."
+    tags: ["vision", "caro", "referencia"]
+
+  - id: "qwen/qwen-2-vl-7b-instruct"
+    name: "Qwen2-VL-7B"
+    type: vision
+    active: false
+    free: false
+    provider: openrouter
+    context: 0
+    input_price_usd: 0.05
+    output_price_usd: 0.15
+    # Pruebas:
+    test_date: "pendiente"
+    tablas_extraidas: "?"
+    calidad: "?"
+    notes: "Versión económica de Qwen Vision."
+    tags: ["vision", "económico"]
+
+  # --------------------------------------------------------------------------
+  # MISTRAL AI - Modelos franceses
+  # --------------------------------------------------------------------------
+  - id: "mistralai/mistral-small-3.1-24b-instruct:free"
+    name: "Mistral Small 3.1 24B (Free)"
+    type: vision
+    active: false
+    free: true
+    provider:
+      only: ["chutes"]
+      quantizations: ["bf16"]
+    context: 128000
+    input_price_usd: 0.00
+    output_price_usd: 0.00
+    # Pruebas:
+    test_date: "2025-01-31"
+    test_pdf: "Gastos por Finalidad y Función 1o Trimestre 2021"
+    tablas_extraidas: 0
+    calidad: "Bueno"
+    notes: "PROBLEMA: Cambia '.' por ',' en números. Requiere provider chutes."
+    tags: ["vision", "gratis", "económico", "free_tier"]
+
+  - id: "mistralai/mistral-small-3.2-24b-instruct"
+    name: "Mistral Small 3.2 24B"
+    type: vision
+    active: false
+    free: false
+    provider: openrouter
+    context: 131000
+    input_price_usd: 0.06
+    output_price_usd: 0.18
+    # Pruebas:
+    test_date: "2025-01-31"
+    test_pdf: "Gastos por Finalidad y Función 1o Trimestre 2021"
+    tablas_extraidas: 2
+    calidad: "Bueno"
+    notes: "PROBLEMA: Crea varias tablas y no guarda el título padre de categoría."
+    tags: ["vision", "económico"]
+
+  - id: "mistralai/mistral-small-3.1-24b-instruct"
+    name: "Mistral Small 3.1 24B"
+    type: vision
+    active: false
+    free: false
+    provider: openrouter
+    context: 128000
+    input_price_usd: 0.00
+    output_price_usd: 0.00
+    # Pruebas:
+    test_date: "pendiente"
+    tablas_extraidas: "?"
+    calidad: "?"
+    notes: "Requiere configuración de provider chutes para ser gratuito."
+    tags: ["vision", "gratis"]
+
+  # --------------------------------------------------------------------------
+  # BYTEDANCE - Modelos chinos emergentes
+  # --------------------------------------------------------------------------
+  - id: "bytedance-seed/seed-1.6-flash"
+    name: "Seed 1.6 Flash"
+    type: vision
+    active: false
+    free: false
+    provider: openrouter
+    context: 262000
+    input_price_usd: 0.075
+    output_price_usd: 0.30
+    # Pruebas:
+    test_date: "2025-01-31"
+    test_pdf: "Gastos por Finalidad y Función 1o Trimestre 2021"
+    tablas_extraidas: 2
+    calidad: "Bueno"
+    notes: "PROBLEMA: A veces no pone los '.' separadores de miles."
+    tags: ["vision", "económico"]
+
+  # --------------------------------------------------------------------------
+  # Z.AI - GLM-OCR (especializado en tablas financieras)
+  # --------------------------------------------------------------------------
+  - id: "zai/glm-ocr"
+    name: "GLM-OCR"
+    type: vision
+    active: false
+    free: false
+    provider: zai
+    context: 0  # No publicado por Z.AI
+    input_price_usd: 0.03
+    output_price_usd: 0.03
+    # Pruebas:
+    test_date: "2026-02-03"
+    test_pdf: "balances_f572eef0b91f.pdf"
+    tablas_extraidas: "?"
+    calidad: "Pendiente de evaluación"
+    notes: "Especializado en tablas financieras complejas. Devuelve Markdown directamente. Requiere ZAI_API_KEY."
+    tags: ["vision", "tablas", "financiero", "zai"]
+
+# ============================================================================
+# MODELOS LLM GENERAL (para parsing, análisis, etc.)
+# ============================================================================
+llm_models:
+  # --------------------------------------------------------------------------
+  # GOOGLE GEMINI - LLM general
+  # --------------------------------------------------------------------------
+  - id: "google/gemini-3-flash-preview"
+    name: "Gemini 3 Flash"
+    type: llm
+    active: false
+    free: false
+    provider: openrouter
+    context: 1000000
+    input_price_usd: 0.50
+    output_price_usd: 3.00
+    notes: "Anterior modelo por defecto."
+    tags: ["llm", "sibom"]
+
+  - id: "zai/glm-4.7"
+    name: "GLM-4.7"
+    type: llm
+    active: true
+    free: false
+    provider: zai
+    context: 131072 # 128k
+    input_price_usd: 0.03 # Consultar precio final
+    output_price_usd: 0.03
+    notes: "Nuevo modelo por defecto para SIBOM scraping. Alta capacidad de texto."
+    tags: ["llm", "default", "sibom", "zai"]
+
+  - id: "google/gemini-2.5-flash-lite"
+    name: "Gemini 2.5 Flash Lite"
+    type: llm
+    active: false
+    free: false
+    provider: openrouter
+    context: 1000000
+    input_price_usd: 0.10
+    output_price_usd: 0.40
+    notes: "Alternativa económica para SIBOM scraping."
+    tags: ["llm", "económico", "sibom"]
+
+  # --------------------------------------------------------------------------
+  # MODELOS GRATIS - Para reducir costos
+  # --------------------------------------------------------------------------
+  - id: "z-ai/glm-4.5-air:free"
+    name: "GLM-4.5 Air"
+    type: llm
+    active: false
+    free: true
+    provider: openrouter
+    context: 0
+    input_price_usd: 0.00
+    output_price_usd: 0.00
+    notes: "Modelo gratuito alternativo."
+    tags: ["llm", "gratis", "free_tier"]
+
+  - id: "google/gemma-3-27b-it:free"
+    name: "Gemma 3 27B"
+    type: llm
+    active: false
+    free: true
+    provider: openrouter
+    context: 0
+    input_price_usd: 0.00
+    output_price_usd: 0.00
+    notes: "Modelo gratuito alternativo."
+    tags: ["llm", "gratis", "free_tier"]
+
+  # --------------------------------------------------------------------------
+  # ANTHROPIC CLAUDE - Premium
+  # --------------------------------------------------------------------------
+  - id: "anthropic/claude-3-haiku"
+    name: "Claude 3 Haiku"
+    type: llm
+    active: false
+    free: false
+    provider: openrouter
+    context: 200000
+    input_price_usd: 0.25
+    output_price_usd: 1.25
+    notes: "Tareas críticas. No usado actualmente."
+    tags: ["llm", "premium", "no_usado"]
+
+  - id: "anthropic/claude-3.5-sonnet"
+    name: "Claude 3.5 Sonnet"
+    type: llm
+    active: false
+    free: false
+    provider: openrouter
+    context: 200000
+    input_price_usd: 3.00
+    output_price_usd: 15.00
+    notes: "Tareas complejas. No usado actualmente."
+    tags: ["llm", "premium", "no_usado"]
+
+  # --------------------------------------------------------------------------
+  # OPENAI GPT - Premium
+  # --------------------------------------------------------------------------
+  - id: "openai/gpt-4o-mini"
+    name: "GPT-4o Mini"
+    type: llm
+    active: false
+    free: false
+    provider: openrouter
+    context: 128000
+    input_price_usd: 0.15
+    output_price_usd: 0.60
+    notes: "General purpose. No usado actualmente."
+    tags: ["llm", "premium", "no_usado"]
+
+# ============================================================================
+# MAPEO DE SCRIPTS A MODELOS
+# ============================================================================
+# Define qué modelo usa cada script/función para tracking.
+#
+# script: nombre del script (ej: cli.py, sibom_scraper.py)
+# function: función específica (opcional)
+# model_id: ID del modelo en models[]
+# task: tipo de tarea para stats
+# ============================================================================
+script_models:
+  # Vision API (OCR de PDFs)
+  - script: "vision_extractor.py"
+    function: "extract_bulletin_with_vision"
+    model_id: "google/gemini-2.5-flash-lite-preview-09-2025"
+    task: "vision"
+
+  - script: "vision_extractor.py"
+    function: "VisionExtractor.extract_pdf"
+    model_id: "google/gemini-2.5-flash-lite-preview-09-2025"
+    task: "vision_tables"
+
+  # SIBOM Scraper
+  - script: "sibom_scraper.py"
+    function: "SIBOMScraper.scrape"
+    model_id: "zai/glm-4.7"
+    task: "sibom_parsing"
+
+  - script: "sibom_scraper.py"
+    function: "SIBOMScraper._make_llm_call"
+    model_id: "zai/glm-4.7"
+    task: "sibom_parsing"
+
+  # Transparency Scraper
+  - script: "cli.py"
+    function: "cmd_transparency"
+    model_id: "google/gemini-2.5-flash-lite-preview-09-2025"
+    task: "transparency"
+
+  # Web Scraper
+  - script: "web_scraper.py"
+    function: "scrape_all_sources"
+    model_id: null
+    task: null
+    notes: "No usa LLM, solo scraping HTTP"
+
+# ============================================================================
+# HISTORIAL DE PRUEBAS
+# ============================================================================
+# Registro de pruebas realizadas a modelos para comparación.
+# =============================================================================
+pruebas:
+  - date: "2025-01-31"
+    test_pdf: "https://carlostejedor.gob.ar/wp-content/uploads/simple-file-list/Gastos-por-Finalidad-y-Funcion-1o-Trimestre-2021.pdf"
+    resultados:
+      - model: "google/gemini-2.5-flash-lite-preview-09-2025"
+        tablas: 4
+        calidad: "Excelente"
+        costo_usd: 0.004080
+        ganador: true
+      - model: "bytedance-seed/seed-1.6-flash"
+        tablas: 2
+        calidad: "Bueno"
+        costo_usd: 0.001959
+      - model: "mistralai/mistral-small-3.1-24b-instruct:free"
+        tablas: 0
+        calidad: "Bueno"
+        costo_usd: 0.000000
+        notas: "No extrajo tablas, solo texto plano"
+    conclusion: "Gemini 2.5 Flash Lite es el mejor balance calidad/costo"

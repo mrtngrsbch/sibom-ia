@@ -5,8 +5,11 @@ utils/llm_tracker.py
 Sistema unificado de tracking de LLM usage.
 Registra todas las llamadas a APIs de LLM (OpenRouter).
 
-@version 1.0.0
+La configuración de modelos se lee desde config/models.yaml.
+
+@version 2.0.0
 @created 2026-01-30
+@updated 2026-02-01 - Migración a models.yaml
 """
 
 import json
@@ -20,121 +23,145 @@ console = Console()
 
 
 # ============================================================================
-# CONFIGURACIÓN DE MODELOS Y PRECIOS
+# CARGA DE CONFIGURACIÓN DESDE models.yaml
 # ============================================================================
 
-MODEL_PRICING = {
-    # ============================================================================
-    # MODELOS EN USO ACTIVO
-    # ============================================================================
+def _load_models_config() -> Dict[str, Any]:
+    """
+    Carga la configuración de modelos desde config/models.yaml.
 
-    # Vision API (OpenRouter) - Para OCR de PDFs con tablas
-    "qwen/qwen3-vl-235b-a22b-instruct": {
-        "type": "vision",
-        "provider": "openrouter",
-        "cost_per_million_input": 0.50,
-        "cost_per_million_output": 1.50,
-        "free": False,
-        "display_name": "Qwen3-VL",
-        "usage": "OCR de PDFs (balances, presupuestos)"
-    },
+    Returns:
+        Dict con defaults, models, llm_models, script_models
+    """
+    config_path = Path(__file__).parent.parent / "config" / "models.yaml"
 
-    # SIBOM Scraper - Modelo por defecto para parsing de boletines
-    "google/gemini-3-flash-preview": {
-        "type": "llm",
-        "provider": "openrouter",
-        "cost_per_million_input": 0.075,
-        "cost_per_million_output": 0.30,
-        "free": False,
-        "display_name": "Gemini-3-Flash",
-        "usage": "SIBOM scraping (default)"
-    },
-    "google/gemini-2.5-flash-lite": {
-        "type": "llm",
-        "provider": "openrouter",
-        "cost_per_million_input": 0.075,
-        "cost_per_million_output": 0.30,
-        "free": False,
-        "display_name": "Gemini-2.5-Flash-Lite",
-        "usage": "SIBOM scraping (alternativo)"
-    },
+    if not config_path.exists():
+        console.print("[yellow]⚠️  config/models.yaml no encontrado, usando defaults[/yellow]")
+        return {
+            "defaults": {"vision": "", "llm": ""},
+            "models": [],
+            "llm_models": [],
+            "script_models": []
+        }
 
-    # ============================================================================
-    # LLMs GRATIS (Alternativas para reducir costos)
-    # ============================================================================
+    try:
+        import yaml
+        with config_path.open('r', encoding='utf-8') as f:
+            return yaml.safe_load(f)
+    except ImportError:
+        console.print("[yellow]⚠️  PyYAML no instalado, usando defaults[/yellow]")
+        return {"defaults": {}, "models": [], "llm_models": [], "script_models": []}
+    except Exception as e:
+        console.print(f"[yellow]⚠️  Error cargando models.yaml: {e}[/yellow]")
+        return {"defaults": {}, "models": [], "llm_models": [], "script_models": []}
 
-    "z-ai/glm-4.5-air:free": {
-        "type": "llm",
-        "provider": "openrouter",
-        "cost_per_million_input": 0.0,
-        "cost_per_million_output": 0.0,
-        "free": True,
-        "display_name": "GLM-4.5-Air",
-        "usage": "Modelo gratuito alternativo"
-    },
-    "google/gemma-3-27b-it:free": {
-        "type": "llm",
-        "provider": "openrouter",
-        "cost_per_million_input": 0.0,
-        "cost_per_million_output": 0.0,
-        "free": True,
-        "display_name": "Gemma-3-27B",
-        "usage": "Modelo gratuito alternativo"
-    },
 
-    # ============================================================================
-    # OTROS MODELOS DISPONIBLES
-    # ============================================================================
+# Cargar configuración al inicio
+_MODELS_CONFIG = _load_models_config()
 
-    # Vision API alternatives
-    "qwen/qwen-2-vl-7b-instruct": {
-        "type": "vision",
-        "provider": "openrouter",
-        "cost_per_million_input": 0.05,
-        "cost_per_million_output": 0.15,
-        "free": False,
-        "display_name": "Qwen2-VL-7B",
-        "usage": "OCR económico"
-    },
-    "qwen/qwen-2-vl-72b-instruct": {
-        "type": "vision",
-        "provider": "openrouter",
-        "cost_per_million_input": 0.30,
-        "cost_per_million_output": 0.90,
-        "free": False,
-        "display_name": "Qwen2-VL-72B",
-        "usage": "OCR calidad media"
-    },
 
-    # LLMs Premium (no usados por defecto)
-    "anthropic/claude-3-haiku": {
-        "type": "llm",
-        "provider": "openrouter",
-        "cost_per_million_input": 0.25,
-        "cost_per_million_output": 1.25,
-        "free": False,
-        "display_name": "Claude-3-Haiku",
-        "usage": "Tareas críticas (no usado)"
-    },
-    "anthropic/claude-3.5-sonnet": {
-        "type": "llm",
-        "provider": "openrouter",
-        "cost_per_million_input": 3.0,
-        "cost_per_million_output": 15.0,
-        "free": False,
-        "display_name": "Claude-3.5-Sonnet",
-        "usage": "Tareas complejas (no usado)"
-    },
-    "openai/gpt-4o-mini": {
-        "type": "llm",
-        "provider": "openrouter",
-        "cost_per_million_input": 0.15,
-        "cost_per_million_output": 0.60,
-        "free": False,
-        "display_name": "GPT-4o-Mini",
-        "usage": "General purpose (no usado)"
-    },
-}
+def _build_model_pricing_dict() -> Dict[str, Dict[str, Any]]:
+    """
+    Construye el diccionario MODEL_PRICING desde models.yaml.
+    Compatible con ambos formatos: models (vision) y llm_models.
+    """
+    pricing = {}
+
+    # Procesar modelos Vision (models)
+    for model in _MODELS_CONFIG.get("models", []):
+        model_id = model.get("id")
+        if not model_id:
+            continue
+
+        pricing[model_id] = {
+            "type": model.get("type", "vision"),
+            "provider": model.get("provider", "openrouter"),
+            "cost_per_million_input": model.get("input_price_usd", 0.0),
+            "cost_per_million_output": model.get("output_price_usd", 0.0),
+            "free": model.get("free", False),
+            "display_name": model.get("name", model_id.split("/")[-1][:20]),
+            "usage": model.get("notes", ""),
+            "active": model.get("active", False),
+            "tags": model.get("tags", []),
+        }
+
+    # Procesar modelos LLM (llm_models)
+    for model in _MODELS_CONFIG.get("llm_models", []):
+        model_id = model.get("id")
+        if not model_id:
+            continue
+
+        pricing[model_id] = {
+            "type": model.get("type", "llm"),
+            "provider": model.get("provider", "openrouter"),
+            "cost_per_million_input": model.get("input_price_usd", 0.0),
+            "cost_per_million_output": model.get("output_price_usd", 0.0),
+            "free": model.get("free", False),
+            "display_name": model.get("name", model_id.split("/")[-1][:20]),
+            "usage": model.get("notes", ""),
+            "active": model.get("active", False),
+            "tags": model.get("tags", []),
+        }
+
+    return pricing
+
+
+# ============================================================================
+# DICCIONARIO DE PRECIOS (construido desde models.yaml)
+# ============================================================================
+MODEL_PRICING = _build_model_pricing_dict()
+
+
+# ============================================================================
+# FUNCIONES DE CONSULTA DE CONFIGURACIÓN
+# ============================================================================
+
+def get_default_model(model_type: str = "vision") -> str:
+    """
+    Retorna el modelo por defecto para un tipo.
+
+    Args:
+        model_type: "vision" o "llm"
+
+    Returns:
+        ID del modelo por defecto (ej: "google/gemini-2.5-flash-lite-preview-09-2025")
+    """
+    defaults = _MODELS_CONFIG.get("defaults", {})
+    return defaults.get(model_type, "")
+
+
+def get_model_for_script(script: str, function: str = None) -> Optional[str]:
+    """
+    Busca qué modelo usa un script específico.
+
+    Args:
+        script: Nombre del script (ej: "vision_extractor.py")
+        function: Nombre de la función (opcional)
+
+    Returns:
+        ID del modelo o None si no se encuentra
+    """
+    for mapping in _MODELS_CONFIG.get("script_models", []):
+        if mapping.get("script") == script:
+            if function is None or mapping.get("function") == function:
+                return mapping.get("model_id")
+    return None
+
+
+def get_all_models() -> Dict[str, Dict[str, Any]]:
+    """Retorna todos los modelos configurados."""
+    return MODEL_PRICING.copy()
+
+
+def reload_models_config() -> None:
+    """
+    Recarga la configuración desde models.yaml.
+    Útil después de editar el archivo manualmente.
+    """
+    global _MODELS_CONFIG, MODEL_PRICING
+    _MODELS_CONFIG = _load_models_config()
+    MODEL_PRICING = _build_model_pricing_dict()
+    console.print("[green]✓ Configuración de modelos recargada[/green]")
 
 
 # ============================================================================
@@ -233,8 +260,25 @@ class LLMTracker:
         return date.today().isoformat()
 
     def _calculate_cost(self, model: str, input_tokens: int, output_tokens: int) -> float:
-        """Calcula el costo de una llamada"""
-        config = MODEL_PRICING.get(model, {})
+        """
+        Calcula el costo de una llamada.
+
+        Si el modelo no está en MODEL_PRICING, advierte y retorna 0.
+        Esto previene que modelos aparezcan como "GRATIS" incorrectamente.
+        """
+        config = MODEL_PRICING.get(model)
+
+        if config is None:
+            # Modelo no configurado - advertir UNA vez
+            if not hasattr(self, '_warned_models'):
+                self._warned_models = set()
+            if model not in self._warned_models:
+                console.print(
+                    f"[yellow]⚠️  Modelo '{model}' no está en config/models.yaml[/yellow]"
+                )
+                console.print("[dim]    Agrega el modelo para tracking correcto de costos[/dim]")
+                self._warned_models.add(model)
+            return 0.0
 
         if config.get("free", False):
             return 0.0
@@ -388,6 +432,7 @@ class LLMTracker:
                         "output_tokens": 0,
                         "total_tokens": 0,
                         "cost": 0.0,
+                        "recalculated_cost": 0.0,  # Costo con precios actuales
                         "task": model_config.get("type", "unknown"),
                         "display_name": model_config.get("display_name", model_id.split("/")[-1][:20]),
                         "is_free": model_config.get("free", False)
@@ -400,9 +445,17 @@ class LLMTracker:
                 m["total_tokens"] += stats["total_tokens"]
                 m["cost"] += stats["cost"]
 
+                # Recalcular costo con precios actuales
+                if not m["is_free"]:
+                    model_config = MODEL_PRICING.get(model_id, {})
+                    cost_input = (stats["input_tokens"] / 1_000_000) * model_config.get("cost_per_million_input", 0)
+                    cost_output = (stats["output_tokens"] / 1_000_000) * model_config.get("cost_per_million_output", 0)
+                    m["recalculated_cost"] += cost_input + cost_output
+
                 total_calls += stats["calls"]
                 total_tokens += stats["total_tokens"]
-                total_cost += stats["cost"]
+                # Usar costo recalculado si está disponible
+                total_cost += m.get("recalculated_cost", stats["cost"])
 
         # Ordenar por costo (descendente)
         sorted_models = dict(sorted(

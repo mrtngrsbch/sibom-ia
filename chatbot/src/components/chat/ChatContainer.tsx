@@ -8,7 +8,7 @@
 'use client';
 
 import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
-import { useChat } from 'ai/react';
+import { useChat } from '@ai-sdk/react';
 import type { ChatFilters, ChatMessage } from '@/lib/types';
 import { extractFiltersFromQuery } from '@/lib/query-filter-extractor';
 import type { SearchOptions } from '@/lib/rag/retriever';
@@ -70,6 +70,7 @@ export function ChatContainer({
   } = useChat({
     api: '/api/chat',
     id: `chat-${chatKey}`,
+    streamProtocol: 'text',
     onError: (err) => {
       console.error('Chat error:', err);
     }

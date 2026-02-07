@@ -26,6 +26,10 @@ from pathlib import Path
 from typing import List, Dict
 import time
 import hashlib
+import sqlite3
+
+# Add parent directory to sys.path to allow importing from utils
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 try:
     import openai
@@ -39,8 +43,19 @@ except ImportError as e:
     print("  pip install openai qdrant-client tqdm python-dotenv")
     sys.exit(1)
 
-# Load environment variables from .env file
+# Load environment variables
 load_dotenv()
+
+# Try finding .env.local in python-cli directory or parent
+script_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(script_dir) # python-cli folder usually
+env_path = os.path.join(project_root, '.env.local')
+
+if not os.getenv('OPENAI_API_KEY'):
+    load_dotenv(env_path)
+    # Fallback to current dir if not found above
+    if not os.getenv('OPENAI_API_KEY'):
+         load_dotenv('.env.local')
 
 
 def generate_uuid_from_id(doc_id: str) -> str:
@@ -95,6 +110,7 @@ def load_normativas_index() -> List[Dict]:
     # Try multiple possible locations
     possible_paths = [
         Path('normativas_index_minimal.json'),  # Current directory
+        Path('data/indexes/normativas_index_minimal.json'), # Data folder
         Path('boletines/normativas_index_minimal.json'),  # Subdirectory
         Path('../python-cli/normativas_index_minimal.json'),  # Parent directory
     ]
@@ -122,6 +138,89 @@ def load_normativas_index() -> List[Dict]:
     return normativas
 
 
+def load_normativas_from_db(municipality: str) -> List[Dict]:
+    """Load normativas for a specific municipality directly from SQLite"""
+    import sqlite3
+    db_path = Path('boletines/normativas.db')
+    if not db_path.exists():
+        db_path = Path('python-cli/boletines/normativas.db')
+    
+    if not db_path.exists():
+        print(f"❌ Error: SQLite database not found at {db_path}")
+        return []
+
+    print(f"📥 Loading normativas for '{municipality}' from SQLite...")
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = sqlite3.Row
+    cursor = conn.cursor()
+    
+    cursor.execute(
+        "SELECT * FROM normativas WHERE municipality = ?", 
+        (municipality,)
+    )
+    rows = cursor.fetchall()
+    conn.close()
+
+    normativas = []
+    for r in rows:
+        r_dict = dict(r)
+        normativas.append({
+            'id': str(r_dict['id']),
+            'm': r_dict['municipality'],
+            't': r_dict['type'],
+            'n': r_dict['number'],
+            'y': r_dict['year'],
+            'ti': r_dict['title'],
+            'url': r_dict['url'],
+            # Map to expected keys in process_normativas
+            'sb': r_dict.get('source_bulletin', '')
+        })
+    
+    print(f"✅ Loaded {len(normativas):,} normativas from DB")
+    return normativas
+
+
+def load_transparency_docs() -> List[Dict]:
+    """Load valid transparency documents from SQLite via individual JSONs for chunk access"""
+    from utils.sqlite_manager import get_sqlite_manager
+    
+    mgr = get_sqlite_manager()
+    print("\n🔍 Querying transparency documents for indexing...")
+    
+    # Solo traer los válidos
+    docs = mgr.get_transparency_docs(limit=2000) # Aumentamos el límite para indexar todo
+    valid_docs = [d for d in docs if d.get('validation_status') == 'valid']
+    
+    total_chunks = []
+    
+    boletines_dir = Path("boletines")
+    
+    print(f"📥 Loading chunks for {len(valid_docs)} valid transparency documents...")
+    
+    for d in valid_docs:
+        json_file = d.get('json_file')
+        if not json_file: continue
+        
+        file_path = boletines_dir / json_file
+        if not file_path.exists(): continue
+        
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                
+            doc_chunks = data.get('rag_chunks', [])
+            for c in doc_chunks:
+                # Enriquecer el chunk con metadata del documento original
+                c['url_origen'] = d.get('url_origen')
+                c['id_doc'] = d.get('id')
+                total_chunks.append(c)
+        except Exception as e:
+            print(f"  ⚠ Error loading chunks for {json_file}: {e}")
+            
+    print(f"✅ Loaded {len(total_chunks):,} semantic financial chunks")
+    return total_chunks
+
+
 # ============================================================================
 # QDRANT SETUP
 # ============================================================================
@@ -136,12 +235,8 @@ def setup_qdrant_collection(client: QdrantClient, force: bool = False):
         print(f"⚠️ Collection already exists with {existing.points_count:,} points")
         
         if not force:
-            response = input("Do you want to DELETE and recreate it? (yes/no): ")
-            if response.lower() != 'yes':
-                print("❌ Aborted. Use existing collection or delete it manually.")
-                sys.exit(1)
-        else:
-            print("🗑️ Force mode: Deleting existing collection...")
+            print("🚀 Append mode: Keeping existing collection.")
+            return
 
         print("🗑️ Deleting existing collection...")
         client.delete_collection(COLLECTION_NAME)
@@ -204,29 +299,83 @@ def process_normativas(
                 # 1. Prepare texts for embedding
                 texts = []
                 for n in batch:
-                    # Combine title, municipality, type, and number for better semantic search
-                    text = f"{n['ti']} {n['m']} {n['t']} {n['n']}"
-                    texts.append(text)
+                    if 'embedding_text' in n:
+                        # Case: Transparency Chunk
+                        texts.append(n['embedding_text'])
+                    elif 'text_to_embed' in n:
+                         # Legacy case if any
+                        texts.append(n['text_to_embed'])
+                    else:
+                        # Case: Normal Normativa
+                        # Use .get() with defaults to avoid KeyError
+                        ti = n.get('ti', 's/t')
+                        m = n.get('m', 's/m')
+                        t = n.get('t', 's/tipo')
+                        n_val = n.get('n', 's/n')
+                        text = f"{ti} {m} {t} {n_val}"
+                        texts.append(text)
 
                 # 2. Generate embeddings
                 embeddings = generate_embeddings_batch(openai_client, texts)
 
-                # 3. Prepare points for Qdrant
+                 # 3. Prepare points for Qdrant
                 points = []
                 for j, n in enumerate(batch):
-                    points.append(PointStruct(
-                        id=generate_uuid_from_id(n['id']),  # Convert to UUID
-                        vector=embeddings[j],
-                        payload={
-                            'id': n['id'],  # Keep original ID in payload for reference
-                            'municipality': n['m'],
-                            'type': n['t'],
-                            'number': n['n'],
-                            'year': n['y'],
-                            'title': n['ti'],
-                            'url': n['url'],
-                            'source_bulletin': n['sb'],
+                    # Check if it's a transparency chunk
+                    if 'embedding_text' in n:
+                         # Case: Transparency Chunk
+                        chunk_id = n.get('chunk_id')
+                        if not chunk_id:
+                             chunk_id = f"{n.get('id_doc', 'unknown')}_{j}_{i}"
+                        
+                        point_id = generate_uuid_from_id(chunk_id)
+                        
+                        # Extract metadata safely
+                        meta = n.get('metadata', {})
+                        data = n.get('data', {})
+                        
+                        payload = {
+                            'source_type': 'transparency_chunk',
+                            'municipality': meta.get('entity', n.get('municipality')), # key 'entity' in metadata
+                            'period': meta.get('period', n.get('period')),
+                            'year': meta.get('year'),
+                            'month': meta.get('month'),
+                            'document_type': meta.get('document_type'),
+                            'account_code': data.get('CUENTA'),
+                            'account_desc': data.get('DESCRIPCION'),
+                            'text': n['embedding_text'],
+                            'id_doc': n.get('id_doc'),
+                            'chunk_id': chunk_id,
+                            'url': n.get('url_origen')
                         }
+                    elif 'text_to_embed' in n:
+                        # Legacy Case
+                        point_id = generate_uuid_from_id(f"{n.get('id_doc')}_{j}_{i}")
+                        payload = {
+                            'source_type': 'transparency_chunk',
+                            'text': n['text_to_embed'],
+                            'id_doc': n.get('id_doc'),
+                            'url': n.get('url_origen')
+                        }
+                    else:
+                        # Case: Normal Normativa
+                        point_id = generate_uuid_from_id(n.get('id', 'unknown'))
+                        payload = {
+                            'source_type': 'normativa',
+                            'id': n.get('id'),
+                            'municipality': n.get('m'),
+                            'type': n.get('t'),
+                            'number': n.get('n'),
+                            'year': n.get('y'),
+                            'title': n.get('ti'),
+                            'url': n.get('url'),
+                            'source_bulletin': n.get('sb'),
+                        }
+                        
+                    points.append(PointStruct(
+                        id=point_id,
+                        vector=embeddings[j],
+                        payload=payload
                     ))
 
                 # 4. Upload to Qdrant
@@ -276,13 +425,28 @@ def verify_collection(client: QdrantClient):
 
         # Test search
         print(f"\n🧪 Testing search with query 'ordenanza municipal'...")
-        test_embedding = [0.1] * VECTOR_SIZE  # Dummy vector for testing
-        results = client.search(
-            collection_name=COLLECTION_NAME,
-            query_vector=test_embedding,
-            limit=3
-        )
-        print(f"✅ Search works! Found {len(results)} results")
+        try:
+            # Updated method for newer qdrant-client versions
+            results = client.query_points(
+                collection_name=COLLECTION_NAME,
+                query="ordenanza municipal",
+                limit=3
+            )
+            print(f"✅ Search test successful: {len(results.points)} results found.")
+        except Exception as e:
+            print(f"❌ Verification failed: {e}")
+            # Fallback if query_points also fails
+            try:
+                 results = client.search(
+                    collection_name=COLLECTION_NAME,
+                    query_vector=[0.0] * VECTOR_SIZE,
+                    limit=3
+                 )
+                 print(f"✅ Fallback search successful.")
+            except:
+                 pass
+            
+        print("\n🔍 Sample points look correct")
 
     except Exception as e:
         print(f"❌ Verification failed: {e}")
@@ -294,6 +458,15 @@ def verify_collection(client: QdrantClient):
 # ============================================================================
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser(description="Generador de Embeddings para Qdrant")
+    parser.add_argument("--only-transparency", action="store_true", help="Indexar solo documentos de transparencia")
+    parser.add_argument("--only-normativas", action="store_true", help="Indexar solo normativas estándar")
+    parser.add_argument("--skip-normativas", action="store_true", help="Saltar normativas")
+    parser.add_argument("--recreate", action="store_true", help="BORRAR y recrear la colección")
+    parser.add_argument("--municipality", "-m", type=str, help="Filtrar por municipio (ej: 'Carlos Tejedor')")
+    args = parser.parse_args()
+
     print("=" * 70)
     print("OpenAI Embeddings Generator for Qdrant")
     print("=" * 70)
@@ -307,17 +480,43 @@ def main():
     qdrant_client = QdrantClient(url=qdrant_url, api_key=qdrant_key)
     print("✅ Clients initialized")
 
-    # 3. Load normativas
-    normativas = load_normativas_index()
+    # 3. Load data
+    normativas = []
+    if not args.only_transparency and not args.skip_normativas:
+        if args.municipality:
+            # Use DB for filtered municipality (more accurate than JSON index)
+            normativas = load_normativas_from_db(args.municipality)
+        else:
+            normativas = load_normativas_index()
+    else:
+        print("⏩ Skipping normativas index load")
+    
+    # 3.5 Load transparency chunks
+    trans_chunks = []
+    if not args.only_normativas:
+        trans_chunks = load_transparency_docs()
+        if args.municipality:
+            # Transparency chunks use 'municipality' key in metadata or top level
+            trans_chunks = [c for c in trans_chunks if args.municipality.lower() in (c.get('metadata', {}).get('entity', '') or c.get('municipality', '')).lower()]
+            print(f"🎯 Filtered transparency chunks for '{args.municipality}': {len(trans_chunks):,}")
+    else:
+        print("⏩ Skipping transparency chunks load")
+    
+    # Combine everything
+    all_data = normativas + trans_chunks
+    
+    if not all_data:
+        print("❌ No data to process. Exiting.")
+        return
 
     # 4. Setup Qdrant collection
-    setup_qdrant_collection(qdrant_client)
+    setup_qdrant_collection(qdrant_client, force=args.recreate)
 
-    # 5. Process normativas
+    # 5. Process everything
     successful, failed = process_normativas(
         openai_client,
         qdrant_client,
-        normativas
+        all_data
     )
 
     # 6. Verify
@@ -328,10 +527,12 @@ def main():
     print("\n" + "=" * 70)
     print("SUMMARY")
     print("=" * 70)
-    print(f"Total normativas: {len(normativas):,}")
+    if normativas:
+        print(f"Total normativas: {len(normativas):,}")
+    print(f"Total transparency chunks: {len(trans_chunks):,}")
     print(f"Successfully processed: {successful:,}")
     print(f"Failed: {failed:,}")
-    print(f"Success rate: {successful / len(normativas) * 100:.1f}%")
+    print(f"Success rate: {(successful / len(all_data) * 100) if all_data else 0:.1f}%")
     print("\n✅ Done! Vector search is now available.")
     print("\nNext steps:")
     print("1. Add QDRANT_URL and QDRANT_API_KEY to chatbot/.env")

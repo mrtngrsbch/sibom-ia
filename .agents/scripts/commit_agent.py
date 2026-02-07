@@ -147,6 +147,22 @@ class CommitAgent:
         
         return files
     
+    def get_staged_files(self) -> List[Dict]:
+        """Obtiene lista de archivos staged"""
+        staged = []
+        try:
+            output = self._run_git_command(['diff', '--cached', '--name-status'])
+            for line in output.split('\n'):
+                if line.strip():
+                    parts = line.split()
+                    if len(parts) >= 2:
+                        status = parts[0]
+                        filepath = ' '.join(parts[1:])
+                        staged.append({'status': status, 'path': filepath})
+        except Exception:
+            pass
+        return staged
+    
     def categorize_file(self, filepath: str) -> str:
         """Categoriza un archivo por scope"""
         filepath = str(filepath)
@@ -179,24 +195,47 @@ class CommitAgent:
         return {k: v for k, v in categorized.items() if v}
     
     def count_lines(self, files: List[Dict]) -> Tuple[int, int]:
-        """Cuenta líneas añadidas y eliminadas"""
+        """Cuenta líneas añadidas y eliminadas usando git diff"""
         added = 0
         deleted = 0
         
+        # Obtener lista de archivos staged para comparación
+        staged_files = {f['path'] for f in self.get_staged_files()}
+        
         for file_info in files:
             filepath = file_info['path']
-            full_path = self.repo_root / filepath
-            
-            if not full_path.exists():
-                continue
             
             try:
-                with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
-                    content = f.read()
-                    lines = len(content.split('\n'))
-                    added += lines  # Simplificado
-            except Exception as e:
-                print(f"⚠️  No se pudo leer {filepath}: {e}")
+                # Determinar si el archivo está staged
+                is_staged = filepath in staged_files
+                
+                if is_staged:
+                    # Para archivos staged, usar diff --cached
+                    result = self._run_git_command(['diff', '--cached', '--numstat', '--', filepath])
+                else:
+                    # Para archivos unstaged, usar diff contra HEAD
+                    result = self._run_git_command(['diff', '--numstat', '--', filepath])
+                
+                if result.strip():
+                    # Formato: added\tdeleted\tfilename
+                    parts = result.strip().split('\t')
+                    if len(parts) >= 2:
+                        file_added = int(parts[0]) if parts[0].isdigit() else 0
+                        file_deleted = int(parts[1]) if parts[1].isdigit() else 0
+                        added += file_added
+                        deleted += file_deleted
+                        
+            except Exception:
+                # Si git diff falla (archivo nuevo o eliminado), contar líneas completas
+                try:
+                    full_path = self.repo_root / filepath
+                    if full_path.exists():
+                        with open(full_path, 'r', encoding='utf-8', errors='ignore') as f:
+                            content = f.read()
+                            lines = len(content.split('\n'))
+                            added += lines
+                except Exception:
+                    pass
         
         return added, deleted
     

@@ -14,8 +14,10 @@
 
 // Re-export solo los íconos usados en la aplicación
 export { Activity } from 'lucide-react';
+export { AlertCircle } from 'lucide-react';
 export { AlertTriangle } from 'lucide-react';
 export { BarChart3 } from 'lucide-react';
+export { Check } from 'lucide-react';
 export { Bot } from 'lucide-react';
 export { Building2 } from 'lucide-react';
 export { Calendar } from 'lucide-react';
@@ -36,6 +38,7 @@ export { Menu } from 'lucide-react';
 export { MessageSquare } from 'lucide-react';
 export { Moon } from 'lucide-react';
 export { RefreshCw } from 'lucide-react';
+export { Satellite } from 'lucide-react';
 export { Scale } from 'lucide-react';
 export { Search } from 'lucide-react';
 export { Send } from 'lucide-react';
@@ -48,3 +51,7 @@ export { User } from 'lucide-react';
 export { Wind } from 'lucide-react';
 export { X } from 'lucide-react';
 export { XCircle } from 'lucide-react';
+export { TrendingUp } from 'lucide-react';
+export { TrendingDown } from 'lucide-react';
+export { Minus } from 'lucide-react';
+export { Leaf } from 'lucide-react';

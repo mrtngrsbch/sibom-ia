@@ -8,19 +8,22 @@ Este módulo proporciona un punto de entrada único para todos los scrapers:
 - Transparency: Datos de transparencia (balances, presupuestos, etc.)
 - DB: Operaciones de base de datos
 
-@version 3.0.0
+@version 3.0.1
 @created 2026-01-29
+@updated 2026-02-01 - Resumen de ejecución unificado
 """
 
 import argparse
 import asyncio
 import sys
+import time
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
+from rich.live import Live
 
 console = Console()
 
@@ -32,6 +35,13 @@ except ImportError:
     class CreditExhaustedError(Exception):
         """Fallback si no se puede importar."""
         pass
+
+
+# ============================================================================
+# IMPORTAR EXECUTION SUMMARY DESDE command_runner.py
+# ============================================================================
+
+from core.command_runner import ExecutionSummary, CreditExhaustedHandler
 
 
 # ============================================================================
@@ -53,16 +63,43 @@ def cmd_sibom(args):
 
     scraper = SIBOMScraper()
 
+    target = ""
     if args.all:
         console.print("[yellow]Modo: todos los municipios[/yellow]")
-        # Ejecutar para todos los municipios configurados
-        scraper.run_all(limit=args.limit)
+        target = "Todos los municipios"
     elif args.municipality:
         console.print(f"[yellow]Modo: municipio {args.municipality}[/yellow]")
-        scraper.run(municipality=args.municipality, limit=args.limit)
+        target = args.municipality
     else:
         console.print("[red]Error: especifica --municipality o --all[/red]")
         sys.exit(1)
+
+    console.print()
+
+    # Ejecutar con resumen
+    with ExecutionSummary("SIBOM", target) as summary:
+        try:
+            if args.all:
+                results = scraper.run_all(limit=args.limit)
+                if results:
+                    # Agregar resultados al resumen
+                    for mun_result in results:
+                        if mun_result.get('success'):
+                            summary.add_success()
+                        if mun_result.get('json_files'):
+                            summary.add_file("JSON", mun_result['json_files'])
+            else:
+                result = scraper.run(municipality=args.municipality, limit=args.limit)
+                if result:
+                    summary.add_success()
+                    if result.get('json_files'):
+                        summary.add_file("JSON", result['json_files'])
+        except CreditExhaustedError:
+            console.print("\n[red]❌ Créditos de Vision API agotados[/red]")
+            summary.add_error()
+        except Exception as e:
+            console.print(f"\n[red]❌ Error: {e}[/red]")
+            summary.add_error()
 
 
 # ============================================================================
@@ -77,22 +114,36 @@ def cmd_web(args):
         python cli.py web --sources config/sources.yaml
         python cli.py web --filter "Carlos Tejedor" "Daireaux"
     """
-    console.print(Panel.fit("[bold cyan]Web Scraper[/bold cyan]"))
-    console.print()
+    sources_file = Path(args.sources) if args.sources else None
+    filter_list = args.filter if args.filter else None
 
-    async def run_web():
+    # Construir target para el resumen
+    target = ", ".join(filter_list) if filter_list else "Todas las fuentes"
+
+    async def run_web(summary: ExecutionSummary):
         from core.web_scraper import scrape_all_sources
 
-        sources_file = Path(args.sources) if args.sources else None
-
-        filter_list = args.filter if args.filter else None
-
-        await scrape_all_sources(
+        result = await scrape_all_sources(
             sources_file=sources_file,
             filter_names=filter_list
         )
 
-    asyncio.run(run_web())
+        # Actualizar métricas
+        if result:
+            if isinstance(result, dict):
+                for source_name, docs in result.items():
+                    if docs:
+                        summary.add_success(len(docs))
+                        summary.add_file("JSON", len(docs))
+            elif isinstance(result, list):
+                summary.add_success(len(result))
+                summary.add_file("JSON", len(result))
+
+    async def main():
+        async with ExecutionSummary("Web Scraper", target) as summary:
+            await run_web(summary)
+
+    asyncio.run(main())
 
 
 # ============================================================================
@@ -116,6 +167,9 @@ def cmd_transparency(args):
         console.print("[red]Error: --municipality es obligatorio[/red]")
         sys.exit(1)
 
+    # Variable para tracking del tiempo de inicio (usada por run_transparency)
+    summary_start_time = None
+
     async def run_transparency():
         from extractors.vision_extractor import extract_bulletin_with_vision
         import httpx
@@ -124,6 +178,9 @@ def cmd_transparency(args):
         from config import BOLETINES_DIR, USER_SOURCES_FILE, SOURCES_FILE
         import yaml
 
+        nonlocal summary_start_time
+        summary_start_time = time.time()
+
         municipio = args.municipality
         category = args.category or "balances"
 
@@ -131,10 +188,32 @@ def cmd_transparency(args):
         console.print(f"[yellow]Categoría: {category}[/yellow]")
         console.print()
 
-        # Directorio de salida: boletines/{Municipio}/
+        # Directorio de salida: test/ o boletines/{Municipio}/
         municipio_slug = municipio.replace(' ', '_')
-        output_dir = BOLETINES_DIR / municipio_slug
+        if args.test_dir:
+            # MODO TEST: usar carpeta test/
+            from config import PROJECT_ROOT
+            test_dir = PROJECT_ROOT / "test"
+            output_dir = test_dir / municipio_slug
+            console.print("[yellow]MODO TEST: guardando en test/ (sin SQLite)[/yellow]")
+        else:
+            # MODO PRODUCCIÓN: usar boletines/
+            output_dir = BOLETINES_DIR / municipio_slug
         output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Inicializar tracker de procesamiento
+        from utils.processing_tracker import ProcessingTracker
+        tracker = ProcessingTracker(output_dir)
+
+        # Verificar si hay PDFs grandes pendientes de procesar
+        large_pdfs_list = output_dir / "_pdfs_grandes_pending.txt"
+        if large_pdfs_list.exists():
+            with open(large_pdfs_list, 'r') as f:
+                pending_lines = [line.strip() for line in f if line.strip()]
+            if pending_lines:
+                console.print(f"\n[yellow]⚠ Hay {len(pending_lines)} PDF(s) grande(s) pendientes de procesar:[/yellow]")
+                console.print(f"   [dim]Archivo: {large_pdfs_list.name}[/dim]")
+                console.print(f"   [dim]Para procesarlos: --url <url_del_primer_pdf> --pdf-engine vision-chunks[/dim]\n")
 
         # Obtener URLs: desde --url (modo manual/test) o desde sources_user.yaml (producción)
         if args.url:
@@ -224,6 +303,10 @@ def cmd_transparency(args):
         skip_count = 0
 
         try:
+            # Inicializar el resumen de ejecución aquí para que esté disponible en el bucle
+            summary_exec = ExecutionSummary("Transparency", f"{municipio} - {category}")
+            summary_exec.start_time = summary_start_time
+
             for i, url in enumerate(urls_to_process, 1):
                 # Saltar si ya fue procesado
                 if url in processed_urls:
@@ -255,11 +338,61 @@ def cmd_transparency(args):
                         # Para documentos de transparencia (balances, presupuestos), usar prompt de tablas
                         is_transparency_doc = category in ["balances", "presupuestos", "concursos", "licitaciones"]
 
+
+                        # =====================================================================
+                        # VALIDACIÓN & CHUNKING (RAG Pipeline)
+                        # =====================================================================
+                        from utils.financial_validator import (
+                            FinancialValidator, 
+                            ChunkGenerator, 
+                            FinancialMetadata, 
+                            markdown_to_dataframe
+                        )
+                        from extractors.glm_ocr_extractor import extract_pdf_with_glm_ocr_async
+                        validator = FinancialValidator()
+
+                        # =====================================================================
+                        # DETECCIÓN DE PDFs GRANDES (antes de consumir tokens)
+                        # =====================================================================
+                        from extractors.vision_extractor import get_pdf_size_info
+
+                        pdf_info = get_pdf_size_info(response.content)
+                        is_large = pdf_info["page_count"] > args.large_pdf_threshold
+                        skip_this = False
+
+                        if is_large:
+                            filename = url.split('/')[-1]
+                            console.print(f"\n[yellow]⚠ PDF GRANDE DETECTADO:[/yellow]")
+                            console.print(f"   [dim]Archivo:[/dim] {filename}")
+                            console.print(f"   [dim]Páginas:[/dim] {pdf_info['page_count']}")
+                            console.print(f"   [dim]Tamaño:[/dim] {pdf_info['size_mb']:.1f} MB")
+
+                            if args.skip_large_pdfs:
+                                console.print(f"   [red]→ OMITIENDO (agregado a lista manual)[/red]\n")
+
+                                # Guardar en lista de PDFs para procesamiento manual
+                                large_pdfs_list = output_dir / "_pdfs_grandes_pending.txt"
+                                with open(large_pdfs_list, 'a') as f:
+                                    f.write(f"{url} | {pdf_info['page_count']} pág | {pdf_info['size_mb']:.1f} MB | {filename}\n")
+
+                                # Actualizar tracker
+                                tracker.mark_skipped(url, f"PDF grande ({pdf_info['page_count']} pág)")
+
+                                skip_count += 1
+                                skip_this = True
+                            else:
+                                console.print(f"   [yellow]→ Procesando con {args.pdf_engine} engine...[/yellow]\n")
+                                summary_exec.set_metric("large_pdfs_processed", 1)
+
+                        if skip_this:
+                            continue
+
                         result = await extract_bulletin_with_vision(
                             response.content,
                             url,
                             municipio,
-                            extract_tables=is_transparency_doc
+                            extract_tables=is_transparency_doc,
+                            pdf_engine=args.pdf_engine
                         )
 
                         if result:
@@ -268,6 +401,87 @@ def cmd_transparency(args):
                             # Guardar en formato TransparencyDocument
                             from extractors.vision_extractor import extract_tables_as_markdown
                             tablas_md = extract_tables_as_markdown(content)
+
+                            # --- Validar y Generar Chunks ---
+                            validation_status = "unchecked"
+                            validation_errors = []
+                            rag_chunks = []
+                            
+                            # Solo validar si es Balance y tiene tablas
+                            if is_transparency_doc and 'balance' in category.lower() and tablas_md:
+                                try:
+                                    is_any_valid = False
+                                    all_errors = []
+                                    
+                                    for idx, md_table in enumerate(tablas_md):
+                                        df = markdown_to_dataframe(md_table)
+                                        if df.empty:
+                                            continue
+                                            
+                                        # Intentar validar (asume columnas standard o las mapea si es necesario)
+                                        # Por ahora usamos el mapping default de FinancialValidator
+                                        try:
+                                            val_result = validator.validate_balance_sheet(df)
+                                            is_valid = val_result['is_valid'].all()
+                                            
+                                            if is_valid:
+                                                is_any_valid = True
+                                            elif not val_result.empty:
+                                                 # Colectar errores de filas invalidas
+                                                 invalid_rows = val_result[~val_result['is_valid']]
+                                                 for _, row in invalid_rows.iterrows():
+                                                     err_msg = f"Table {idx+1}: Final {row.get('saldo_final',0)} != Calc {row.get('calculated_final',0)}"
+                                                     all_errors.append(err_msg)
+                                        except Exception as val_e:
+                                            # Puede fallar si faltan columnas, etc.
+                                            # No bloqueamos el scrapeo
+                                            pass
+                                            
+                                    if is_any_valid and not all_errors:
+                                        validation_status = "valid"
+                                    elif all_errors:
+                                        validation_status = "failed"
+                                        validation_errors = all_errors[:10]
+                                        
+                                        # FALLBACK LOGIC: Try GLM-OCR if Gemini failed validation
+                                        console.print(f"[yellow]  ⚠ Validación fallida con Gemini. Re-intentando con GLM-OCR...[/yellow]")
+                                        try:
+                                            glm_result = await extract_pdf_with_glm_ocr_async(
+                                                response.content, url, municipio, extract_tables=True
+                                            )
+                                            if glm_result:
+                                                g_title, g_content, g_quality = glm_result
+                                                g_tablas_md = extract_tables_as_markdown(g_content)
+                                                
+                                                # Validar GLM-OCR
+                                                g_is_any_valid = False
+                                                g_all_errors = []
+                                                for md_table in g_tablas_md:
+                                                    df = markdown_to_dataframe(md_table)
+                                                    if df.empty: continue
+                                                    v_res = validator.validate_balance_sheet(df)
+                                                    if v_res['is_valid'].all(): g_is_any_valid = True
+                                                    else: g_all_errors.extend([f"GLM Row Error" for _ in range(len(v_res[~v_res['is_valid']]))])
+                                                
+                                                if g_is_any_valid and not g_all_errors:
+                                                    console.print(f"[green]  ✓ GLM-OCR solucionó la validación![/green]")
+                                                    content = g_content # Replace with better result
+                                                    tablas_md = g_tablas_md
+                                                    quality = g_quality
+                                                    validation_status = "valid"
+                                                    validation_errors = []
+                                                    quality["fallback_success"] = True
+                                                else:
+                                                    console.print(f"[dim]  → GLM-OCR también falló o no mejoró la validación.[/dim]")
+                                        except Exception as fallback_e:
+                                            console.print(f"[dim]  → Error en fallback GLM-OCR: {fallback_e}[/dim]")
+                                        
+                                except Exception as e:
+                                    validation_status = "error"
+                                    validation_errors.append(str(e))
+                            
+                            # Generar Metadata para Chunks (si tenemos info suficiente mas adelante)
+
 
                             # =====================================================================
                             # EXTRAER CABECERA DEL DOCUMENTO (datos importantes de la primera página)
@@ -318,8 +532,30 @@ def cmd_transparency(args):
                                     else:
                                         periodo_extraido = year
 
-                            # Usar el periodo especificado por args si existe, sino el extraído
                             periodo_final = args.period if args.period else periodo_extraido
+
+                            # =====================================================================
+                            # GENERAR CHUNKS PARA EL RAG (Si es válido)
+                            # =====================================================================
+                            if validation_status == "valid" and tablas_md:
+                                try:
+                                    chunker = ChunkGenerator()
+                                    meta = FinancialMetadata(
+                                        municipality=municipio,
+                                        period=periodo_final,
+                                        category=category
+                                    )
+                                    for md_table in tablas_md:
+                                        df = markdown_to_dataframe(md_table)
+                                        if not df.empty:
+                                            # Generar chunks enriquecidos
+                                            table_chunks = chunker.generate_chunks(df, meta)
+                                            rag_chunks.extend(table_chunks)
+                                    
+                                    if rag_chunks:
+                                        console.print(f"[green]  ✓ Generados {len(rag_chunks)} chunks para el RAG[/green]")
+                                except Exception as chunk_err:
+                                    console.print(f"[yellow]  ⚠ Error generando chunks: {chunk_err}[/yellow]")
 
                             doc_data = {
                                 "municipio": municipio,
@@ -335,6 +571,10 @@ def cmd_transparency(args):
                                 "tablas_md": tablas_md,
                                 "calidad": quality,
                                 "pdf_file": str(pdf_file) if pdf_file else None,
+                                "validation_status": validation_status,
+                                "validation_errors": validation_errors,
+                                "rag_chunks": rag_chunks, 
+                                "rag_chunks_count": len(rag_chunks),
                                 "metadata": {
                                     "fecha_scraping": datetime.now().isoformat(),
                                     "version_scraper": "3.2",  # Actualizado: ahora incluye cabecera y contenido
@@ -348,14 +588,17 @@ def cmd_transparency(args):
                             # Agregar el nombre del archivo JSON para que el chatbot lo pueda encontrar
                             doc_data["json_file"] = output_file.name
 
-                            # Guardar en SQLite
-                            try:
-                                from utils.sqlite_manager import get_sqlite_manager
-                                mgr = get_sqlite_manager()
-                                mgr.insert_transparency_doc(doc_data)
-                                console.print(f"[dim]  → SQLite actualizado[/dim]")
-                            except Exception as sqlite_err:
-                                console.print(f"[yellow]  ⚠ SQLite: {sqlite_err}[/yellow]")
+                            # Guardar en SQLite (SOLO en modo producción)
+                            if not args.test_dir:
+                                try:
+                                    from utils.sqlite_manager import get_sqlite_manager
+                                    mgr = get_sqlite_manager()
+                                    mgr.insert_transparency_doc(doc_data)
+                                    console.print(f"[dim]  → SQLite actualizado[/dim]")
+                                except Exception as sqlite_err:
+                                    console.print(f"[yellow]  ⚠ SQLite: {sqlite_err}[/yellow]")
+                            else:
+                                console.print(f"[dim]  → MODO TEST: SQLite omitido[/dim]")
 
                             # FIX: Solo guardar progreso si la extracción fue exitosa (contenido > 1000)
                             if content and len(content) > 1000:
@@ -364,6 +607,16 @@ def cmd_transparency(args):
                             else:
                                 console.print(f"[yellow]  ⚠ Contenido vacío/corto, NO se guarda progreso[/yellow]")
 
+                            # Actualizar tracker de procesamiento
+                            saved_to_sqlite = not args.test_dir  # Solo se guarda en SQLite si NO es test-dir
+                            tracker.mark_processed(
+                                url=url,
+                                model=quality.get('extraction_method', args.pdf_engine),
+                                page_count=pdf_info.get('page_count', 0),
+                                size_mb=pdf_info.get('size_mb', 0),
+                                saved_to_sqlite=saved_to_sqlite
+                            )
+
                             success_count += 1
                             console.print(f"[green]✓ Extraído: {title[:50]}...[/green]")
                             console.print(f"  Tablas: {len(tablas_md)}, Calidad: {quality['confidence']:.1%}")
@@ -371,6 +624,7 @@ def cmd_transparency(args):
                         else:
                             error_count += 1
                             console.print(f"[yellow]⚠ No se pudo extraer contenido[/yellow]")
+                            tracker.mark_error(url, "No se pudo extraer contenido")
 
                 except KeyboardInterrupt:
                     # Usuario canceló con Ctrl+C - GUARDAR PROGRESO ANTES DE SALIR
@@ -396,17 +650,26 @@ def cmd_transparency(args):
                     error_count += 1
 
         finally:
-            # Siempre mostrar resumen final
-            console.print()
-            console.print(f"[bold]Resumen:[/bold]")
-            console.print(f"  ✓ Exitosos: {success_count}")
-            console.print(f"  ✗ Errores: {error_count}")
-            console.print(f"  ⊘ Saltados (ya procesados): {skip_count}")
-            console.print(f"  → Total procesados: {len(processed_urls)}")
+            # Siempre mostrar resumen final con ExecutionSummary
+            if 'summary_exec' in locals():
+                summary_exec.end_time = time.time()
+                summary_exec.add_success(success_count)
+                summary_exec.add_error(error_count)
+                summary_exec.add_skipped(skip_count)
+                summary_exec.add_file("JSON", success_count)
+                if args.keep_pdf:
+                    summary_exec.add_file("PDF", success_count)
 
+                # Mostrar resumen unificado
+                summary_exec.display()
+
+            # Mostrar resumen del tracker de procesamiento
+            tracker.print_summary()
+
+            # Mensajes de progreso adicionales
             if processed_urls and success_count > 0:
-                console.print(f"\n[green]✓ Progreso guardado en {progress_file.name}[/green]")
-                console.print("[dim]Usa --skip-existing para retomar donde dejaste[/dim]")
+                console.print(f"[green]✓ Progreso guardado en {progress_file.name}[/green]")
+                console.print("[dim]Usa el mismo comando para retomar donde dejaste[/dim]")
 
     try:
         asyncio.run(run_transparency())
@@ -435,60 +698,71 @@ def cmd_db(args):
     from utils.sqlite_manager import get_sqlite_manager
     from config import DEFAULT_DB_PATH
 
-    console.print(Panel.fit("[bold cyan]SQLite Manager[/bold cyan]"))
-    console.print()
-
-    mgr = get_sqlite_manager(DEFAULT_DB_PATH)
-
+    # Determinar acción para el resumen
+    action = ""
     if args.stats:
-        console.print("[yellow]Estadísticas de la base de datos:[/yellow]\n")
-        mgr.print_stats()
-
+        action = "Estadísticas"
     elif args.export:
-        output_path = Path(args.export)
-        console.print(f"[yellow]Exportando a {output_path}...[/yellow]")
-        mgr.export_json(output_path, include_content=args.content)
-
+        action = f"Exportar a {args.export}"
     elif args.search:
-        console.print("[yellow]Buscando normativas:[/yellow]\n")
-
-        results = mgr.search(
-            municipality=args.municipality,
-            tipo=args.type,
-            year=args.year,
-            limit=args.limit
-        )
-
-        if results:
-            table = Table(title=f"Resultados ({len(results)})")
-            table.add_column("ID", style="dim")
-            table.add_column("Municipio")
-            table.add_column("Tipo")
-            table.add_column("Nº")
-            table.add_column("Año")
-            table.add_column("Fecha")
-            table.add_column("Título")
-
-            for r in results[:args.limit]:
-                table.add_row(
-                    r['id'][:8] + "...",
-                    r['municipality'][:20],
-                    r['type'][:15],
-                    r['number'],
-                    r['year'],
-                    r['date'] or "-",
-                    r['title'][:40] + "..." if r['title'] and len(r['title']) > 40 else (r['title'] or "-")
-                )
-
-            console.print(table)
-        else:
-            console.print("[dim]No se encontraron resultados[/dim]")
-
+        action = "Buscar"
     else:
-        console.print("[yellow]Opciones disponibles:[/yellow]")
-        console.print("  --stats     Mostrar estadísticas")
-        console.print("  --export    Exportar a JSON")
-        console.print("  --search    Buscar normativas")
+        action = "Ayuda"
+
+    with ExecutionSummary("SQLite Manager", action, show_startup=False) as summary:
+        mgr = get_sqlite_manager(DEFAULT_DB_PATH)
+
+        if args.stats:
+            console.print("[yellow]Estadísticas de la base de datos:[/yellow]\n")
+            mgr.print_stats()
+
+        elif args.export:
+            output_path = Path(args.export)
+            console.print(f"[yellow]Exportando a {output_path}...[/yellow]")
+            mgr.export_json(output_path, include_content=args.content)
+            summary.add_file("JSON export", 1)
+
+        elif args.search:
+            console.print("[yellow]Buscando normativas:[/yellow]\n")
+
+            results = mgr.search(
+                municipality=args.municipality,
+                tipo=args.type,
+                year=args.year,
+                limit=args.limit
+            )
+
+            if results:
+                summary.add_success(len(results))
+                table = Table(title=f"Resultados ({len(results)})")
+                table.add_column("ID", style="dim")
+                table.add_column("Municipio")
+                table.add_column("Tipo")
+                table.add_column("Nº")
+                table.add_column("Año")
+                table.add_column("Fecha")
+                table.add_column("Título")
+
+                for r in results[:args.limit]:
+                    table.add_row(
+                        r['id'][:8] + "...",
+                        r['municipality'][:20],
+                        r['type'][:15],
+                        r['number'],
+                        r['year'],
+                        r['date'] or "-",
+                        r['title'][:40] + "..." if r['title'] and len(r['title']) > 40 else (r['title'] or "-")
+                    )
+
+                console.print(table)
+            else:
+                console.print("[dim]No se encontraron resultados[/dim]")
+
+        else:
+            console.print("[yellow]Opciones disponibles:[/yellow]")
+            console.print("  --stats     Mostrar estadísticas")
+            console.print("  --export    Exportar a JSON")
+            console.print("  --search    Buscar normativas")
 
 
 # ============================================================================
@@ -503,20 +777,14 @@ def cmd_vision(args):
         python cli.py vision --url https://example.com/documento.pdf
         python cli.py vision --test
     """
-    console.print(Panel.fit("[bold cyan]Vision API Test[/bold cyan]"))
-    console.print()
-
-    async def run_vision():
+    async def run_vision(summary: ExecutionSummary):
         from extractors.vision_extractor import extract_bulletin_with_vision
         import httpx
 
         if args.test:
-            # URL de prueba
             url = "https://boletin.casares.gob.ar/archivos_boletin_oficial/boletin_oficial_31.pdf"
-            console.print(f"[yellow]URL de prueba: {url}[/yellow]\n")
         elif args.url:
             url = args.url
-            console.print(f"[yellow]URL: {url}[/yellow]\n")
         else:
             console.print("[red]Error: especifica --url o --test[/red]")
             sys.exit(1)
@@ -526,6 +794,7 @@ def cmd_vision(args):
                 response = await client.get(url)
                 if response.status_code != 200:
                     console.print(f"[red]Error HTTP {response.status_code}[/red]")
+                    summary.add_error()
                     return
 
             console.print("[cyan]Extrayendo con Vision API...[/cyan]\n")
@@ -533,11 +802,16 @@ def cmd_vision(args):
             result = await extract_bulletin_with_vision(
                 response.content,
                 url,
-                municipio=args.municipality or "Prueba"
+                municipio=args.municipality or "Prueba",
+                extract_tables=True,
+                pdf_engine=args.pdf_engine
             )
 
             if result:
                 title, content, quality = result
+                summary.add_success()
+                summary.set_metric("Caracteres", len(content))
+                summary.set_metric("Calidad", f"{quality['confidence']:.1%}")
 
                 console.print(Panel.fit(f"[bold green]Extracción exitosa[/bold green]"))
                 console.print()
@@ -551,13 +825,21 @@ def cmd_vision(args):
                     with output_path.open('w', encoding='utf-8') as f:
                         f.write(content)
                     console.print(f"[green]✓ Contenido guardado en {output_path}[/green]")
+                    summary.add_file("TXT", 1)
             else:
                 console.print("[red]La extracción falló[/red]")
+                summary.add_error()
 
         except Exception as e:
             console.print(f"[red]Error: {e}[/red]")
+            summary.add_error()
 
-    asyncio.run(run_vision())
+    async def main():
+        url = args.url or ("test" if args.test else "")
+        async with ExecutionSummary("Vision API Test", url) as summary:
+            await run_vision(summary)
+
+    asyncio.run(main())
 
 
 # ============================================================================
@@ -575,89 +857,151 @@ def cmd_index(args):
     from extractors.normativas_extractor import save_index, save_minimal_index
     import json
 
-    console.print(Panel.fit("[bold cyan]Index Manager[/bold cyan]"))
-    console.print()
+    with ExecutionSummary("Index Manager", "Rebuild", show_startup=False) as summary:
+        if args.rebuild:
+            console.print("[yellow]Reconstruyendo índices desde boletines/ y SQLite...[/yellow]\n")
 
-    if args.rebuild:
-        console.print("[yellow]Reconstruyendo índices desde boletines/ y SQLite...[/yellow]\n")
+            all_normas = []
 
-        all_normas = []
+            # 1. Leer todos los JSON de boletines
+            console.print("[cyan]1. Leyendo JSONs de boletines...[/cyan]")
+            for json_file in BOLETINES_DIR.glob("*.json"):
+                console.print(f"[dim]  Leyendo {json_file.name}...[/dim]")
 
-        # 1. Leer todos los JSON de boletines
-        console.print("[cyan]1. Leyendo JSONs de boletines...[/cyan]")
-        for json_file in BOLETINES_DIR.glob("*.json"):
-            console.print(f"[dim]  Leyendo {json_file.name}...[/dim]")
+                try:
+                    with json_file.open('r', encoding='utf-8') as f:
+                        data = json.load(f)
 
+                    if isinstance(data, dict) and 'normas' in data:
+                        all_normas.extend(data['normas'])
+                    elif isinstance(data, list):
+                        all_normas.extend(data)
+                except Exception as e:
+                    console.print(f"[yellow]  Error leyendo {json_file.name}: {e}[/yellow]")
+
+            console.print(f"\n[cyan]  Normativas desde JSON: {len(all_normas):,}[/cyan]\n")
+
+            # 2. Leer documentos de transparencia desde SQLite
+            console.print("[cyan]2. Leyendo documentos de transparencia desde SQLite...[/cyan]")
             try:
-                with json_file.open('r', encoding='utf-8') as f:
-                    data = json.load(f)
+                from utils.sqlite_manager import get_sqlite_manager
+                mgr = get_sqlite_manager()
 
-                if isinstance(data, dict) and 'normas' in data:
-                    all_normas.extend(data['normas'])
-                elif isinstance(data, list):
-                    all_normas.extend(data)
+                trans_docs = mgr.get_all_transparency_for_index()
+                console.print(f"[cyan]  Documentos de transparencia: {len(trans_docs):,}[/cyan]\n")
+                all_normas.extend(trans_docs)
+
             except Exception as e:
-                console.print(f"[yellow]  Error leyendo {json_file.name}: {e}[/yellow]")
+                console.print(f"[yellow]  ⚠ No se pudieron leer documentos de transparencia: {e}[/yellow]\n")
 
-        console.print(f"\n[cyan]  Normativas desde JSON: {len(all_normas):,}[/cyan]\n")
+            console.print(f"[bold green]Total de documentos a indexar: {len(all_normas):,}[/bold green]\n")
+            summary.set_metric("Documentos", len(all_normas))
 
-        # 2. Leer documentos de transparencia desde SQLite
-        console.print("[cyan]2. Leyendo documentos de transparencia desde SQLite...[/cyan]")
-        try:
-            from utils.sqlite_manager import get_sqlite_manager
-            mgr = get_sqlite_manager()
+            # Guardar índices
+            index_file = INDEXES_DIR / "normativas_index.json"
+            compact_file = INDEXES_DIR / "normativas_index_compact.json"
+            minimal_file = INDEXES_DIR / "normativas_index_minimal.json"
 
-            # Obtener documentos de transparencia
-            trans_docs = mgr.get_all_transparency_for_index()
-            console.print(f"[cyan]  Documentos de transparencia: {len(trans_docs):,}[/cyan]\n")
+            from core.data_models import Normativa
 
-            # Agregar a las normativas (el índice del chatbot usa el mismo formato)
-            all_normas.extend(trans_docs)
-
-        except Exception as e:
-            console.print(f"[yellow]  ⚠ No se pudieron leer documentos de transparencia: {e}[/yellow]\n")
-
-        console.print(f"[bold green]Total de documentos a indexar: {len(all_normas):,}[/bold green]\n")
-
-        # Guardar índices
-        index_file = INDEXES_DIR / "normativas_index.json"
-        compact_file = INDEXES_DIR / "normativas_index_compact.json"
-        minimal_file = INDEXES_DIR / "normativas_index_minimal.json"
-
-        # Intentar convertir a objetos Normativa, pero mantener dicts minimalistas
-        from core.data_models import Normativa
-
-        final_list = []
-        for n in all_normas:
-            if isinstance(n, dict):
-                # Los documentos de transparencia ya vienen en formato minimalista (m, t, n, etc.)
-                # Los dejamos tal cual para que save_minimal_index los use directamente
-                if 'm' in n and 'municipality' not in n:
-                    # Formato minimalista (desde SQLite transparency)
-                    final_list.append(n)
-                elif 'municipality' in n:
-                    # Formato completo, intentar convertir a Normativa
-                    try:
-                        final_list.append(Normativa(**n))
-                    except Exception:
+            final_list = []
+            for n in all_normas:
+                if isinstance(n, dict):
+                    if 'm' in n and 'municipality' not in n:
+                        final_list.append(n)
+                    elif 'municipality' in n:
+                        try:
+                            final_list.append(Normativa(**n))
+                        except Exception:
+                            final_list.append(n)
+                    else:
                         final_list.append(n)
                 else:
                     final_list.append(n)
-            else:
-                final_list.append(n)
 
-        save_index(final_list, index_file, compact=False)
-        save_index(final_list, compact_file, compact=True)
-        save_minimal_index(final_list, minimal_file)
+            save_index(final_list, index_file, compact=False)
+            save_index(final_list, compact_file, compact=True)
+            save_minimal_index(final_list, minimal_file)
 
-        console.print(f"[green]✓ Índices reconstruidos:[/green]")
-        console.print(f"  - {index_file.name}")
-        console.print(f"  - {compact_file.name}")
-        console.print(f"  - {minimal_file.name}")
+            console.print(f"[green]✓ Índices reconstruidos:[/green]")
+            console.print(f"  - {index_file.name}")
+            console.print(f"  - {compact_file.name}")
+            console.print(f"  - {minimal_file.name}")
+
+            summary.add_file("Índices", 3)
 
 
 # ============================================================================
 # COMANDO STATUS
+# ============================================================================
+
+def cmd_scrape(args):
+    """
+    Comando simplificado para scraping de PDFs.
+
+    Uso:
+        # Scraping normal (guarda PDFs + JSON)
+        python cli.py scrape "Carlos Tejedor" balances
+
+        # Retomar interrumpido
+        python cli.py scrape "Carlos Tejedor" balances --resume
+
+        # Modo prueba sin afectar producción
+        python cli.py scrape "Carlos Tejedor" balances --test
+
+        # Procesar solo N PDFs
+        python cli.py scrape "Carlos Tejedor" balances --limit 5
+
+    Este comando reemplaza/encapsula `transparency` con una interfaz más simple.
+    """
+    import asyncio
+
+    from services.scraper_service import scrape
+
+    municipio = args.municipality
+    categoria = args.category
+
+    # Mostrar configuración
+    console.print("\n[bold cyan]╔════════════════════════════════════════╗[/bold cyan]")
+    console.print("[bold cyan]║         SIBOM SCRAPER v2.0              ║[/bold cyan]")
+    console.print("[bold cyan]╚════════════════════════════════════════╝[/bold cyan]\n")
+    console.print(f"[dim]Municipio:[/dim] {municipio}")
+    console.print(f"[dim]Categoría:[/dim] {categoria}")
+    console.print(f"[dim]Guardar PDFs:[/dim] {'Sí' if args.save_pdfs else 'No'}")
+    console.print(f"[dim]Modo Test:[/dim] {'Sí' if args.test else 'No'}")
+    if args.limit > 0:
+        console.print(f"[dim]Límite:[/dim] {args.limit}")
+    console.print(f"[dim]Resume:[/dim] {'Sí' if args.resume else 'No'}")
+    console.print()
+
+    # Ejecutar scraping
+    try:
+        result = asyncio.run(scrape(
+            municipio=municipio,
+            categoria=categoria,
+            urls=None,  # Se obtienen de sources_user.yaml
+            save_pdfs=args.save_pdfs,
+            is_table=True,
+            limit=args.limit,
+            resume=args.resume,
+            test_mode=args.test
+        ))
+
+        # Resumen final
+        if result.errors > 0:
+            console.print(f"\n[yellow]⚠ Completado con {result.errors} errores[/yellow]")
+        else:
+            console.print(f"\n[green]✅ Completado sin errores[/green]")
+
+    except KeyboardInterrupt:
+        console.print("\n\n[yellow]⚠️ Proceso interrumpido por el usuario[/yellow]")
+        console.print("[yellow]El progreso se guardó. Usa --resume para continuar.[/yellow]")
+    except Exception as e:
+        console.print(f"\n[red]❌ Error: {e}[/red]")
+        import traceback
+        traceback.print_exc()
+
+
 # ============================================================================
 
 def cmd_status(args):
@@ -687,9 +1031,14 @@ def cmd_status(args):
     console.print()
 
     # 1. Obtener municipios disponibles
+    # Directorios que NO son ciudades (herramientas, tmp, etc)
+    IGNORED_DIRS = {'csv', 'tmp', 'temp', 'test', 'data', 'cache', 'logs'}
+
     municipios = {}
     for municipio_dir in BOLETINES_DIR.iterdir():
-        if municipio_dir.is_dir() and not municipio_dir.name.startswith('.'):
+        if municipio_dir.is_dir() \
+           and not municipio_dir.name.startswith('.') \
+           and municipio_dir.name not in IGNORED_DIRS:
             municipio_slug = municipio_dir.name
             municipio_name = municipio_slug.replace('_', ' ')
 
@@ -918,7 +1267,70 @@ def cmd_status(args):
         console.print(f"[dim]Error obteniendo stats de Vision API: {e}[/dim]")
         console.print()
 
-    # 7. Modelos LLM - Consumo detallado
+    # 7. Configuración de Modelos - Scripts y mapeo
+    try:
+        from utils.llm_tracker import (
+            _MODELS_CONFIG, get_default_model, get_model_for_script, MODEL_PRICING
+        )
+
+        console.print("[bold]⚙️  Configuración de Modelos:[/bold]")
+
+        config_table = Table(show_header=False, box=None, padding=(0, 1))
+        config_table.add_column("Script", style="cyan")
+        config_table.add_column("Modelo", style="yellow")
+        config_table.add_column("Estado", justify="right")
+
+        # Mostrar defaults
+        default_vision = get_default_model("vision")
+        default_llm = get_default_model("llm")
+
+        def short_name(model_id: str) -> str:
+            if not model_id:
+                return "[dim]No configurado[/dim]"
+            # Buscar en models.yaml
+            for m in _MODELS_CONFIG.get("models", []) + _MODELS_CONFIG.get("llm_models", []):
+                if m.get("id") == model_id:
+                    name = m.get("name", model_id)
+                    if m.get("free"):
+                        return f"{name} [green]✓ FREE[/green]"
+                    if m.get("active"):
+                        return f"{name} [green]✓ ACTIVE[/green]"
+                    return name
+            return model_id.split("/")[-1][:25]
+
+        config_table.add_row(
+            "[dim]Default Vision[/dim]",
+            short_name(default_vision),
+            ""
+        )
+        config_table.add_row(
+            "[dim]Default LLM[/dim]",
+            short_name(default_llm),
+            ""
+        )
+        config_table.add_row("", "", "")  # Separador
+
+        # Mostrar mapeo de scripts
+        for mapping in _MODELS_CONFIG.get("script_models", []):
+            script = mapping.get("script", "")
+            function = mapping.get("function", "")
+            model_id = mapping.get("model_id", "")
+
+            script_label = f"{script}" + (f" → {function}" if function else "")
+            config_table.add_row(
+                script_label,
+                short_name(model_id),
+                ""
+            )
+
+        console.print(config_table)
+        console.print("[dim]  📝 Editá config/models.yaml para cambiar modelos[/dim]")
+        console.print()
+    except Exception as e:
+        console.print(f"[dim]Error obteniendo config de modelos: {e}[/dim]")
+        console.print()
+
+    # 8. Modelos LLM - Consumo detallado
     try:
         from utils.llm_tracker import get_llm_tracker
 
@@ -948,9 +1360,13 @@ def cmd_status(args):
                     'llm': '🤖'
                 }.get(data.get('task', ''), '📌')
 
-                # Formatear costo
-                costo = data['cost']
-                if costo == 0:
+                # Formatear costo (usar recalculado si está disponible)
+                costo = data.get('recalculated_cost', data['cost'])
+                is_free = data.get('is_free', False)
+                if costo == 0 and not is_free:
+                    # Modelo no configurado en models.yaml
+                    costo_str = "[red]?[/red]"
+                elif costo == 0:
                     costo_str = "[green]GRATIS[/green]"
                 else:
                     costo_str = f"[yellow]${costo:.4f}[/yellow]"
@@ -983,7 +1399,7 @@ def cmd_status(args):
         console.print(f"[dim]Error obteniendo stats de LLM: {e}[/dim]")
         console.print()
 
-    # 8. Estadísticas de SQLite (incluyendo transparency)
+    # 9. Estadísticas de SQLite (incluyendo transparency)
     try:
         from utils.sqlite_manager import get_sqlite_manager
 
@@ -1019,7 +1435,109 @@ def cmd_status(args):
         console.print(f"[dim]Error obteniendo stats de SQLite: {e}[/dim]")
         console.print()
 
-    # 9. Resumen general
+    # 10. Calidad de Datos (Validación)
+    try:
+        console.print("[bold]✅ Calidad de Datos (Validación):[/bold]")
+        quality_table = Table(show_header=True, header_style="bold cyan")
+        quality_table.add_column("Municipio", style="cyan")
+        quality_table.add_column("Estado", justify="center")
+        quality_table.add_column("Documentos", justify="right")
+        quality_table.add_column("Tablas", justify="right")
+
+        # Recopilar stats de calidad
+        quality_stats = {} # {municipio: {valid: 0, failed: 0, unchecked: 0, tables: 0}}
+        
+        for municipio_dir in BOLETINES_DIR.iterdir():
+            if municipio_dir.is_dir() and not municipio_dir.name.startswith('.') and municipio_dir.name not in IGNORED_DIRS:
+                m_name = municipio_dir.name.replace('_', ' ')
+                quality_stats[m_name] = {"valid": 0, "failed": 0, "error": 0, "unchecked": 0, "tables": 0}
+                
+                for json_file in municipio_dir.rglob("*.json"):
+                    try:
+                        with open(json_file, 'r', encoding='utf-8') as f:
+                            data = json.load(f)
+                        
+                        status = data.get("validation_status")
+                        if not status:
+                            continue
+                            
+                        if status in quality_stats[m_name]:
+                            quality_stats[m_name][status] += 1
+                        else:
+                            quality_stats[m_name]["unchecked"] += 1
+                            
+                        quality_stats[m_name]["tables"] += len(data.get("tablas_md", []))
+                    except:
+                        pass
+
+        for m_name, q_info in sorted(quality_stats.items()):
+            if sum([q_info["valid"], q_info["failed"], q_info["error"]]) == 0:
+                continue
+                
+            status_summary = []
+            if q_info["valid"] > 0: status_summary.append(f"[green]{q_info['valid']} ✅[/green]")
+            if q_info["failed"] > 0: status_summary.append(f"[red]{q_info['failed']} ❌[/red]")
+            if q_info["error"] > 0: status_summary.append(f"[yellow]{q_info['error']} ⚠[/yellow]")
+            
+            quality_table.add_row(
+                m_name,
+                " | ".join(status_summary) if status_summary else "[dim]—[/dim]",
+                str(q_info["valid"] + q_info["failed"] + q_info["error"]),
+                str(q_info["tables"])
+            )
+            
+        if quality_table.row_count > 0:
+            console.print(quality_table)
+        else:
+            console.print("[dim]  No hay datos de validación disponibles aún.[/dim]")
+        
+        console.print()
+    except Exception as e:
+        console.print(f"[dim]Error obteniendo calidad de datos: {e}[/dim]")
+        console.print()
+
+    # 11. Archivos Grandes (Skipped)
+    try:
+        skipped_files = []
+        for municipio_dir in BOLETINES_DIR.iterdir():
+            if municipio_dir.is_dir() and not municipio_dir.name.startswith('.'):
+                proc_file = municipio_dir / "_procesamiento.json"
+                if proc_file.exists():
+                    try:
+                        with open(proc_file, 'r', encoding='utf-8') as f:
+                            proc_data = json.load(f)
+                        
+                        m_name = municipio_dir.name.replace('_', ' ')
+                        for file_id, info in proc_data.get("files", {}).items():
+                            if info.get("status") == "skipped":
+                                url = info.get("url", "")
+                                filename = url.split('/')[-1] if not info.get("filename") else info.get("filename")
+                                error = info.get("error", "Desconocido")
+                                skipped_files.append({
+                                    "municipio": m_name,
+                                    "archivo": filename,
+                                    "razon": error
+                                })
+                    except:
+                        pass
+
+        if skipped_files:
+            console.print("[bold yellow]⚠️ Archivos Grandes (Pendientes):[/bold yellow]")
+            skipped_table = Table(show_header=True, header_style="bold yellow")
+            skipped_table.add_column("Municipio", style="cyan")
+            skipped_table.add_column("Archivo", style="white")
+            skipped_table.add_column("Razón / Páginas", style="yellow")
+            
+            for f in skipped_files:
+                skipped_table.add_row(f["municipio"], f["archivo"][:40], f["razon"])
+            
+            console.print(skipped_table)
+            console.print()
+    except Exception as e:
+        console.print(f"[dim]Error obteniendo archivos saltados: {e}[/dim]")
+        console.print()
+
+    # 12. Resumen general
     total_jsons = sum(m['json_count'] for m in municipios.values())
     total_pdfs = sum(m['pdf_count'] for m in municipios.values())
     total_urls = sum(c['total_urls'] for c in categories_info.values())
@@ -1071,10 +1589,17 @@ Ejemplos:
 
   # Status - Estado del scraping
   python cli.py status
+  python cli.py --status
 
 Para más ayuda sobre un comando específico:
   python cli.py <comando> --help
         """
+    )
+
+    parser.add_argument(
+        '-s', '--status',
+        action='store_true',
+        help='Mostrar el estado completo (dashboard)'
     )
 
     subparsers = parser.add_subparsers(dest='command', help='Comando a ejecutar')
@@ -1174,6 +1699,28 @@ Para más ayuda sobre un comando específico:
         action='store_true',
         help='Guardar PDF original en carpeta pdfs/'
     )
+    trans_parser.add_argument(
+        '--pdf-engine',
+        choices=['auto', 'free', 'vision-chunks', 'images'],
+        default='auto',
+        help='Motor: auto (intenta GRATIS primero), free (solo GRATIS), vision-chunks (premium, columnas correctas), images (legacy)'
+    )
+    trans_parser.add_argument(
+        '--test-dir',
+        action='store_true',
+        help='MODO TEST: Guardar en test/ en lugar de boletines/ (NO guarda en SQLite)'
+    )
+    trans_parser.add_argument(
+        '--skip-large-pdfs',
+        action='store_true',
+        help='Saltar PDFs grandes (>50 páginas) y crear lista para procesamiento manual'
+    )
+    trans_parser.add_argument(
+        '--large-pdf-threshold',
+        type=int,
+        default=50,
+        help='Umbral de páginas para considerar un PDF como grande (default: 50)'
+    )
 
     # ---------------------------------------------------------------------
     # DB
@@ -1247,6 +1794,12 @@ Para más ayuda sobre un comando específico:
         '--output',
         help='Guardar contenido extraído en archivo'
     )
+    vision_parser.add_argument(
+        '--pdf-engine',
+        choices=['auto', 'free', 'vision-chunks', 'images'],
+        default='auto',
+        help='Motor: auto (intenta GRATIS primero), free (solo GRATIS), vision-chunks (premium, columnas correctas), images (legacy)'
+    )
 
     # ---------------------------------------------------------------------
     # INDEX
@@ -1262,6 +1815,61 @@ Para más ayuda sobre un comando específico:
     )
 
     # ---------------------------------------------------------------------
+    # SCRAPE - Comando simplificado de scraping
+    # ---------------------------------------------------------------------
+    scrape_parser = subparsers.add_parser(
+        'scrape',
+        help='Scrapear PDFs (comando simplificado)',
+        usage='%(prog)s <municipio> <categoria> [opciones]',
+        description="""
+Scrapear PDFs de transparencia de forma sencilla.
+
+Ejemplos:
+  %(prog)s "Carlos Tejedor" balances           # Scraping normal
+  %(prog)s "Carlos Tejedor" balances --resume   # Retomar interrumpido
+  %(prog)s "Carlos Tejedor" balances --test     # Modo prueba
+  %(prog)s "Carlos Tejedor" balances --limit 5  # Solo 5 PDFs
+        """
+    )
+    scrape_parser.add_argument(
+        'municipality',
+        help='Nombre del municipio'
+    )
+    scrape_parser.add_argument(
+        'category',
+        help='Categoría (balances, presupuestos, etc.)'
+    )
+    scrape_parser.add_argument(
+        '--save-pdfs',
+        action='store_true',
+        default=True,
+        help='Guardar PDFs originales localmente (default: True)'
+    )
+    scrape_parser.add_argument(
+        '--no-save-pdfs',
+        action='store_false',
+        dest='save_pdfs',
+        help='No guardar PDFs originales'
+    )
+    scrape_parser.add_argument(
+        '--resume',
+        action='store_true',
+        help='Retomar donde se quedó (omite ya procesados)'
+    )
+    scrape_parser.add_argument(
+        '--test',
+        action='store_true',
+        help='Modo prueba: guarda en {municipio}_test/'
+    )
+    scrape_parser.add_argument(
+        '--limit',
+        type=int,
+        default=0,
+        metavar='N',
+        help='Procesar solo N PDFs (0 = todos)'
+    )
+    scrape_parser.set_defaults(command='scrape')
+
     # STATUS
     # ---------------------------------------------------------------------
     status_parser = subparsers.add_parser(
@@ -1278,10 +1886,18 @@ Para más ayuda sobre un comando específico:
     args = parser.parse_args()
 
     # Ejecutar comando
-    if args.command == 'sibom':
+    if args.status or args.command == 'status':
+        # Truco: si se corre --status con --municipality global (que no existe arriba)
+        # pero status_parser sí lo tiene, args.municipality existirá si se definió
+        # pero status no lo recibe si no usamos el objeto parser correcto.
+        # Aquí simplificamos.
+        cmd_status(args)
+    elif args.command == 'sibom':
         cmd_sibom(args)
     elif args.command == 'web':
         cmd_web(args)
+    elif args.command == 'scrape':
+        cmd_scrape(args)
     elif args.command == 'transparency':
         cmd_transparency(args)
     elif args.command == 'db':

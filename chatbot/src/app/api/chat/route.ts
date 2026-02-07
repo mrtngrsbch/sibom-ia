@@ -16,7 +16,8 @@
  */
 
 import { createOpenAI } from '@ai-sdk/openai';
-import { streamText, convertToCoreMessages, StreamData, tool } from 'ai';
+import { createOpenRouter } from '@openrouter/ai-sdk-provider';
+import { streamText, tool } from 'ai';
 import { z } from 'zod';
 import { retrieveContext, getDatabaseStats, type Source } from '@/lib/rag/retriever';
 import { retrieveWithComputation, type ComputationalSearchResult } from '@/lib/rag/computational-retriever';
@@ -81,9 +82,8 @@ export async function POST(req: Request) {
     console.log(`[ChatAPI] API Key detectada (longitud: ${apiKey.length}, comienza con: ${apiKey.slice(0, 10)}...)`);
 
     // Configurar OpenRouter dentro de la petición para asegurar acceso a env vars
-    const openrouter = createOpenAI({
+    const openrouter = createOpenRouter({
       apiKey: apiKey,
-      baseURL: 'https://openrouter.ai/api/v1',
       headers: {
         'HTTP-Referer': 'https://github.com/mrtngrsbch/sibom-ia',
         'X-Title': 'SIBOM Scraper Assistant',
@@ -268,30 +268,9 @@ export async function POST(req: Request) {
     if (sqlComparisonResult?.success) {
       console.log(`[ChatAPI] 🗄️ SQL COMPARISON EXITOSA - Generando respuesta directa`);
       console.log(`[ChatAPI] 💰 Ahorro estimado: ~150,000 tokens (~$0.45)`);
-      
+
       // Construir respuesta con markdown table
       const directResponse = sqlComparisonResult.answer + (sqlComparisonResult.markdown || '');
-      
-      // Crear StreamData para metadatos
-      const data = new StreamData();
-      
-      // No hay sources individuales en comparaciones SQL
-      data.append({
-        type: 'sources',
-        sources: []
-      });
-      
-      data.append({
-        type: 'usage',
-        usage: {
-          promptTokens: 0,
-          completionTokens: 0,
-          totalTokens: 0,
-          model: 'sql-direct-response (comparison)'
-        }
-      });
-
-      data.close();
 
       // Crear stream compatible con Vercel AI SDK manualmente
       const encoder = new TextEncoder();
@@ -299,13 +278,6 @@ export async function POST(req: Request) {
         start(controller) {
           // Enviar el texto en formato de stream de Vercel AI
           controller.enqueue(encoder.encode(`0:"${directResponse.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"\n`));
-          
-          // Enviar metadatos de sources
-          controller.enqueue(encoder.encode(`2:[${JSON.stringify({type:'sources',sources:[]})}]\n`));
-          
-          // Enviar metadatos de usage
-          controller.enqueue(encoder.encode(`2:[${JSON.stringify({type:'usage',usage:{promptTokens:0,completionTokens:0,totalTokens:0,model:'sql-direct-response (comparison)'}})}]\n`));
-          
           controller.close();
         }
       });
@@ -544,77 +516,26 @@ Pero hay ${retrievedContext.sources.length} resultados EN TOTAL que el usuario p
       console.log(`[ChatAPI] Usando modelo premium para búsqueda: ${modelId}`);
     }
 
-    // Crear StreamData para enviar metadatos (fuentes) al frontend
-    const data = new StreamData();
-
-    // Enviar las fuentes como metadatos
-    try {
-      // Convertir Source[] a un formato compatible con StreamData
-      const sourcesPlain = retrievedContext.sources.map((s: Source) => ({
-        title: s.title,
-        url: s.url,
-        municipality: s.municipality,
-        type: s.type,
-        status: s.status,
-        documentTypes: s.documentTypes
-      }));
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      data.append({
-        type: 'sources',
-        sources: sourcesPlain
-      } as any);
-    } catch (appendError) {
-      console.error('[ChatAPI] Error al añadir fuentes a StreamData:', appendError);
-    }
-
     // Generar respuesta con streaming
     try {
       console.log(`[ChatAPI] Iniciando streamText con modelo: ${modelId}`);
-      
-      const coreMessages = convertToCoreMessages(recentMessages);
-      console.log(`[ChatAPI] Enviando ${coreMessages.length} mensajes al LLM`);
+
+      // Los mensajes ya vienen formateados desde el frontend
+      console.log(`[ChatAPI] Enviando ${recentMessages.length} mensajes al LLM`);
 
       const result = streamText({
         model: openrouter(modelId),
         system: systemPrompt,
-        messages: coreMessages,
+        messages: recentMessages,
         temperature: 0.3,
         // Para listados masivos, reducir tokens para forzar respuesta breve
-        maxTokens: isMassiveListing ? 500 : 4000,
-        onFinish: (completion) => {
-          const duration = Date.now() - startTime;
-          console.log(`[ChatAPI] Respuesta completada en ${duration}ms`);
-
-          // Enviar información de tokens y modelo al frontend
-          if (completion.usage) {
-            data.append({
-              type: 'usage',
-              usage: {
-                promptTokens: completion.usage.promptTokens,
-                completionTokens: completion.usage.completionTokens,
-                totalTokens: completion.usage.totalTokens,
-                model: modelId // Incluir el modelo usado
-              }
-            });
-            console.log(`[ChatAPI] Tokens usados - Prompt: ${completion.usage.promptTokens}, Completion: ${completion.usage.completionTokens}, Total: ${completion.usage.totalTokens}, Model: ${modelId}`);
-          }
-
-          data.close();
-        },
+        maxOutputTokens: isMassiveListing ? 500 : 4000,
       });
 
-      return result.toDataStreamResponse({
-        data,
-        getErrorMessage: (error: any) => {
-          console.error('[ChatAPI] Error en el stream:', error);
-          data.close();
-          return error?.message || 'Error en el flujo de datos';
-        }
-      });
+      return result.toTextStreamResponse();
     } catch (streamError: any) {
       console.error('[ChatAPI] Error crítico al iniciar streamText:', streamError);
-      data.close();
-      
+
       return new Response(
         JSON.stringify({
           error: 'Error al conectar con el modelo de IA',

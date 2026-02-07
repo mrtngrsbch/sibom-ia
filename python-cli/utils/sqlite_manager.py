@@ -59,7 +59,11 @@ CREATE TABLE IF NOT EXISTS transparency_docs (
     titulo_extraido TEXT,
     status TEXT DEFAULT 'completed',
     pdf_file TEXT,
+    json_file TEXT,  -- Nombre del archivo JSON para que el chatbot lo encuentre
     calidad_json TEXT,
+    validation_status TEXT DEFAULT 'unchecked',
+    validation_errors TEXT,  -- JSON string de una lista de errores
+    rag_chunks_count INTEGER DEFAULT 0,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -140,6 +144,35 @@ class SQLiteManager:
         """Inicializa la base de datos con el esquema."""
         with sqlite3.connect(self.db_path) as conn:
             conn.executescript(SCHEMA)
+        
+        # Aplicar migraciones para columnas nuevas
+        self._apply_migrations()
+
+    def _apply_migrations(self):
+        """Añade columnas nuevas a tablas existentes si no existen."""
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            
+            # Columnas a añadir a transparency_docs
+            needed_cols = {
+                "json_file": "TEXT",
+                "validation_status": "TEXT DEFAULT 'unchecked'",
+                "validation_errors": "TEXT",
+                "rag_chunks_count": "INTEGER DEFAULT 0"
+            }
+            
+            cursor.execute("PRAGMA table_info(transparency_docs)")
+            existing_cols = [row[1] for row in cursor.fetchall()]
+            
+            for col, col_type in needed_cols.items():
+                if col not in existing_cols:
+                    try:
+                        cursor.execute(f"ALTER TABLE transparency_docs ADD COLUMN {col} {col_type}")
+                        console.print(f"[dim]  → Migración: Añadida columna '{col}' a 'transparency_docs'[/dim]")
+                    except Exception as e:
+                        console.print(f"[yellow]  ⚠ Error migrando columna {col}: {e}[/yellow]")
+            
+            conn.commit()
 
     def insert_normativas(
         self,
@@ -441,6 +474,7 @@ class SQLiteManager:
                 - pdf_file: Ruta al PDF (opcional)
                 - json_file: Nombre del archivo JSON (para que el chatbot lo encuentre)
                 - status: Estado (default: "completed")
+                - rag_chunks_count: Número de chunks generados para RAG
 
         Returns:
             ID del documento insertado
@@ -454,8 +488,9 @@ class SQLiteManager:
             cursor.execute("""
                 INSERT OR REPLACE INTO transparency_docs
                 (id, municipio, tipo_documento, periodo, fecha_documento,
-                 url_origen, titulo_extraido, status, pdf_file, json_file, calidad_json)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 url_origen, titulo_extraido, status, pdf_file, json_file, 
+                 calidad_json, validation_status, validation_errors, rag_chunks_count)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 doc_id,
                 doc_data.get('municipio', ''),
@@ -466,8 +501,11 @@ class SQLiteManager:
                 doc_data.get('titulo_extraido', ''),
                 doc_data.get('status', 'completed'),
                 doc_data.get('pdf_file'),
-                doc_data.get('json_file'),  # Nombre del archivo JSON
-                json.dumps(doc_data.get('calidad', {}), ensure_ascii=False)
+                doc_data.get('json_file'),
+                json.dumps(doc_data.get('calidad', {}), ensure_ascii=False),
+                doc_data.get('validation_status', 'unchecked'),
+                json.dumps(doc_data.get('validation_errors', []), ensure_ascii=False),
+                doc_data.get('rag_chunks_count', 0)
             ))
 
             # Insertar contenido (tablas)

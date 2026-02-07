@@ -60,7 +60,7 @@ class SibomScraper:
             api_key=openrouter_api_key,
             base_url="https://openrouter.ai/api/v1",
             default_headers={
-                "HTTP-Referer": "https://github.com/sibom-scraper-assistant",
+                "HTTP-Referer": "https://github.com/mrtngrsbch/sibom-ia",
                 "X-Title": "SIBOM Scraper Assistant"
             }
         )
@@ -310,7 +310,7 @@ export async function POST(req: Request) {
     apiKey: process.env.OPENROUTER_API_KEY,
     baseURL: 'https://openrouter.ai/api/v1',
     headers: {
-      'HTTP-Referer': 'https://github.com/sibom-scraper-assistant',
+      'HTTP-Referer': 'https://github.com/mrtngrsbch/sibom-ia',
       'X-Title': 'SIBOM Scraper Assistant',
     }
   });

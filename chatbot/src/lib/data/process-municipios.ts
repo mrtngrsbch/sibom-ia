@@ -172,7 +172,7 @@ export function generateMunicipiosStats(): GlobalStats {
   // Paths relativos al proyecto
   const rootPath = process.cwd();
   const mdPath = join(rootPath, '..', 'docs', 'Municipios_contenidos.md');
-  const indexPath = join(rootPath, '..', 'python-cli', 'boletines_index.json');
+  const indexPath = join(rootPath, '..', 'python-cli', 'data', 'indexes', 'boletines_index.json');
 
   // Leer archivo MD
   const mdContent = readFileSync(mdPath, 'utf-8');

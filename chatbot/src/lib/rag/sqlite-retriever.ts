@@ -21,8 +21,8 @@ let dbInstance: Database.Database | null = null;
 function getDatabase(): Database.Database {
   if (dbInstance) return dbInstance;
 
-  // Ruta a la base de datos (en python-cli)
-  const dbPath = path.join(process.cwd(), '..', 'python-cli', 'normativas.db');
+  // Ruta a la base de datos (en python-cli/data)
+  const dbPath = path.join(process.cwd(), '..', 'python-cli', 'data', 'normativas.db');
 
   console.log(`[SQLite] 📂 Abriendo BD: ${dbPath}`);
 
@@ -191,7 +191,7 @@ export async function getSQLiteStats() {
 
     // Obtener fecha de última actualización del archivo
     const fs = await import('fs/promises');
-    const dbPath = path.join(process.cwd(), '..', 'python-cli', 'normativas.db');
+    const dbPath = path.join(process.cwd(), '..', 'python-cli', 'data', 'normativas.db');
     let lastUpdated: string | null = null;
     try {
       const stats = await fs.stat(dbPath);
@@ -218,7 +218,7 @@ export async function getSQLiteStats() {
  */
 export function isSQLiteAvailable(): boolean {
   try {
-    const dbPath = path.join(process.cwd(), '..', 'python-cli', 'normativas.db');
+    const dbPath = path.join(process.cwd(), '..', 'python-cli', 'data', 'normativas.db');
     const fs = require('fs');
     return fs.existsSync(dbPath);
   } catch {

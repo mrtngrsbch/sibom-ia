@@ -226,12 +226,34 @@ function getGitHubRawBase(): string {
 
 /**
  * Obtiene la ruta base de datos locales
+ * 
+ * @returns {string} Ruta al directorio que contiene los índices de datos
+ * 
+ * @description
+ * Esta función determina la ruta base para acceder a los índices de datos del chatbot.
+ * Prioriza la variable de entorno DATA_PATH si está definida.
+ * Por defecto, busca en el directorio `python-cli/data/indexes/` relativo al directorio de trabajo actual.
+ * 
+ * @example
+ * // Uso con DATA_PATH definido
+ * process.env.DATA_PATH = '/custom/path'
+ * getDataBasePath() // '/custom/path'
+ * 
+ * @example
+ * // Uso por defecto (desde chatbot/)
+ * getDataBasePath() // '../python-cli/data/indexes'
+ * 
+ * @example
+ * // Archivos esperados en esta ruta:
+ * // - boletines_index.json (índice de boletines municipales)
+ * // - normativas_index.json (índice de normativas)
+ * // - montos_index.json (índice de montos presupuestarios)
  */
 function getDataBasePath(): string {
   if (process.env.DATA_PATH) {
     return process.env.DATA_PATH;
   }
-  return path.join(process.cwd(), '..', 'python-cli');
+  return path.join(process.cwd(), '..', 'python-cli', 'data', 'indexes');
 }
 
 // ============================================================================

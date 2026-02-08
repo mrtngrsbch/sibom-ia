@@ -121,7 +121,10 @@ export class SatAnalysisClient {
    * Obtiene la lista de partidos ARBA disponibles
    */
   async getPartidos(): Promise<PartidosResponse> {
+    console.log('[DEBUG] SatAnalysisClient.getPartidos() - baseUrl:', this.baseUrl);
+    console.log('[DEBUG] Intentando conectar a:', `${this.baseUrl}/api/partidos`);
     const response = await fetch(`${this.baseUrl}/api/partidos`);
+    console.log('[DEBUG] Response status:', response.status, response.statusText);
     if (!response.ok) {
       throw new Error(`Error fetching partidos: ${response.statusText}`);
     }

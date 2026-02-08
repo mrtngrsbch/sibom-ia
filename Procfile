@@ -2,4 +2,4 @@
 # Uso: overmind start
 
 backend: cd sat-analysis && source venv/bin/activate && python -m uvicorn api.main:app --reload --host 0.0.0.0 --port 8001
-frontend: cd chatbot && npm run dev
+frontend: cd chatbot && PORT=3000 npm run dev

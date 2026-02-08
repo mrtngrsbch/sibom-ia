@@ -1,3 +1,5 @@
+> ⚠️ NOTA (2026-02-06): Este doc puede tener refs desactualizadas. Stack actual: Gemini 3 Flash + GLM 4.7, Qdrant. Ver `.agents/README.md`
+
 # Guía de Modelos LLM - SIBOM Scraper
 
 Esta guía te ayuda a elegir el modelo LLM óptimo para tu caso de uso, considerando costo, velocidad y calidad.

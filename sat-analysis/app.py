@@ -39,7 +39,7 @@ def analyze_parcel(
     samples_per_year: int,
     max_clouds: int,
     progress: gr.Progress = gr.Progress(),
-) -> tuple[str | None, str, str, list[str | None]]:
+) -> tuple[str | None, str, str, list[str | None], list[str | None]]:
     """
     Analiza una partida catastral y retorna resultados.
 
@@ -52,7 +52,7 @@ def analyze_parcel(
         progress: Gradio progress tracker
 
     Returns:
-        (grafico_path, tabla_html, resumen_markdown, lista_imagenes_paths)
+        (grafico_path, tabla_html, resumen_markdown, lista_imagenes_paths, lista_satelital_paths)
     """
     if not partida or not partida.strip():
         return None, "", "❌ Ingrese una partida catastral", []
@@ -255,6 +255,87 @@ def analyze_parcel(
     progress(1.0, desc="¡Análisis completo!")
 
     return grafico_path, table_html, resumen, index_images
+
+
+def _save_rgb_composite(
+    bands_b04: "np.ndarray",
+    bands_b03: "np.ndarray",
+    bands_b02: "np.ndarray",
+    parcel_mask: "np.ndarray | None",
+    partida: str,
+    image_date: str,
+    output_dir: Path,
+) -> str | None:
+    """
+    Genera imagen satelital RGB (true color) de la parcela.
+
+    Combina B04 (Red), B03 (Green), B02 (Blue) para crear una
+    imagen de color real de la parcela, con realce de contraste.
+
+    Args:
+        bands_b04: Banda roja (reflectancia 0-1)
+        bands_b03: Banda verde (reflectancia 0-1)
+        bands_b02: Banda azul (reflectancia 0-1)
+        parcel_mask: Máscara booleana de la parcela (opcional)
+        partida: Número de partida para el nombre del archivo
+        image_date: Fecha de la imagen (YYYY-MM-DD)
+        output_dir: Directorio de salida
+
+    Returns:
+        Path al archivo PNG guardado, o None si falla
+    """
+    try:
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+        import numpy as np
+
+        # Crear composición RGB
+        rgb = np.stack([bands_b04, bands_b03, bands_b02], axis=-1)
+
+        # Realce de contraste (percentile stretch)
+        # Esto mejora la visualización al expandir el rango dinámico
+        p2, p98 = np.percentile(rgb[rgb > 0], [2, 98])
+        rgb = np.clip((rgb - p2) / (p98 - p2), 0, 1)
+
+        # Aplicar máscara: hacer semi-transparente lo que está fuera de la parcela
+        if parcel_mask is not None:
+            # Crear overlay: fuera de parcela se oscurece
+            mask_3d = np.stack([parcel_mask] * 3, axis=-1)
+            rgb_masked = np.where(mask_3d, rgb, rgb * 0.3)
+        else:
+            rgb_masked = rgb
+
+        fig, axes = plt.subplots(1, 2, figsize=(16, 7))
+
+        # Panel izquierdo: imagen completa
+        axes[0].imshow(rgb)
+        axes[0].set_title(f"Imagen Satelital - {image_date}", fontsize=11, fontweight='bold')
+        axes[0].axis('off')
+
+        # Panel derecho: parcela destacada
+        axes[1].imshow(rgb_masked)
+        if parcel_mask is not None:
+            # Dibujar contorno de la parcela
+            from matplotlib.colors import ListedColormap
+            contour_mask = parcel_mask.astype(float)
+            axes[1].contour(contour_mask, levels=[0.5], colors=['#FF5722'], linewidths=1.5)
+        axes[1].set_title(f"Parcela {partida} - {image_date}", fontsize=11, fontweight='bold')
+        axes[1].axis('off')
+
+        plt.suptitle(f"Sentinel-2 True Color | {image_date}", fontsize=13, fontweight='bold', y=1.02)
+        plt.tight_layout()
+
+        partida_clean = partida.replace('coords:', 'c').replace(':', '_')
+        date_clean = image_date.replace('-', '')
+        img_path = output_dir / f"satelital_{partida_clean}_{date_clean}.png"
+        plt.savefig(img_path, dpi=150, bbox_inches='tight', facecolor='white')
+        plt.close(fig)
+
+        return str(img_path)
+
+    except Exception:
+        return None
 
 
 def _save_mask_image(parcel_mask, partida: str, output_dir: Path) -> str | None:

@@ -105,7 +105,16 @@
       "Bash(docker-compose build:*)",
       "Bash(docker-compose logs:*)",
       "Bash(docker-compose ps:*)",
-      "Bash(docker-compose restart:*)"
+      "Bash(docker-compose restart:*)",
+      "Bash(pip uninstall:*)",
+      "Bash(npm run)",
+      "Bash(npx next build:*)",
+      "Bash(brew info:*)",
+      "Bash(pip3:*)",
+      "Bash(pip3 show:*)",
+      "Bash(brew install:*)",
+      "Bash(tmux:*)",
+      "Bash(overmind:*)"
     ],
     "deny": [],
     "ask": [],

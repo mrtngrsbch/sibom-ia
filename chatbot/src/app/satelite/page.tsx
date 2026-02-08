@@ -26,11 +26,16 @@ export default function SatelitePage() {
   useEffect(() => {
     const fetchPartidos = async () => {
       try {
+        console.log('[DEBUG] SatelitePage - Iniciando fetchPartidos()');
+        console.log('[DEBUG] SatelitePage - client baseUrl:', (client as any).baseUrl);
         setLoadingPartidos(true);
         const data = await client.getPartidos();
+        console.log('[DEBUG] SatelitePage - Partidos cargados:', data.partidos.length);
         setPartidos(data.partidos);
       } catch (error) {
-        console.error('Error cargando partidos:', error);
+        console.error('[DEBUG] SatelitePage - Error cargando partidos:', error);
+        console.error('[DEBUG] SatelitePage - Error name:', error instanceof Error ? error.name : 'unknown');
+        console.error('[DEBUG] SatelitePage - Error message:', error instanceof Error ? error.message : 'unknown');
         setPartidosError('No se pudo cargar la lista de partidos');
       } finally {
         setLoadingPartidos(false);
@@ -143,7 +148,7 @@ export default function SatelitePage() {
       {/* Resultados */}
       {analysis && (
         <div className="space-y-6">
-          <ResultsPanel analysis={analysis} />
+          <ResultsPanel analysis={analysis} taskId={taskId} />
 
           {/* Botón para nuevo análisis */}
           {analysis.status === 'completed' || analysis.status === 'failed' ? (

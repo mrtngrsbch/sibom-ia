@@ -56,7 +56,7 @@ export const SQL_SCHEMA = {
 export const JSON_SCHEMA = {
   bulletins: {
     description: 'Archivos JSON con boletines municipales completos',
-    location: 'python-cli/boletines/*.json',
+    location: 'python-cli/data/indexes/boletines_index.json',
     structure: {
       fullText: { type: 'string', description: 'Texto completo del boletín' },
       tables: {

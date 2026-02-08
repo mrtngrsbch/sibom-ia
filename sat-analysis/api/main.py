@@ -134,7 +134,8 @@ async def create_analysis(
     """
     # Validar partida
     if not request.partida or not request.partida.strip():
-        raise HTTPException(status_code=400, detail="La partida no puede estar vacía")
+        raise HTTPException(
+            status_code=400, detail="La partida no puede estar vacía")
 
     # Generar task_id único
     task_id = str(uuid.uuid4())
@@ -178,7 +179,8 @@ async def create_analysis(
         OUTPUT_DIR,
     )
 
-    logger.info(f"Análisis iniciado: task_id={task_id}, partida={request.partida}")
+    logger.info(
+        f"Análisis iniciado: task_id={task_id}, partida={request.partida}")
 
     return TaskCreateResponse(
         task_id=task_id,
@@ -207,7 +209,8 @@ async def get_analysis_status(task_id: str):
     response = await task_store.get(task_id)
 
     if response is None:
-        raise HTTPException(status_code=404, detail=f"Tarea {task_id} no encontrada")
+        raise HTTPException(
+            status_code=404, detail=f"Tarea {task_id} no encontrada")
 
     return response
 
@@ -244,7 +247,8 @@ async def delete_task(task_id: str):
     response = await task_store.get(task_id)
 
     if response is None:
-        raise HTTPException(status_code=404, detail=f"Tarea {task_id} no encontrada")
+        raise HTTPException(
+            status_code=404, detail=f"Tarea {task_id} no encontrada")
 
     # Eliminar del store
     if hasattr(task_store, '_lock'):
@@ -276,7 +280,8 @@ async def download_images_zip(task_id: str):
     response = await task_store.get(task_id)
 
     if response is None:
-        raise HTTPException(status_code=404, detail=f"Tarea {task_id} no encontrada")
+        raise HTTPException(
+            status_code=404, detail=f"Tarea {task_id} no encontrada")
 
     if response.status != "completed":
         raise HTTPException(
@@ -285,7 +290,8 @@ async def download_images_zip(task_id: str):
         )
 
     if not response.results:
-        raise HTTPException(status_code=404, detail="No hay imágenes para descargar")
+        raise HTTPException(
+            status_code=404, detail="No hay imágenes para descargar")
 
     # Crear ZIP en memoria
     zip_buffer = io.BytesIO()
@@ -316,7 +322,8 @@ async def download_images_zip(task_id: str):
                             added_files.add(url)
 
         # Agregar gráfico de evolución si existe
-        partida_clean = response.partida.replace('coords:', 'c').replace(':', '_')
+        partida_clean = response.partida.replace(
+            'coords:', 'c').replace(':', '_')
         chart_path = OUTPUT_DIR / f"grafico_{partida_clean}.png"
         if chart_path.exists():
             zip_file.write(chart_path, f"grafico_{partida_clean}.png")
@@ -350,10 +357,12 @@ async def startup_event():
     settings = get_settings()
     logger.info("Umbrales de clasificación:")
     logger.info("  - Agua (NDWI): %.2f", settings.water_ndwi_threshold)
-    logger.info("  - Agua turbia (MNDWI): %.2f", settings.water_mndwi_threshold)
+    logger.info("  - Agua turbia (MNDWI): %.2f",
+                settings.water_mndwi_threshold)
     logger.info("  - Humedal (NDVI): %.2f", settings.wetland_ndvi_threshold)
     logger.info("  - Humedal (NDMI): %.2f", settings.wetland_ndmi_threshold)
-    logger.info("  - Vegetación (NDVI): %.2f", settings.vegetation_ndvi_threshold)
+    logger.info("  - Vegetación (NDVI): %.2f",
+                settings.vegetation_ndvi_threshold)
 
 
 # Shutdown event

@@ -1,3 +1,5 @@
+> ⚠️ NOTA (2026-02-06): Este doc puede tener refs desactualizadas. Stack actual: Gemini 3 Flash + GLM 4.7, Qdrant. Ver `.agents/README.md`
+
 # Migración Completa: Gemini → OpenRouter + CLI Python
 
 > **Nota (2026-02-06):** Stack actual: **Gemini 3 Flash** (principal) + **GLM 4.7** (alternativo). Ver `.agents/README.md`.

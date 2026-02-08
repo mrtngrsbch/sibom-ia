@@ -29,6 +29,12 @@ export function ImagesPanel({ results, partida, taskId }: ImagesPanelProps) {
     results.length > 0 ? results[results.length - 1].date : ''
   );
 
+  // Log de diagnóstico
+  console.log('[DEBUG] ImagesPanel - results:', results);
+  console.log('[DEBUG] ImagesPanel - results.length:', results.length);
+  console.log('[DEBUG] ImagesPanel - selectedDate:', selectedDate);
+  console.log('[DEBUG] ImagesPanel - results dates:', results.map(r => r.date));
+
   // Modal state
   const [modalOpen, setModalOpen] = useState(false);
   const [modalImage, setModalImage] = useState<{ url: string; title: string; description: string } | null>(null);
@@ -38,6 +44,10 @@ export function ImagesPanel({ results, partida, taskId }: ImagesPanelProps) {
 
   // URLs de imágenes para el resultado seleccionado
   const images = selectedResult?.images;
+
+  // Log de diagnóstico
+  console.log('[DEBUG] ImagesPanel - selectedResult:', selectedResult);
+  console.log('[DEBUG] ImagesPanel - images:', images);
 
   // Configuración de tipos de imágenes
   const imageTypes = [
@@ -172,24 +182,30 @@ export function ImagesPanel({ results, partida, taskId }: ImagesPanelProps) {
       {/* Galería de imágenes */}
       {images ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {imageTypes
-            .filter((type) => images[type.key as keyof typeof images])
-            .sort((a, b) => a.priority - b.priority)
-            .map((type) => {
-              const imageUrl = images[type.key as keyof typeof images];
-              if (!imageUrl) return null;
+          {(() => {
+            const filteredTypes = imageTypes.filter((type) => images[type.key as keyof typeof images]);
+            console.log('[DEBUG] ImagesPanel - filteredTypes:', filteredTypes);
+            console.log('[DEBUG] ImagesPanel - available images count:', filteredTypes.length);
+            return filteredTypes
+              .sort((a, b) => a.priority - b.priority)
+              .map((type) => {
+                const imageUrl = images[type.key as keyof typeof images];
+                if (!imageUrl) return null;
 
-              return (
-                <ImageCard
-                  key={type.key}
-                  title={type.title}
-                  description={type.description}
-                  imageUrl={getFullImageUrl(imageUrl)}
-                  onZoom={() => openModal(getFullImageUrl(imageUrl), type.title, type.description)}
-                  type={type.key === 'rgb' ? 'rgb' : type.key === 'clasificacion' ? 'clasificacion' : 'indice'}
-                />
-              );
-            })}
+                console.log('[DEBUG] ImagesPanel - rendering image:', type.key, imageUrl);
+
+                return (
+                  <ImageCard
+                    key={type.key}
+                    title={type.title}
+                    description={type.description}
+                    imageUrl={getFullImageUrl(imageUrl)}
+                    onZoom={() => openModal(getFullImageUrl(imageUrl), type.title, type.description)}
+                    type={type.key === 'rgb' ? 'rgb' : type.key === 'clasificacion' ? 'clasificacion' : 'indice'}
+                  />
+                );
+              });
+          })()}
         </div>
       ) : (
         <Card>

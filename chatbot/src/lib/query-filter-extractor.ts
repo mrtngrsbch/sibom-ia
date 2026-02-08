@@ -6,9 +6,77 @@
  *
  * FIX: Bug donde "cuantas ordenanzas tuvo carlos tejedor en el 2025?"
  * no aplicaba el filtro de año 2025.
+ *
+ * v1.1.0: Agrega extractConversationContext() para mantener contexto
+ * conversacional (municipio, año, tipo) entre mensajes consecutivos.
  */
 
 import { SearchOptions } from './rag/retriever';
+
+/**
+ * Contexto conversacional extraído del historial de mensajes
+ */
+export interface ConversationContext {
+  municipality?: string;
+  type?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  year?: string;
+}
+
+/**
+ * Extrae contexto conversacional del historial de mensajes.
+ *
+ * Analiza los mensajes previos del usuario para detectar municipio, año y tipo
+ * de normativa mencionados anteriormente. Prioriza los más recientes.
+ *
+ * Ejemplo:
+ *   Usuario: "ordenanzas de carlos tejedor 2025"
+ *   Usuario: "y los decretos?"
+ *   → Retorna { municipality: "Carlos Tejedor", year: "2025" }
+ *     para que la segunda query herede el contexto.
+ *
+ * @param messages - Array de mensajes de la conversación (role + content)
+ * @param availableMunicipalities - Lista de municipios disponibles
+ * @returns ConversationContext con los filtros más recientes detectados
+ */
+export function extractConversationContext(
+  messages: Array<{ role: string; content: string | any }>,
+  availableMunicipalities: string[]
+): ConversationContext {
+  const context: ConversationContext = {};
+
+  // Recorrer mensajes del usuario en orden cronológico (más viejo → más nuevo)
+  // El más reciente sobreescribe al anterior (último valor gana)
+  const userMessages = messages
+    .filter((m) => m.role === 'user' && typeof m.content === 'string')
+    .map((m) => m.content as string);
+
+  for (const msg of userMessages) {
+    // Extraer municipio
+    const municipality = extractMunicipality(msg, availableMunicipalities);
+    if (municipality) {
+      context.municipality = municipality;
+    }
+
+    // Extraer año
+    const year = extractYear(msg);
+    if (year) {
+      context.year = year;
+      const dateRange = yearToDateRange(year);
+      context.dateFrom = dateRange.dateFrom;
+      context.dateTo = dateRange.dateTo;
+    }
+
+    // Extraer tipo de normativa
+    const type = extractOrdinanceType(msg);
+    if (type) {
+      context.type = type;
+    }
+  }
+
+  return context;
+}
 
 /**
  * Extrae el año mencionado en la query
@@ -109,12 +177,14 @@ export function yearToDateRange(year: string): { dateFrom: string; dateTo: strin
  * @param query - Consulta del usuario
  * @param availableMunicipalities - Lista de municipios disponibles
  * @param existingFilters - Filtros ya aplicados (desde UI)
+ * @param conversationContext - Contexto extraído de mensajes anteriores (fallback)
  * @returns SearchOptions con filtros extraídos + existentes
  */
 export function extractFiltersFromQuery(
   query: string,
   availableMunicipalities: string[],
-  existingFilters: Partial<SearchOptions> = {}
+  existingFilters: Partial<SearchOptions> = {},
+  conversationContext: ConversationContext = {}
 ): Partial<SearchOptions> {
   const extractedFilters: Partial<SearchOptions> = {};
 
@@ -144,12 +214,29 @@ export function extractFiltersFromQuery(
     }
   }
 
-  // Combinar filtros: existentes tienen prioridad SOLO si no son null/undefined
+  // 4. Aplicar contexto conversacional como FALLBACK
+  // Solo se usa si no hay filtro de la UI NI de la query actual
+  const finalMunicipality = existingFilters.municipality
+    || extractedFilters.municipality
+    || conversationContext.municipality;
+
+  const finalType = (existingFilters.type && existingFilters.type !== 'all')
+    ? existingFilters.type
+    : (extractedFilters.type || conversationContext.type);
+
+  const finalDateFrom = existingFilters.dateFrom
+    || extractedFilters.dateFrom
+    || conversationContext.dateFrom;
+
+  const finalDateTo = existingFilters.dateTo
+    || extractedFilters.dateTo
+    || conversationContext.dateTo;
+
   return {
-    municipality: existingFilters.municipality || extractedFilters.municipality,
-    type: (existingFilters.type && existingFilters.type !== 'all') ? existingFilters.type : extractedFilters.type,
-    dateFrom: existingFilters.dateFrom || extractedFilters.dateFrom,
-    dateTo: existingFilters.dateTo || extractedFilters.dateTo,
+    municipality: finalMunicipality,
+    type: finalType,
+    dateFrom: finalDateFrom,
+    dateTo: finalDateTo,
     limit: existingFilters.limit
   };
 }

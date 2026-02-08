@@ -31,7 +31,7 @@ import {
   classifyQueryIntent,
   generateDirectResponse
 } from '@/lib/query-classifier';
-import { extractFiltersFromQuery } from '@/lib/query-filter-extractor';
+import { extractFiltersFromQuery, extractConversationContext } from '@/lib/query-filter-extractor';
 import {
   isComparisonQuery,
   handleComparisonQuery,
@@ -159,9 +159,16 @@ export async function POST(req: Request) {
       dateTo: filters.dateTo
     };
 
+    // Extraer contexto conversacional de mensajes anteriores
+    // Permite que el usuario haga preguntas de seguimiento sin repetir el municipio/año
+    // Ej: "ordenanzas de carlos tejedor 2025" → "y los decretos?" (hereda Carlos Tejedor + 2025)
+    const conversationContext = extractConversationContext(recentMessages, stats.municipalityList);
+    console.log(`[ChatAPI] Contexto conversacional: ${JSON.stringify(conversationContext)}`);
+
     // Extraer filtros automáticamente de la query
     // Estrategia A: Auto-aplicar municipio/año/tipo detectado en la query
-    const enhancedFilters = extractFiltersFromQuery(query, stats.municipalityList, uiFilters);
+    // Estrategia B (nuevo): Si la query actual no tiene filtros, usar contexto conversacional como fallback
+    const enhancedFilters = extractFiltersFromQuery(query, stats.municipalityList, uiFilters, conversationContext);
 
     const hasFilters = !!(enhancedFilters.municipality || enhancedFilters.type || enhancedFilters.dateFrom || enhancedFilters.dateTo);
     const optimalLimit = calculateOptimalLimit(query, hasFilters);
@@ -480,10 +487,26 @@ Pero hay ${retrievedContext.sources.length} resultados EN TOTAL que el usuario p
 **RECORDATORIO:** El usuario ya verá TODOS los ${retrievedContext.sources.length} resultados en "Fuentes Consultadas". Tu trabajo es SOLO resumir, NO listar.`;
       }
 
+      // Construir texto de contexto conversacional para el LLM
+      const conversationContextParts: string[] = [];
+      if (conversationContext.municipality) {
+        conversationContextParts.push(`- **Municipio activo**: ${conversationContext.municipality}`);
+      }
+      if (conversationContext.year) {
+        conversationContextParts.push(`- **Año activo**: ${conversationContext.year}`);
+      }
+      if (conversationContext.type) {
+        conversationContextParts.push(`- **Tipo de normativa activo**: ${conversationContext.type}`);
+      }
+      const conversationContextText = conversationContextParts.length > 0
+        ? conversationContextParts.join('\n')
+        : 'No hay contexto previo (primera consulta de la conversación).';
+
       systemPrompt = systemPromptTemplate
         .replace('{{stats}}', statsText)
         .replace('{{context}}', contextToUse)
-        .replace('{{sources}}', sourcesText) + noSourcesWarning + filtersApplied + massiveListingInstruction;
+        .replace('{{sources}}', sourcesText)
+        .replace('{{conversation_context}}', conversationContextText) + noSourcesWarning + filtersApplied + massiveListingInstruction;
 
       // Log para debug de consumo de tokens
       console.log(`[ChatAPI] 📊 System Prompt size: ${systemPrompt.length} chars (~${Math.round(systemPrompt.length / 3)} tokens est.)`);

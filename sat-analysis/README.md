@@ -2,9 +2,10 @@
 
 Sistema de detección de anegamiento y salinización usando imágenes satelitales Sentinel-2, HLS (Harmonized Landsat-Sentinel-2) y Microsoft Planetary Computer.
 
-**Dos modos de uso:**
+**Tres modos de uso:**
 - 🖥️ **CLI** - Línea de comandos para análisis local
-- 🌐 **Web** - Interfaz Gradio para deploy en la nube
+- 🌐 **API REST** - Backend FastAPI para integración con frontend
+- 🖼️ **Gradio** - Interfaz web para deploy en la nube
 
 ## Características
 
@@ -15,6 +16,130 @@ Sistema de detección de anegamiento y salinización usando imágenes satelitale
 - Detección de salinización usando banda SWIR2 (B12)
 - Análisis temporal con tendencias
 - Exportación de resultados en JSON
+- **Generación de imágenes PNG** (RGB, clasificación, 6 índices espectrales)
+- **API REST asíncrona** con tareas en background
+- **Descarga ZIP** de todas las imágenes generadas
+
+---
+
+## 🔌 API REST (FastAPI)
+
+El servidor API permite integración con aplicaciones web como el chatbot Next.js.
+
+### Iniciar el servidor
+
+```bash
+# Desarrollo con auto-reload
+cd sat-analysis
+source venv/bin/activate
+python -m uvicorn api.main:app --reload --host 0.0.0.0 --port 8001
+```
+
+### Endpoints
+
+#### POST /api/analyze
+
+Inicia un análisis asíncrono de una partida catastral.
+
+```bash
+curl -X POST http://localhost:8001/api/analyze \
+  -H "Content-Type: application/json" \
+  -d '{
+    "partida": "4606",
+    "days_back": 365,
+    "cloud_cover_max": 30
+  }'
+```
+
+**Respuesta:**
+```json
+{
+  "task_id": "d3b99a91-7ba7-4acf-bf14-832f196463eb",
+  "status": "processing"
+}
+```
+
+#### GET /api/analyze/{task_id}
+
+Consulta el estado de un análisis.
+
+```bash
+curl http://localhost:8001/api/analyze/d3b99a91-7ba7-4acf-bf14-832f196463eb
+```
+
+**Respuesta (completado):**
+```json
+{
+  "task_id": "d3b99a91-7ba7-4acf-bf14-832f196463eb",
+  "status": "completed",
+  "partida": "4606",
+  "results": [
+    {
+      "date": "2025-01-07",
+      "water_ha": 12.5,
+      "wetland_ha": 45.2,
+      "vegetation_ha": 120.8,
+      "other_ha": 85.3,
+      "cloud_cover": 5,
+      "images": {
+        "rgb": "/images/rgb_4606_20250107.png",
+        "clasificacion": "/images/clasificacion_4606_20250107.png",
+        "ndwi": "/images/ndwi_4606_20250107.png",
+        "ndvi": "/images/ndvi_4606_20250107.png",
+        "ndmi": "/images/ndmi_4606_20250107.png",
+        "mndwi": "/images/mndwi_4606_20250107.png",
+        "ndsi": "/images/ndsi_4606_20250107.png",
+        "swir2_nir": "/images/swir2-nir_4606_20250107.png"
+      }
+    }
+  ]
+}
+```
+
+#### GET /api/analyze/{task_id}/zip
+
+Descarga todas las imágenes del análisis en un ZIP.
+
+```bash
+curl http://localhost:8001/api/analyze/d3b99a91-7ba7-4acf-bf14-832f196463eb/zip \
+  -o analisis_satelital.zip
+```
+
+#### GET /images/{filename}
+
+Accede a una imagen individual generada por el análisis.
+
+```bash
+curl http://localhost:8001/images/rgb_4606_20250107.png -o imagen.png
+```
+
+### Estructura de imágenes generadas
+
+Por cada fecha analizada, se generan 8 tipos de imágenes:
+
+| Tipo | Archivo | Descripción |
+|------|---------|-------------|
+| RGB | `rgb_{partida}_{fecha}.png` | Color real |
+| Clasificación | `clasificacion_{partida}_{fecha}.png` | Mapa de 4 categorías |
+| NDWI | `ndwi_{partida}_{fecha}.png` | Normalized Difference Water Index |
+| MNDWI | `mndwi_{partida}_{fecha}.png` | Modified NDWI (agua turbia) |
+| NDVI | `ndvi_{partida}_{fecha}.png` | Normalized Difference Vegetation Index |
+| NDMI | `ndmi_{partida}_{fecha}.png` | Normalized Difference Moisture Index |
+| NDSI | `ndsi_{partida}_{fecha}.png` | Normalized Difference Salinity Index |
+| SWIR2-NIR | `swir2-nir_{partida}_{fecha}.png` | Salinity Index |
+
+### Directorio de salida
+
+Las imágenes se guardan en `web_output/` por defecto:
+
+```
+sat-analysis/
+└── web_output/
+    ├── rgb_4606_20250107.png
+    ├── clasificacion_4606_20250107.png
+    ├── ndwi_4606_20250107.png
+    └── ...
+```
 
 ---
 
@@ -579,15 +704,27 @@ python app.py
 
 La interfaz estará disponible en `http://localhost:7860`
 
-### Roadmap - Fase 2 (FastAPI + Frontend)
+### Integración con Frontend
 
-Para una versión más avanzada, se planea:
+El frontend Next.js (`../chatbot/`) se integra con esta API a través del cliente `sat-api.ts`:
 
-- **Backend:** FastAPI con endpoints REST
-- **Frontend:** Next.js + React
-- **Autenticación:** Usuarios protegidos
-- **Base de datos:** Historial de análisis
-- **Mapas interactivos:** Leaflet/MapLibre
+```typescript
+// Ejemplo de uso desde el frontend
+const response = await fetch('http://localhost:8001/api/analyze', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    partida: '4606',
+    days_back: 365,
+    cloud_cover_max: 30
+  })
+});
+
+const { task_id } = await response.json();
+// Poll results...
+```
+
+Ver [`../chatbot/README.md`](../chatbot/README.md) para más detalles sobre la integración con el frontend.
 
 ---
 

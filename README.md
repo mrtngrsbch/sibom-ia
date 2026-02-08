@@ -1,3 +1,5 @@
+> ⚠️ NOTA (2026-02-06): Este doc puede tener refs desactualizadas. Stack actual: Gemini 3 Flash + GLM 4.7, Qdrant. Ver `.agents/README.md`
+
 # SIBOM IA
 
 > **Estado Actual**: 🟢 Producción - 2025-01-17 (v2.1 con Bun runtime)
@@ -10,7 +12,7 @@ Ecosistema completo para extracción y consulta de boletines oficiales municipal
 
 ## 🏗️ Arquitectura del Proyecto
 
-Este es un ecosistema de **dos partes integradas**:
+Este es un ecosistema de **tres partes integradas**:
 
 ### 1. Backend Python 🐍
 Scraper automatizado que extrae boletines usando LLMs
@@ -19,12 +21,19 @@ Scraper automatizado que extrae boletines usando LLMs
 - **Tecnologías**: Python, OpenRouter, LLMs (Gemini, GLM, Grok)
 - **Salida**: JSON estructurados + CSV para análisis
 
-### 2. Frontend Next.js 💬
-Chatbot con RAG para consultar los boletines extraídos
+### 2. Análisis Satelital 🛰️
+Sistema de detección de anegamiento y salinización usando imágenes Sentinel-2
+- **Ubicación**: [`sat-analysis/`](sat-analysis/)
+- **Función**: Análisis de imágenes satelitales, cálculo de índices espectrales, clasificación de coberturas
+- **Tecnologías**: FastAPI, Python, STAC, Microsoft Planetary Computer
+- **Salida**: 8 tipos de imágenes (RGB, clasificación, 6 índices espectrales), JSON con resultados
+
+### 3. Frontend Next.js 💬+🛰️
+Chatbot con RAG para consultar los boletines + módulo de análisis satelital integrado
 - **Ubicación**: [`chatbot/`](chatbot/)
-- **Función**: Búsqueda semántica y consultas en lenguaje natural
+- **Función**: Búsqueda semántica, consultas en lenguaje natural, visualización de imágenes satelitales
 - **Tecnologías**: Next.js 16, React 19, TypeScript, Tailwind, Vercel AI SDK, **Bun** (dev runtime)
-- **Características**: BM25, embeddings, streaming en tiempo real
+- **Características**: BM25, embeddings, streaming, galería de imágenes satelitales, miniaturas, descargas
 
 ## 🚀 Inicio Rápido
 
@@ -49,6 +58,23 @@ cp .env.example .env.local
 # Edita .env.local con tu OPENROUTER_API_KEY
 bun run dev              # O: npm run dev
 # Abre http://localhost:3000
+```
+
+### Paso 3: Análisis Satelital (Opcional)
+
+```bash
+# Development local (recomendado)
+./scripts/dev.sh
+
+# Manual (sin Docker)
+cd sat-analysis
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python -m uvicorn api.main:app --reload --port 8001
+
+# Frontend satélite
+# Abre http://localhost:3000/satelite
 ```
 
 > **Nota:** El proyecto usa **Bun** como runtime de desarrollo (10-20x más rápido que Node.js). El deployment a Vercel usa Node.js automáticamente.
@@ -138,15 +164,24 @@ sibom-scraper-assistant/
 │   ├── scripts/             # Scripts utilitarios (R2, compresión)
 │   ├── tests/               # Tests unitarios
 │   └── tui/                 # UI opcional (React + Ink)
+├── sat-analysis/            # Backend: Análisis satelital
+│   ├── api/                 # FastAPI endpoints
+│   │   ├── main.py          # API principal
+│   │   ├── tasks.py         # Tareas de análisis asíncrono
+│   │   └── models.py        # Modelos Pydantic
+│   ├── src/                 # Lógica de procesamiento
+│   ├── web_output/          # Imágenes PNG generadas
+│   └── codigos_partidos_arba.json # Códigos de partidos
 ├── chatbot/                  # Frontend: Chatbot Next.js
 │   ├── src/
 │   │   ├── app/             # App Router Next.js 16
-│   │   ├── components/      # UI components (Chat, Sidebar)
-│   │   └── lib/
-│   │       ├── rag/         # Motor RAG (BM25 + Vector + SQL)
-│   │       ├── computation/  # Motor de cómputo tabular
-│   │       └── data-catalog # Catálogo de datos para LLM
+│   │   ├── components/      # UI components
+│   │   └── lib/             # Utilidades y APIs
 │   └── .env.example         # Variables de entorno
+├── scripts/                 # Scripts de desarrollo
+│   └── dev.sh              # Inicio local (backend + frontend)
+├── nginx/                   # Configuración Nginx
+│   └── nginx.conf          # Proxy para /api/analyze y /images/
 ├── docs/                    # Documentación general
 │   ├── archive/             # Documentación archivada (historial)
 │   └── chatbot/             # Documentación del chatbot
@@ -193,11 +228,6 @@ docs/
 ```
 
 **Documentación relacionada:**
-- **[AGENTS.md](AGENTS.md)** - Guía de agentes para AI assistants
-- **[python-cli/README.md](python-cli/README.md)** - Documentación del scraper Python
-- **[chatbot/README.md](chatbot/README.md)** - Documentación del chatbot Next.js
-
-**Documentación relacionada:**
 - **[docs/README.md](docs/README.md)** - Índice completo de documentación organizada
 - **[AGENTS.md](AGENTS.md)** - Guía de agentes para AI assistants (arquitectura del proyecto)
 - **[python-cli/README.md](python-cli/README.md)** - Documentación del scraper Python
@@ -223,6 +253,14 @@ docs/
 - ✅ Fuentes citadas (referencias a boletines)
 - ✅ Interfaz responsive con Tailwind CSS
 - ✅ RAG (Retrieval Augmented Generation) para respuestas precisas
+
+### Análisis Satelital
+- ✅ Búsqueda de imágenes Sentinel-2 (STAC)
+- ✅ Cálculo de 6 índices espectrales (NDWI, MNDWI, NDVI, NDMI, NDSI, Salinidad)
+- ✅ Clasificación de coberturas (Agua, Humedal, Vegetación, Otros)
+- ✅ Interfaz web con galería de imágenes
+- ✅ Descarga de imágenes generadas (individual + ZIP)
+- ✅ Análisis temporal con tendencias
 
 ## 💰 Modelos Gratuitos Disponibles
 

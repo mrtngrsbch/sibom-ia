@@ -1,12 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Satellite, AlertCircle } from '@/lib/icons';
+import { Satellite, AlertCircle, HelpCircle } from '@/lib/icons';
 import { PartidaForm } from '@/components/satelite/PartidaForm';
 import { ResultsPanel } from '@/components/satelite/ResultsPanel';
 import { getSatAnalysisClient, type PartidoInfo, type AnalyzeRequest, type AnalyzeResponse } from '@/lib/sat-api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 /**
  * Página principal de análisis satelital
@@ -104,18 +105,26 @@ export default function SatelitePage() {
     <div className="container mx-auto p-6 max-w-6xl">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center">
-            <Satellite className="w-6 h-6 text-white" />
+        <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center">
+              <Satellite className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+                Análisis Satelital
+              </h1>
+              <p className="text-slate-600 dark:text-slate-400">
+                Detección de anegamiento y salinización usando imágenes Sentinel-2
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-              Análisis Satelital
-            </h1>
-            <p className="text-slate-600 dark:text-slate-400">
-              Detección de anegamiento y salinización usando imágenes Sentinel-2
-            </p>
-          </div>
+          <Button variant="outline" asChild>
+            <Link href="/satelite/ayuda">
+              <HelpCircle className="w-4 h-4 mr-2" />
+              Ayuda
+            </Link>
+          </Button>
         </div>
       </div>
 

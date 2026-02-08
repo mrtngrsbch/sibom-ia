@@ -143,9 +143,17 @@ export function ImagesPanel({ results, partida, taskId }: ImagesPanelProps) {
             </div>
 
             <div className="flex items-center gap-3">
+              {/* Label del selector */}
+              <div className="flex items-center gap-2 text-sm">
+                <span className="font-medium text-slate-700 dark:text-slate-300">Fecha:</span>
+                <Badge variant="secondary" className="text-xs">
+                  {results.length} fechas
+                </Badge>
+              </div>
+
               {/* Selector de fecha */}
               <Select value={selectedDate} onValueChange={setSelectedDate}>
-                <SelectTrigger className="w-[200px]">
+                <SelectTrigger className="w-[280px] hover:border-primary-500 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors">
                   <SelectValue placeholder="Seleccionar fecha" />
                 </SelectTrigger>
                 <SelectContent>

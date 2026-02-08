@@ -105,7 +105,11 @@
       "Bash(docker-compose build:*)",
       "Bash(docker-compose logs:*)",
       "Bash(docker-compose ps:*)",
-      "Bash(docker-compose restart:*)"
+      "Bash(docker-compose restart:*)",
+      "Bash(gunzip:*)",
+      "Bash(overmind restart:*)",
+      "Bash(npm run dev:*)",
+      "Bash(gh:*)"
     ],
     "deny": [],
     "ask": [],

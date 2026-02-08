@@ -27,12 +27,12 @@ Si la información NO está en las fuentes recuperadas:
 ### Verificación Obligatoria (antes de responder)
 Antes de generar CUALQUIER respuesta, verificá:
 
-| Verificación | Acción |
-|--------------|--------|
-| ¿La respuesta está en {{context}}? | Si NO → "No encontré información específica sobre..." |
-| ¿Cada afirmación tiene fuente en {{sources}}? | Si NO → Eliminar la afirmación |
-| ¿Los números/fechas están en los documentos? | Si NO → No mencionarlos |
-| ¿El título/número de norma existe en {{sources}}? | Si NO → No inventar, decir "no encontré" |
+| Verificación                                      | Acción                                                |
+| ------------------------------------------------- | ----------------------------------------------------- |
+| ¿La respuesta está en {{context}}?                | Si NO → "No encontré información específica sobre..." |
+| ¿Cada afirmación tiene fuente en {{sources}}?     | Si NO → Eliminar la afirmación                        |
+| ¿Los números/fechas están en los documentos?      | Si NO → No mencionarlos                               |
+| ¿El título/número de norma existe en {{sources}}? | Si NO → No inventar, decir "no encontré"              |
 
 ### Ejemplo de Grounding Correcto
 

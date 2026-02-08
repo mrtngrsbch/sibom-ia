@@ -9,9 +9,6 @@
 
 import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { useChat } from '@ai-sdk/react';
-import type { ChatFilters, ChatMessage } from '@/lib/types';
-import { extractFiltersFromQuery } from '@/lib/query-filter-extractor';
-import type { SearchOptions } from '@/lib/rag/retriever';
 import { ChatWelcome } from './ChatWelcome';
 import { ChatMessageList } from './ChatMessageList';
 import { ChatTypingIndicator } from './ChatTypingIndicator';
@@ -33,25 +30,14 @@ function debounce<T extends (...args: unknown[]) => void>(
 }
 
 interface ChatContainerProps {
-  filters: ChatFilters;
-  municipalities: string[];
   onClearHistory: () => void;
-  onFiltersChange?: (filters: ChatFilters) => void;
 }
 
 /**
  * Componente principal del chat
- *
- * SINCRONIZACIÓN DE FILTROS:
- * - Detecta filtros en la query del usuario
- * - Actualiza el estado del padre vía onFiltersChange
- * - Los badges se actualizan automáticamente
  */
 export function ChatContainer({
-  filters,
-  municipalities,
-  onClearHistory,
-  onFiltersChange
+  onClearHistory
 }: ChatContainerProps) {
   const [chatKey, setChatKey] = useState(0);
 
@@ -124,74 +110,16 @@ export function ChatContainer({
     });
   }, [append]);
 
-  // Handler de envío de formulario con extracción de filtros
-  const handleFormSubmit = useCallback((e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!input.trim()) return;
-
-    // Extraer filtros automáticamente de la query
-    const uiFilters: Partial<SearchOptions> = {
-      municipality: filters.municipality || undefined,
-      type: filters.ordinanceType === 'all' ? undefined : filters.ordinanceType,
-      dateFrom: filters.dateFrom || undefined,
-      dateTo: filters.dateTo || undefined
-    };
-
-    const extractedFilters = extractFiltersFromQuery(input, municipalities, uiFilters);
-
-    // Construir filtros finales para enviar al backend
-    const finalFilters = {
-      municipality: extractedFilters.municipality,
-      ordinanceType: extractedFilters.type,
-      dateFrom: extractedFilters.dateFrom,
-      dateTo: extractedFilters.dateTo
-    };
-
-    // Sincronizar filtros con la UI
-    if (onFiltersChange) {
-      const hasNewFilters =
-        (extractedFilters.municipality && extractedFilters.municipality !== filters.municipality) ||
-        (extractedFilters.type && extractedFilters.type !== filters.ordinanceType) ||
-        (extractedFilters.dateFrom && extractedFilters.dateFrom !== filters.dateFrom) ||
-        (extractedFilters.dateTo && extractedFilters.dateTo !== filters.dateTo);
-
-      if (hasNewFilters) {
-        const validOrdinanceType: ChatFilters['ordinanceType'] =
-          extractedFilters.type === 'all' || !extractedFilters.type
-            ? filters.ordinanceType
-            : extractedFilters.type as ChatFilters['ordinanceType'];
-
-        onFiltersChange({
-          municipality: extractedFilters.municipality || filters.municipality,
-          ordinanceType: validOrdinanceType,
-          dateFrom: extractedFilters.dateFrom || filters.dateFrom,
-          dateTo: extractedFilters.dateTo || filters.dateTo,
-        });
-      }
-    }
-
-    // Enviar al chat con filtros aplicados
-    handleSubmit(e, {
-      body: {
-        filters: finalFilters
-      }
-    });
-  }, [input, filters, municipalities, onFiltersChange, handleSubmit]);
-
   // Manejar Enter para enviar, Shift+Enter para nueva línea
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      const syntheticEvent = { preventDefault: () => {} } as React.FormEvent;
-      handleFormSubmit(syntheticEvent);
+      handleSubmit(e as unknown as React.FormEvent);
     }
-  }, [handleFormSubmit]);
+  }, [handleSubmit]);
 
-  // Placeholder dinámico según filtro
-  const placeholder = filters.municipality
-    ? `Preguntá sobre ${filters.municipality}...`
-    : `Ej: "decretos de Carlos Tejedor en 2025"`;
+  // Placeholder dinámico
+  const placeholder = `Ej: "decretos de Carlos Tejedor en 2025"`;
 
   const showTypingIndicator = isLoading && messages[messages.length - 1]?.role === 'user';
 
@@ -226,7 +154,7 @@ export function ChatContainer({
       <ChatInput
         value={input}
         onChange={setInput}
-        onSubmit={handleFormSubmit}
+        onSubmit={handleSubmit}
         onKeyDown={handleKeyDown}
         isLoading={isLoading}
         placeholder={placeholder}

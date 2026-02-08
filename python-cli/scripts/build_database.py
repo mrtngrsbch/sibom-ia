@@ -130,8 +130,29 @@ def build_database():
     """
     Construye la base de datos desde los archivos JSON
     """
-    boletines_dir = Path(__file__).parent / 'boletines'
+    # Buscar boletines en ubicaciones posibles
+    script_dir = Path(__file__).parent
+    possible_dirs = [
+        script_dir / 'boletines',
+        Path('boletines'),  # Raíz del proyecto
+        Path('../boletines'),  # Un nivel arriba desde scripts/
+    ]
+
+    boletines_dir = None
+    for dir_path in possible_dirs:
+        if dir_path.exists() and any(dir_path.glob('*.json')):
+            boletines_dir = dir_path
+            break
+
+    if boletines_dir is None:
+        console.print("[red]❌ No se encontró directorio con boletines JSON[/red]")
+        console.print("[yellow]   Buscando en:[/yellow]")
+        for d in possible_dirs:
+            console.print(f"     • {d.absolute()}")
+        return
+
     db_path = boletines_dir / 'normativas.db'
+    console.print(f"[blue]📂 Usando boletines de: {boletines_dir}[/blue]")
     
     # Eliminar DB existente
     if db_path.exists():

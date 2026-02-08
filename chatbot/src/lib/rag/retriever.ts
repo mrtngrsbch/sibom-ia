@@ -103,6 +103,7 @@ export interface SearchOptions {
 export interface SearchResult {
   context: string;
   sources: Source[];
+  totalCount?: number;  // Total de resultados disponibles (sin aplicar límite de retrieval)
 }
 
 /**

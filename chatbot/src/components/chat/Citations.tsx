@@ -22,7 +22,7 @@
 
 import { FileText, ExternalLink, AlertTriangle, Search, X, ChevronDown, ChevronUp } from '@/lib/icons';
 import { clsx } from 'clsx';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 
 interface Source {
   title: string;
@@ -35,16 +35,25 @@ interface Source {
 
 interface CitationsProps {
   sources: Source[];
+  defaultExpanded?: boolean;
 }
 
 /**
  * Componente para mostrar las fuentes legales citadas
  * Con manejo inteligente de listados grandes
  */
-export function Citations({ sources }: CitationsProps) {
-  const [isExpanded, setIsExpanded] = useState(false);
+export function Citations({ sources, defaultExpanded = false }: CitationsProps) {
+  // Expandido por defecto si hay pocas fuentes (≤ 50) o si se solicita explícitamente
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded || sources.length <= 50);
   const [searchQuery, setSearchQuery] = useState('');
   const [displayCount, setDisplayCount] = useState(50);
+
+  // Escuchar evento personalizado para expandir desde el indicador del mensaje
+  useEffect(() => {
+    const handleExpandRequest = () => setIsExpanded(true);
+    window.addEventListener('expand-citations', handleExpandRequest);
+    return () => window.removeEventListener('expand-citations', handleExpandRequest);
+  }, []);
 
   // Filtrar fuentes según búsqueda
   const filteredSources = useMemo(() => {
@@ -64,8 +73,8 @@ export function Citations({ sources }: CitationsProps) {
   }, [filteredSources, displayCount]);
 
   const hasMore = displayedSources.length < filteredSources.length;
-  const isLargeList = sources.length > 500;
-  const isMediumList = sources.length > 100 && sources.length <= 500;
+  const isLargeList = sources.length > 200;  // Reducido de 500 a 200
+  const isMediumList = sources.length > 50 && sources.length <= 200;  // Ajustado
 
   if (sources.length === 0) {
     return null;

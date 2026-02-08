@@ -35,14 +35,13 @@ function formatDate(isoDate: string): string {
 
 interface SidebarProps {
   showNavigation?: boolean;
-  currentMunicipality?: string | null;
 }
 
 /**
  * Sidebar de navegación
  * @description Panel lateral simplificado con info del sistema
  */
-export function Sidebar({ showNavigation = true, currentMunicipality = null }: SidebarProps) {
+export function Sidebar({ showNavigation = true }: SidebarProps) {
   const [stats, setStats] = useState<DatabaseStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -216,11 +215,7 @@ export function Sidebar({ showNavigation = true, currentMunicipality = null }: S
         )}
 
         {/* WeatherBadge - Solo si hay municipio seleccionado */}
-        {currentMunicipality && (
-          <div className="mb-4">
-            <WeatherBadge municipality={currentMunicipality} />
-          </div>
-        )}
+        {/* Eliminado: ya no hay filtro de municipio */}
 
         {/* Info de municipios disponibles - Todos */}
         {stats && stats.municipalityList.length > 0 && (

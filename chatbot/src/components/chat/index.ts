@@ -12,5 +12,4 @@ export { ChatInput } from './ChatInput';
 export { ChatErrorMessage } from './ChatErrorMessage';
 export { Citations } from './Citations';
 export { TokenUsage } from './TokenUsage';
-export { FilterBar } from './FilterBar';
 export { WeatherBadge } from './WeatherBadge';

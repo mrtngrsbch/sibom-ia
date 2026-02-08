@@ -119,8 +119,7 @@ export async function retrieveFromSQLite(
         date,
         title,
         source_bulletin,
-        norma_url,
-        status
+        url
       FROM normativas
       ${where}
       ORDER BY date DESC
@@ -137,14 +136,14 @@ export async function retrieveFromSQLite(
       date: string;
       title: string;
       source_bulletin: string;
-      norma_url: string;
+      url: string;
       status: string;
     }>;
 
     // Construir fuentes
     const sources: Source[] = rows.map(row => ({
       title: `${row.type} ${row.number}/${row.year} - ${row.municipality}`,
-      url: row.norma_url || `https://sibom.slyt.gba.gob.ar/`,
+      url: row.url || `https://sibom.slyt.gba.gob.ar/`,
       municipality: row.municipality,
       type: row.type,
       status: row.status || 'vigente',
@@ -163,7 +162,7 @@ export async function retrieveFromSQLite(
     const duration = Date.now() - startTime;
     console.log(`[SQLite] ✅ Query completada en ${duration}ms - ${rows.length.toLocaleString()} resultados (total: ${totalCount.toLocaleString()})`);
 
-    return { context, sources };
+    return { context, sources, totalCount };
   } catch (error) {
     console.error('[SQLite] Error en consulta:', error);
     throw error;

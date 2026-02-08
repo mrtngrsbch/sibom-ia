@@ -70,8 +70,8 @@ export async function POST(req: Request) {
     const body = await req.json();
     console.log(`[ChatAPI] Body recibido: ${JSON.stringify(body).slice(0, 200)}...`);
 
-    // Extraer mensajes y filtros
-    const { messages, municipality, filters = {} } = body;
+    // Extraer mensajes
+    const { messages } = body;
 
     const apiKey = process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
@@ -151,48 +151,30 @@ export async function POST(req: Request) {
       stats = await getDatabaseStats();
     }
 
-    // Construir opciones de búsqueda con todos los filtros (UI + extraídos de query)
-    const uiFilters = {
-      municipality: filters.municipality || municipality, // Soportar ambos formatos
-      type: filters.ordinanceType !== 'all' ? filters.ordinanceType : undefined,
-      dateFrom: filters.dateFrom,
-      dateTo: filters.dateTo
-    };
-
     // Extraer contexto conversacional de mensajes anteriores
     // Permite que el usuario haga preguntas de seguimiento sin repetir el municipio/año
     // Ej: "ordenanzas de carlos tejedor 2025" → "y los decretos?" (hereda Carlos Tejedor + 2025)
     const conversationContext = extractConversationContext(recentMessages, stats.municipalityList);
     console.log(`[ChatAPI] Contexto conversacional: ${JSON.stringify(conversationContext)}`);
 
-    // Extraer filtros automáticamente de la query
-    // Estrategia A: Auto-aplicar municipio/año/tipo detectado en la query
-    // Estrategia B (nuevo): Si la query actual no tiene filtros, usar contexto conversacional como fallback
-    const enhancedFilters = extractFiltersFromQuery(query, stats.municipalityList, uiFilters, conversationContext);
+    // Extraer filtros automáticamente de la query (solo desde la query, sin filtros de UI)
+    const enhancedFilters = extractFiltersFromQuery(query, stats.municipalityList, {}, conversationContext);
 
     const hasFilters = !!(enhancedFilters.municipality || enhancedFilters.type || enhancedFilters.dateFrom || enhancedFilters.dateTo);
     const optimalLimit = calculateOptimalLimit(query, hasFilters);
 
-    // Determinar si el filtro de tipo es MANUAL (UI) o AUTOMÁTICO (detectado de query)
-    // isManualTypeFilter = true solo cuando el usuario seleccionó explícitamente en el dropdown
-    const isManualTypeFilter = uiFilters.type !== undefined && uiFilters.type === enhancedFilters.type;
-
     // Detectar si es query de listado masivo (muchos resultados esperados)
     const isMassiveListing = optimalLimit >= 100 && hasFilters;
-    
+
     // Para listados masivos, NO limitar (recuperar todos los que coincidan)
-    // El usuario quiere ver TODOS los resultados, no una muestra
-    const adjustedLimit = isMassiveListing ? 10000 : optimalLimit; // Sin límite práctico para listados
+    const adjustedLimit = isMassiveListing ? 10000 : optimalLimit;
 
     const searchOptions = {
       ...enhancedFilters,
-      limit: adjustedLimit,
-      isManualTypeFilter
+      limit: adjustedLimit
     };
 
-    console.log(`[ChatAPI] Filtros UI: ${JSON.stringify(uiFilters)}`);
     console.log(`[ChatAPI] Filtros extraídos de query: ${JSON.stringify(enhancedFilters)}`);
-    console.log(`[ChatAPI] Tipo manual: ${isManualTypeFilter}`);
     console.log(`[ChatAPI] Límite dinámico: ${adjustedLimit} docs (filtros: ${hasFilters}, listado masivo: ${isMassiveListing})`);
 
     // Detectar si es query de comparación entre municipios (usar SQL)
@@ -427,9 +409,11 @@ NOTA CRÍTICA: Los municipios listados arriba son los ÚNICOS que tienen informa
 
       // ✅ FIX: Para listados masivos (>50), NO enviar todas las sources al LLM
       // Solo enviar resumen agregado para ahorrar tokens
+      // Usar totalCount si está disponible (total en BD), sino sources.length
+      const totalResultsCount = retrievedContext.totalCount ?? retrievedContext.sources.length;
       const sourcesText = hasRelevantSources
-        ? (retrievedContext.sources.length > 50
-            ? `RESUMEN: ${retrievedContext.sources.length} normativas encontradas (listado completo disponible en UI)`
+        ? (totalResultsCount > 50
+            ? `RESUMEN: ${totalResultsCount.toLocaleString()} normativas encontradas en total (listado completo disponible en UI)`
             : retrievedContext.sources.map((s: any) => {
                 const typeLabel = s.documentTypes && s.documentTypes.length > 0
                   ? s.documentTypes.map((t: string) => t.toUpperCase()).join(', ')
@@ -439,9 +423,9 @@ NOTA CRÍTICA: Los municipios listados arriba son los ÚNICOS que tienen informa
           )
         : '';
 
-      // Construir texto de filtros aplicados
-      const filtersApplied = filters.municipality || filters.ordinanceType || filters.dateFrom || filters.dateTo
-        ? `\n\nFILTROS APLICADOS EN ESTA BÚSQUEDA:\n${filters.municipality ? `- Municipio: ${filters.municipality}\n` : ''}${filters.ordinanceType && filters.ordinanceType !== 'all' ? `- Tipo de norma: ${filters.ordinanceType}\n` : ''}${filters.dateFrom ? `- Desde: ${filters.dateFrom}\n` : ''}${filters.dateTo ? `- Hasta: ${filters.dateTo}\n` : ''}`
+      // Construir texto de filtros aplicados (usar enhancedFilters que se detectaron de la query)
+      const filtersApplied = enhancedFilters.municipality || enhancedFilters.type || enhancedFilters.dateFrom || enhancedFilters.dateTo
+        ? `\n\nFILTROS APLICADOS EN ESTA BÚSQUEDA:\n${enhancedFilters.municipality ? `- Municipio: ${enhancedFilters.municipality}\n` : ''}${enhancedFilters.type ? `- Tipo: ${enhancedFilters.type}\n` : ''}${enhancedFilters.dateFrom ? `- Desde: ${enhancedFilters.dateFrom}\n` : ''}${enhancedFilters.dateTo ? `- Hasta: ${enhancedFilters.dateTo}\n` : ''}`
         : '';
 
       // Para queries computacionales, agregar el resultado al contexto
@@ -458,8 +442,8 @@ NOTA CRÍTICA: Los municipios listados arriba son los ÚNICOS que tienen informa
 
       // Para listados masivos, agregar instrucción especial
       let massiveListingInstruction = '';
-      if (isMassiveListing && retrievedContext.sources.length > 50) {
-        massiveListingInstruction = `\n\n## ⚠️ INSTRUCCIÓN CRÍTICA - LISTADO MASIVO (${retrievedContext.sources.length} RESULTADOS)
+      if (isMassiveListing && totalResultsCount > 50) {
+        massiveListingInstruction = `\n\n## ⚠️ INSTRUCCIÓN CRÍTICA - LISTADO MASIVO (${totalResultsCount.toLocaleString()} RESULTADOS)
 
 **🚨 REGLAS ABSOLUTAS - NO NEGOCIABLES:**
 
@@ -468,15 +452,17 @@ NOTA CRÍTICA: Los municipios listados arriba son los ÚNICOS que tienen informa
 3. ❌ **PROHIBIDO DUPLICAR** - La lista ya se muestra automáticamente en "Fuentes Consultadas"
 
 4. ✅ **SOLO PERMITIDO:** Resumen de 2-3 líneas máximo:
-   - Línea 1: "Se encontraron ${retrievedContext.sources.length} ${enhancedFilters.type || 'normativas'} de ${enhancedFilters.municipality || 'este municipio'}${enhancedFilters.dateFrom ? ' del año ' + new Date(enhancedFilters.dateFrom).getFullYear() : ''}."
+   - Línea 1: "Se encontraron ${totalResultsCount.toLocaleString()} ${enhancedFilters.type || 'normativas'} de ${enhancedFilters.municipality || 'este municipio'}${enhancedFilters.dateFrom ? ' del año ' + new Date(enhancedFilters.dateFrom).getFullYear() : ''}."
    - Línea 2 (opcional): Mencionar rango de números si es relevante
    - Línea 3: "La lista completa con enlaces está disponible en la sección 'Fuentes Consultadas' más abajo."
 
 **IMPORTANTE:** El contexto arriba SOLO muestra las primeras 100 normativas como referencia.
-Pero hay ${retrievedContext.sources.length} resultados EN TOTAL que el usuario puede ver en "Fuentes Consultadas".
+Pero hay ${totalResultsCount.toLocaleString()} resultados EN TOTAL que el usuario puede ver en "Fuentes Consultadas".
 
 **EJEMPLO CORRECTO:**
-"Se encontraron ${retrievedContext.sources.length} decretos de Carlos Tejedor del año ${new Date(enhancedFilters.dateFrom || '').getFullYear() || '2025'}. La lista completa con enlaces está disponible en la sección 'Fuentes Consultadas' más abajo."
+"Se encontraron ${totalResultsCount.toLocaleString()} decretos de Carlos Tejedor del año ${new Date(enhancedFilters.dateFrom || '').getFullYear() || '2025'}. La lista completa con enlaces está disponible en la sección 'Fuentes Consultadas' más abajo.
+
+💡 **Tip:** Para una búsqueda más específica, podés agregar palabras clave como "sueldos", "licitaciones", "personal", o un número de decreto específico."
 
 **EJEMPLO INCORRECTO (NO HACER):**
 "Encontré 100 decretos de Carlos Tejedor en 2025:
@@ -484,7 +470,7 @@ Pero hay ${retrievedContext.sources.length} resultados EN TOTAL que el usuario p
 2. Decreto 2/25 - ...
 [...]"
 
-**RECORDATORIO:** El usuario ya verá TODOS los ${retrievedContext.sources.length} resultados en "Fuentes Consultadas". Tu trabajo es SOLO resumir, NO listar.`;
+**RECORDATORIO:** El usuario ya verá TODOS los ${totalResultsCount.toLocaleString()} resultados en "Fuentes Consultadas". Tu trabajo es SOLO resumir, NO listar.`;
       }
 
       // Construir texto de contexto conversacional para el LLM
@@ -555,7 +541,46 @@ Pero hay ${retrievedContext.sources.length} resultados EN TOTAL que el usuario p
         maxOutputTokens: isMassiveListing ? 500 : 4000,
       });
 
-      return result.toTextStreamResponse();
+      const response = result.toTextStreamResponse();
+
+      // Wrapper para inyectar fuentes al final del stream
+      const reader = response.body!.getReader();
+      const encoder = new TextEncoder();
+
+      const wrappedStream = new ReadableStream({
+        async start(controller) {
+          const sources = retrievedContext.sources;
+          const hasSources = sources && sources.length > 0;
+          let sourcesInjected = false;
+
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+
+              if (done) {
+                // Al final del stream, inyectar las fuentes como JSON oculto
+                if (hasSources && !sourcesInjected) {
+                  const sourcesJson = JSON.stringify({ type: 'sources', sources });
+                  // Formato: <!--SOURCES:{json}-->
+                  const annotation = `\n\n<!--SOURCES:${sourcesJson}-->`;
+                  controller.enqueue(encoder.encode(annotation));
+                }
+                controller.close();
+                break;
+              }
+
+              controller.enqueue(value);
+            }
+          } catch (err) {
+            console.error('[ChatAPI] Error en stream wrapper:', err);
+            controller.error(err);
+          }
+        }
+      });
+
+      return new Response(wrappedStream, {
+        headers: response.headers
+      });
     } catch (streamError: any) {
       console.error('[ChatAPI] Error crítico al iniciar streamText:', streamError);
 

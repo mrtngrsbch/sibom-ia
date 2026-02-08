@@ -79,30 +79,113 @@ get_pid_on_port() {
     lsof -ti :$1 2>/dev/null | head -1
 }
 
+# Verificar si Overmind ya está corriendo
+if overmind status >/dev/null 2>&1; then
+    echo ""
+    echo -e "${GREEN}✅ Overmind ya está corriendo${NC}"
+    echo ""
+    echo -e "${CYAN}   Conectando a la sesión existente...${NC}"
+    echo ""
+    exec overmind connect
+fi
+
+# Verificar si los puertos están en uso por procesos externos
+BACKEND_EXTERNAL_PID=""
+FRONTEND_EXTERNAL_PID=""
+BACKEND_RUNNING=false
+FRONTEND_RUNNING=false
+
+if port_in_use 8001; then
+    BACKEND_PID=$(get_pid_on_port 8001)
+    # Verificar si es un proceso de Overmind
+    if ps -p $BACKEND_PID -o command= 2>/dev/null | grep -q "overmind"; then
+        BACKEND_RUNNING=true
+    else
+        BACKEND_EXTERNAL_PID=$BACKEND_PID
+    fi
+fi
+
+if port_in_use 3000; then
+    FRONTEND_PID=$(get_pid_on_port 3000)
+    # Verificar si es un proceso de Overmind
+    if ps -p $FRONTEND_PID -o command= 2>/dev/null | grep -q "overmind"; then
+        FRONTEND_RUNNING=true
+    else
+        FRONTEND_EXTERNAL_PID=$FRONTEND_PID
+    fi
+fi
+
+# Si hay servicios externos corriendo, preguntar
+if [ ! -z "$BACKEND_EXTERNAL_PID" ] || [ ! -z "$FRONTEND_EXTERNAL_PID" ]; then
+    echo ""
+    echo -e "${YELLOW}⚠️  Servicios detectados corriendo externamente:${NC}"
+    echo ""
+
+    if [ ! -z "$BACKEND_EXTERNAL_PID" ]; then
+        echo -e "   Backend:  ${RED}Corriendo (PID: $BACKEND_EXTERNAL_PID)${NC}"
+    fi
+
+    if [ ! -z "$FRONTEND_EXTERNAL_PID" ]; then
+        echo -e "   Frontend: ${RED}Corriendo (PID: $FRONTEND_EXTERNAL_PID)${NC}"
+    fi
+
+    echo ""
+    echo -e "${YELLOW}Overmind necesita detener estos servicios primero.${NC}"
+    echo ""
+    echo -e "${CYAN}Opciones:${NC}"
+    echo -e "   ${GREEN}1${NC} - Detener servicios externos y usar Overmind"
+    echo -e "   ${GREEN}2${NC} - Cancelar y mantener servicios actuales"
+    echo ""
+    echo -n "   Selecciona (1/2): "
+    read -r choice
+
+    if [ "$choice" != "1" ]; then
+        echo ""
+        echo -e "${YELLOW}Cancelado. Servicios externos mantienen ejecución.${NC}"
+        echo ""
+        echo -e "${CYAN}Para usar Overmind, detén primero:${NC}"
+        if [ ! -z "$BACKEND_EXTERNAL_PID" ]; then
+            echo -e "   kill $BACKEND_EXTERNAL_PID  # Backend"
+        fi
+        if [ ! -z "$FRONTEND_EXTERNAL_PID" ]; then
+            echo -e "   kill $FRONTEND_EXTERNAL_PID  # Frontend"
+        fi
+        exit 0
+    fi
+
+    # Detener servicios externos
+    echo ""
+    echo -e "${YELLOW}Deteniendo servicios externos...${NC}"
+
+    if [ ! -z "$BACKEND_EXTERNAL_PID" ]; then
+        kill $BACKEND_EXTERNAL_PID 2>/dev/null || true
+        echo -e "${GREEN}   ✅ Backend detenido${NC}"
+    fi
+
+    if [ ! -z "$FRONTEND_EXTERNAL_PID" ]; then
+        kill $FRONTEND_EXTERNAL_PID 2>/dev/null || true
+        # Esperar un poco para que libere el puerto
+        sleep 1
+        if port_in_use 3000; then
+            # Intentar con SIGTERM al group
+            kill -9 -$FRONTEND_EXTERNAL_PID 2>/dev/null || true
+        fi
+        echo -e "${GREEN}   ✅ Frontend detenido${NC}"
+    fi
+
+    echo ""
+fi
+
 # Mostrar estado actual
 echo ""
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}  📊 Estado de Servicios${NC}"
+echo -e "${BLUE}  📊 Iniciando Servicios${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
-
-# Backend
-if port_in_use 8001; then
-    BACKEND_PID=$(get_pid_on_port 8001)
-    echo -e "${GREEN}  ✅${NC} Backend       ${GREEN}Corriendo${NC}      (PID: ${BACKEND_PID})"
-else
-    echo -e "${YELLOW}  ⏸️  Backend       Detenido${NC}"
-fi
-
-# Frontend
-if port_in_use 3000; then
-    FRONTEND_PID=$(get_pid_on_port 3000)
-    echo -e "${GREEN}  ✅${NC} Frontend      ${GREEN}Corriendo${NC}      (PID: ${FRONTEND_PID})"
-else
-    echo -e "${YELLOW}  ⏸️  Frontend      Detenido${NC}"
-fi
-
+echo -e "${CYAN}  Backend:  FastAPI (sat-analysis) en puerto 8001${NC}"
+echo -e "${CYAN}  Frontend: Next.js (chatbot) en puerto 3000${NC}"
 echo ""
+
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${BLUE}  🔗 URLs${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -117,8 +200,9 @@ echo ""
 echo -e "${YELLOW}  Comandos útiles:${NC}"
 echo -e "     ${GREEN}overmind status${NC}         - Ver estado de servicios"
 echo -e "     ${GREEN}overmind restart backend${NC} - Reiniciar solo backend"
-echo -e "     ${GREEN}overmind logs${NC}           - Ver logs (salir: Ctrl+C)"
+echo -e "     ${GREEN}overmind connect backend${NC} - Conectar al panel de backend"
 echo ""
+echo -e "${YELLOW}  Presiona Ctrl+B luego D para desconectar sin detener${NC}"
 echo -e "${YELLOW}  Presiona Ctrl+C para detener todos los servicios${NC}"
 echo ""
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"

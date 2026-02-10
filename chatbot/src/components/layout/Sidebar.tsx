@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import {
   MessageSquare,
-  Scale,
+  Mangrullo,
   BarChart3,
   Satellite,
   RefreshCw,
@@ -149,14 +149,14 @@ export function Sidebar({ showNavigation = true }: SidebarProps) {
       <div className="p-4 border-b border-slate-200 dark:border-slate-800">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center flex-shrink-0">
-            <Scale className="w-5 h-5 text-white" />
+            <Mangrullo className="w-5 h-5 text-white" />
           </div>
           <div className="min-w-0">
             <h2 className="font-semibold text-slate-900 dark:text-white truncate">
-              SIBOM Chat
+            Mangrullo
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Observatorio de transparencia municipal de la Provincia de Buenos Aires
+            Observatorio independiente de la decepción municipal
             </p>
           </div>
         </div>

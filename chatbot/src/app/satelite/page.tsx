@@ -14,9 +14,10 @@ import { MobileDrawer } from '@/components/layout/MobileDrawer';
 import { SatelliteAnalysisProvider, useSatelliteAnalysis } from '@/contexts/SatelliteAnalysisContext';
 
 /**
- * Página principal de análisis satelital
+ * Contenido principal de la página de satélite
+ * Envuelto en SatelliteAnalysisProvider para usar el Context
  */
-export default function SatelitePage() {
+function SatelitePageContent() {
   const [partidos, setPartidos] = useState<PartidoInfo[]>([]);
   const [loadingPartidos, setLoadingPartidos] = useState(true);
   const [partidosError, setPartidosError] = useState<string | null>(null);
@@ -108,20 +109,19 @@ export default function SatelitePage() {
   };
 
   return (
-    <SatelliteAnalysisProvider>
-      <div className="flex h-screen overflow-hidden">
-        {/* Contenido principal */}
-        <main className="flex flex-1 flex-col min-w-0">
-          {/* Header */}
-          <header className="flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800 px-4 bg-white dark:bg-slate-900">
-            <Header onMenuClick={() => setIsMobileMenuOpen(true)} />
-            <Button variant="outline" asChild>
-              <Link href="/satelite/ayuda">
-                <HelpCircle className="w-4 h-4 mr-2" />
-                Ayuda
-              </Link>
-            </Button>
-          </header>
+    <div className="flex h-screen overflow-hidden">
+      {/* Contenido principal */}
+      <main className="flex flex-1 flex-col min-w-0">
+        {/* Header */}
+        <header className="flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800 px-4 bg-white dark:bg-slate-900">
+          <Header onMenuClick={() => setIsMobileMenuOpen(true)} />
+          <Button variant="outline" asChild>
+            <Link href="/satelite/ayuda">
+              <HelpCircle className="w-4 h-4 mr-2" />
+              Ayuda
+            </Link>
+          </Button>
+        </header>
 
         {/* Área de contenido */}
         <div className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950">
@@ -222,6 +222,16 @@ export default function SatelitePage() {
         <Sidebar />
       </MobileDrawer>
     </div>
+  );
+}
+
+/**
+ * Página principal de análisis satelital
+ */
+export default function SatelitePage() {
+  return (
+    <SatelliteAnalysisProvider>
+      <SatelitePageContent />
     </SatelliteAnalysisProvider>
   );
 }

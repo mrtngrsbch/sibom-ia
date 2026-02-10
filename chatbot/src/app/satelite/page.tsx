@@ -27,6 +27,34 @@ export default function SatelitePage() {
 
   const client = getSatAnalysisClient();
 
+  // Cargar análisis guardado al montar
+  useEffect(() => {
+    const savedAnalysis = localStorage.getItem('satelite-analysis');
+    if (savedAnalysis) {
+      try {
+        const parsed = JSON.parse(savedAnalysis);
+        // Solo cargar si no hay un análisis activo
+        if (!taskId && parsed.status === 'completed') {
+          setAnalysis(parsed);
+        setTaskId(parsed.task_id);
+        setLoading(false);
+        console.log('[Satelite] Análisis restaurado desde localStorage:', parsed.partida);
+        // Limpiar localStorage después de cargar para evitar duplicados
+        localStorage.removeItem('satelite-analysis');
+      }
+      } catch (error) {
+        console.error('[Satelite] Error al cargar análisis guardado:', error);
+      }
+    }
+  }, []);
+
+  // Guardar análisis en localStorage cuando se complete
+  useEffect(() => {
+    if (analysis && (analysis.status === 'completed' || analysis.status === 'failed')) {
+      localStorage.setItem('satelite-analysis', JSON.stringify(analysis));
+    }
+  }, [analysis]);
+
   // Cargar partidos al montar
   useEffect(() => {
     const fetchPartidos = async () => {
@@ -101,8 +129,12 @@ export default function SatelitePage() {
   };
 
   const handleReset = () => {
-    setAnalysis(null);
-    setTaskId(null);
+    // Confirmar antes de limpiar el análisis
+    if (window.confirm('¿Estás seguro de que quieres crear un nuevo análisis? El análisis anterior se perderá.')) {
+      setAnalysis(null);
+      setTaskId(null);
+      localStorage.removeItem('satelite-analysis');
+    }
   };
 
   return (

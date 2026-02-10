@@ -2,7 +2,7 @@
 
 import { X, Download, ZoomIn } from '@/lib/icons';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface ImageModalProps {
   isOpen: boolean;
@@ -26,6 +26,20 @@ export function ImageModal({
 }: ImageModalProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
+
+  // Listener para cerrar modal con tecla Escape
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

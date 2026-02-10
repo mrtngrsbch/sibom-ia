@@ -112,6 +112,12 @@ export default function SatelitePage() {
         {/* Header */}
         <header className="flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800 px-4 bg-white dark:bg-slate-900">
           <Header onMenuClick={() => setIsMobileMenuOpen(true)} />
+          <Button variant="outline" asChild>
+            <Link href="/satelite/ayuda">
+              <HelpCircle className="w-4 h-4 mr-2" />
+              Ayuda
+            </Link>
+          </Button>
         </header>
 
         {/* Área de contenido */}

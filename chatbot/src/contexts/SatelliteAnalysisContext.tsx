@@ -7,6 +7,7 @@ interface SatelliteAnalysisContextType {
   analysis: AnalyzeResponse | null;
   setAnalysis: (analysis: AnalyzeResponse | null) => void;
   resetAnalysis: () => void;
+  taskId: string | null; // Agregar taskId al contexto
 }
 
 const SatelliteAnalysisContext = createContext<SatelliteAnalysisContextType | undefined>(undefined);
@@ -21,6 +22,7 @@ interface SatelliteAnalysisProviderProps {
  */
 export function SatelliteAnalysisProvider({ children }: SatelliteAnalysisProviderProps) {
   const [analysis, setAnalysis] = useState<AnalyzeResponse | null>(null);
+  const [taskId, setTaskId] = useState<string | null>(null); // Agregar estado local de taskId
 
   // Cargar análisis guardado al montar
   useEffect(() => {
@@ -28,9 +30,11 @@ export function SatelliteAnalysisProvider({ children }: SatelliteAnalysisProvide
     if (savedAnalysis) {
       try {
         const parsed = JSON.parse(savedAnalysis);
-        // Solo cargar si no hay un análisis activo
-        if (parsed && (parsed.status === 'completed' || parsed.status === 'failed')) {
+        console.log('[SatelliteAnalysisContext] Cargando análisis guardado, taskId actual:', taskId);
+        // Solo cargar si no hay un análisis activo (taskId es null)
+        if (!taskId && parsed.status === 'completed' || parsed.status === 'failed') {
           setAnalysis(parsed);
+          setTaskId(parsed.task_id); // Restaurar taskId también
           console.log('[SatelliteAnalysisContext] Análisis restaurado desde localStorage:', parsed.partida);
           // Limpiar localStorage después de cargar para evitar duplicados
           localStorage.removeItem('satellite-analysis');
@@ -39,7 +43,7 @@ export function SatelliteAnalysisProvider({ children }: SatelliteAnalysisProvide
         console.error('[SatelliteAnalysisContext] Error al cargar análisis guardado:', error);
       }
     }
-  }, []);
+  }, [taskId]); // Agregar taskId como dependencia
 
   // Guardar análisis en localStorage cuando se complete
   useEffect(() => {
@@ -52,12 +56,13 @@ export function SatelliteAnalysisProvider({ children }: SatelliteAnalysisProvide
     // Confirmar antes de limpiar el análisis
     if (window.confirm('¿Estás seguro de que quieres crear un nuevo análisis? El análisis anterior se perderá.')) {
       setAnalysis(null);
+      setTaskId(null); // Limpiar taskId también
       localStorage.removeItem('satellite-analysis');
     }
   };
 
   return (
-    <SatelliteAnalysisContext.Provider value={{ analysis, setAnalysis, resetAnalysis }}>
+    <SatelliteAnalysisContext.Provider value={{ analysis, setAnalysis, resetAnalysis, taskId }}>
       {children}
     </SatelliteAnalysisContext.Provider>
   );

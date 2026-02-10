@@ -58,7 +58,5 @@ export { Wind } from 'lucide-react';
 export { X } from 'lucide-react';
 export { XCircle } from 'lucide-react';
 export { ZoomIn } from 'lucide-react';
-export { Leaf } from 'lucide-react';
-
-// Iconos personalizados
 export { Mangrullo } from '@/components/icons/Mangrullo';
+export { Leaf } from 'lucide-react';

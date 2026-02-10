@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { MobileDrawer } from '@/components/layout/MobileDrawer';
+import { SatelliteAnalysisProvider, useSatelliteAnalysis } from '@/contexts/SatelliteAnalysisContext';
 
 /**
  * Página principal de análisis satelital
@@ -20,40 +21,13 @@ export default function SatelitePage() {
   const [loadingPartidos, setLoadingPartidos] = useState(true);
   const [partidosError, setPartidosError] = useState<string | null>(null);
 
-  const [analysis, setAnalysis] = useState<AnalyzeResponse | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [taskId, setTaskId] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  const { analysis, setAnalysis, resetAnalysis } = useSatelliteAnalysis();
+  const [loading, setLoading] = useState(false);
+  const [taskId, setTaskId] = useState<string | null>(null);
+
   const client = getSatAnalysisClient();
-
-  // Cargar análisis guardado al montar
-  useEffect(() => {
-    const savedAnalysis = localStorage.getItem('satelite-analysis');
-    if (savedAnalysis) {
-      try {
-        const parsed = JSON.parse(savedAnalysis);
-        // Solo cargar si no hay un análisis activo
-        if (!taskId && parsed.status === 'completed') {
-          setAnalysis(parsed);
-        setTaskId(parsed.task_id);
-        setLoading(false);
-        console.log('[Satelite] Análisis restaurado desde localStorage:', parsed.partida);
-        // Limpiar localStorage después de cargar para evitar duplicados
-        localStorage.removeItem('satelite-analysis');
-      }
-      } catch (error) {
-        console.error('[Satelite] Error al cargar análisis guardado:', error);
-      }
-    }
-  }, []);
-
-  // Guardar análisis en localStorage cuando se complete
-  useEffect(() => {
-    if (analysis && (analysis.status === 'completed' || analysis.status === 'failed')) {
-      localStorage.setItem('satelite-analysis', JSON.stringify(analysis));
-    }
-  }, [analysis]);
 
   // Cargar partidos al montar
   useEffect(() => {
@@ -129,28 +103,25 @@ export default function SatelitePage() {
   };
 
   const handleReset = () => {
-    // Confirmar antes de limpiar el análisis
-    if (window.confirm('¿Estás seguro de que quieres crear un nuevo análisis? El análisis anterior se perderá.')) {
-      setAnalysis(null);
-      setTaskId(null);
-      localStorage.removeItem('satelite-analysis');
-    }
+    // Usar el método resetAnalysis del Context que incluye confirmación
+    resetAnalysis();
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
-      {/* Contenido principal */}
-      <main className="flex flex-1 flex-col min-w-0">
-        {/* Header */}
-        <header className="flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800 px-4 bg-white dark:bg-slate-900">
-          <Header onMenuClick={() => setIsMobileMenuOpen(true)} />
-          <Button variant="outline" asChild>
-            <Link href="/satelite/ayuda">
-              <HelpCircle className="w-4 h-4 mr-2" />
-              Ayuda
-            </Link>
-          </Button>
-        </header>
+    <SatelliteAnalysisProvider>
+      <div className="flex h-screen overflow-hidden">
+        {/* Contenido principal */}
+        <main className="flex flex-1 flex-col min-w-0">
+          {/* Header */}
+          <header className="flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800 px-4 bg-white dark:bg-slate-900">
+            <Header onMenuClick={() => setIsMobileMenuOpen(true)} />
+            <Button variant="outline" asChild>
+              <Link href="/satelite/ayuda">
+                <HelpCircle className="w-4 h-4 mr-2" />
+                Ayuda
+              </Link>
+            </Button>
+          </header>
 
         {/* Área de contenido */}
         <div className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950">
@@ -251,5 +222,6 @@ export default function SatelitePage() {
         <Sidebar />
       </MobileDrawer>
     </div>
+    </SatelliteAnalysisProvider>
   );
 }

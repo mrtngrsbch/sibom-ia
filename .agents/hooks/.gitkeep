@@ -1,0 +1,38 @@
+# Hooks
+
+Esta carpeta contiene automatizaciones que los agentes pueden ejecutar.
+
+## Tipos de hooks
+
+- **Pre-commit**: Validaciones antes de commitear
+- **Post-save**: Acciones después de guardar archivos
+- **Pre-deploy**: Verificaciones antes de deploy
+- **Scheduled**: Tareas periódicas automatizadas
+
+## Formato de hooks
+
+Cada hook debe tener:
+
+```yaml
+name: nombre-del-hook
+description: Qué hace
+trigger: cuándo se ejecuta
+actions:
+  - type: shellCommand | agentMessage | validation
+    description: qué acción realiza
+enabled: true/false
+```
+
+## Ejemplo
+
+```yaml
+name: test-validation
+description: Ejecuta tests al guardar archivos
+trigger:
+  event: onFileSave
+  filePattern: **/*.{ts,tsx,py}
+actions:
+  - type: shellCommand
+    command: npm run test:changed
+    condition: file.path.startsWith('chatbot/')
+```

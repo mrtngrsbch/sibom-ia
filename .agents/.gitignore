@@ -1,0 +1,17 @@
+# .agents/.gitignore
+# Creado: 2026-02-06
+
+# Logs
+logs/
+*.log
+*.pid
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Backups
+*.BACKUP
+
+# macOS
+.DS_Store

@@ -1,0 +1,28 @@
+#!/bin/sh
+set -e
+
+# Commit-msg hook for SIBOM Scraper Assistant
+# Validates commit message format (Conventional Commits)
+
+COMMIT_MSG_FILE=$1
+
+echo "✨ Validating commit message format..."
+
+# Validar con script Python
+if command -v python3 &> /dev/null; then
+    if python3 .agents/scripts/validate_commit_message.py "$COMMIT_MSG_FILE"; then
+        echo "✅ Commit message format validated!"
+    else
+        echo ""
+        echo "❌ Commit message validation failed!"
+        echo ""
+        echo "   You can bypass this hook with:"
+        echo "   git commit --no-verify"
+        echo ""
+        echo "   But it's highly recommended to use the correct format"
+        exit 1
+    fi
+else
+    echo "⚠️  WARNING: python3 not found, skipping commit message validation"
+    echo "   Consider installing Python 3.13 for validation"
+fi

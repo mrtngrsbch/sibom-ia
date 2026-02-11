@@ -1,0 +1,63 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Logs (se generan en runtime)
+logs/
+*.log
+
+# Output web (se genera en runtime)
+web_output/
+*.png
+*.jpg
+*.jpeg
+
+# Git
+.git/
+.gitignore
+
+# Docs y ejemplos
+README*.md
+LICENSE
+*.md
+docs/
+examples/
+tests/
+scripts/
+
+# Misc
+.DS_Store
+*.bak
+*.tmp
+
+# Desarrollo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/

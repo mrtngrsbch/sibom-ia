@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+.next/
+.turbo/
+
+# Environment
+.env.local
+.env.production
+
+# Build
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# Vercel
+.vercel
+
+# Lockfiles (using pnpm)
+# bun.lockb
+package-lock.json
+pnpm-lock.yaml
+pnpm-workspace.yaml
+yarn.lock
+yarn-error.log
+
+# OS
+.DS_Store
+
+# IDE
+.backup/
+
+# Generated
+robots.txt

@@ -445,22 +445,28 @@ export function generateDirectResponse(
       }
       return `Hay **${count.toLocaleString('es-AR')} ${type || 'normativas'}** de **${municipality || 'este municipio'}**${year ? ` del año **${year}**` : ''}.\n\nLa lista completa está disponible en la sección "Fuentes Consultadas" más abajo.`;
 
-    case 'search-by-number':
+    case 'search-by-number': {
       if (count === 0) {
         return `No se encontró la ${type || 'normativa'} solicitada de ${municipality || 'este municipio'}.`;
       }
       if (count === 1) {
         const source = sources[0];
-        return `**${source.type.toUpperCase()} N° ${source.title.match(/\d+\/\d+/)?.[0] || 'S/N'}** - ${source.municipality}\n\nPodés ver el documento completo en la sección "Fuentes Consultadas" más abajo.`;
+        const titleMatch = source.title.match(/\d+\/\d+/);
+        const titleNum = titleMatch ? titleMatch[0] : 'S/N';
+        return `**${source.type.toUpperCase()} N° ${titleNum}** - ${source.municipality}\n\nPodés ver el documento completo en la sección "Fuentes Consultadas" más abajo.`;
       }
       return `Se encontraron **${count} resultados** para tu búsqueda.\n\nLa lista completa está disponible en la sección "Fuentes Consultadas" más abajo.`;
+    }
 
-    case 'latest':
+    case 'latest': {
       if (count === 0) {
         return `No se encontraron ${type || 'normativas'} de ${municipality || 'este municipio'}.`;
       }
-      const latest = sources[0]; // Assume sorted by date
-      return `La última ${type || 'normativa'} de **${municipality || 'este municipio'}** es:\n\n**${latest.type.toUpperCase()} N° ${latest.title.match(/\d+\/\d+/)?.[0] || 'S/N'}**\n\nPodés verla en la sección "Fuentes Consultadas" más abajo.`;
+      const latest = sources[0];
+      const latestMatch = latest.title.match(/\d+\/\d+/);
+      const latestNum = latestMatch ? latestMatch[0] : 'S/N';
+      return `La última ${type || 'normativa'} de **${municipality || 'este municipio'}** es:\n\n**${latest.type.toUpperCase()} N° ${latestNum}**\n\nPodés verla en la sección "Fuentes Consultadas" más abajo.`;
+    }
 
     default:
       return `Se encontraron **${count.toLocaleString('es-AR')} resultados**.\n\nLa lista completa está disponible en la sección "Fuentes Consultadas" más abajo.`;

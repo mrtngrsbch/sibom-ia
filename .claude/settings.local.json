@@ -114,7 +114,10 @@
       "Bash(pip3 show:*)",
       "Bash(brew install:*)",
       "Bash(tmux:*)",
-      "Bash(overmind:*)"
+      "Bash(overmind:*)",
+      "Bash(gh api:*)",
+      "Bash(git diff:*)",
+      "Bash(gh repo view:*)"
     ],
     "deny": [],
     "ask": [],

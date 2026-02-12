@@ -12,13 +12,13 @@ import { clsx } from 'clsx';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { Components } from 'react-markdown';
-import type { Message } from '@ai-sdk/react';
 import type { Source } from '@/lib/types';
 import { Citations } from './Citations';
 import { TokenUsage } from './TokenUsage';
+import type { ChatMessage } from '@/lib/types';
 
 interface ChatMessageListProps {
-  messages: Message[];
+  messages: any[];
   data: unknown;
 }
 
@@ -49,6 +49,29 @@ function extractUsageFromData(data: unknown): { promptTokens: number; completion
   if (!Array.isArray(data)) return undefined;
   const usageItem = data.find((d): d is StreamDataUsage => d?.type === 'usage');
   return usageItem?.usage;
+}
+
+// Helper para extraer el contenido de texto del mensaje
+function getTextFromMessage(message: any): string {
+  // 🔍 DIAGNÓSTICO: Log del formato del mensaje recibido
+  console.log('[ChatMessageList] 📋 Mensaje completo:', JSON.stringify(message, null, 2));
+  console.log('[ChatMessageList] 📋 ¿Tiene "content"?', 'content' in message);
+  console.log('[ChatMessageList] 📋 ¿Tiene "parts"?', 'parts' in message);
+  if (message.parts) {
+    console.log('[ChatMessageList] 📋 Parts:', JSON.stringify(message.parts, null, 2));
+  }
+  
+  // Soportar ambos formatos (content y parts) durante la migración
+  if (message.content) {
+    return message.content;
+  }
+  if (message.parts && Array.isArray(message.parts)) {
+    return message.parts
+      .filter((p: any) => p.type === 'text')
+      .map((p: any) => p.text)
+      .join('');
+  }
+  return '';
 }
 
 // Componentes de markdown memoizados
@@ -119,13 +142,13 @@ export function ChatMessageList({ messages, data }: ChatMessageListProps) {
                 : 'prose-slate dark:prose-invert prose-headings:text-slate-800 dark:prose-headings:text-slate-200 prose-p:text-slate-700 dark:prose-p:text-slate-300 prose-strong:text-slate-800 dark:prose-strong:text-slate-200 prose-li:text-slate-700 dark:prose-li:text-slate-300 prose-table:text-sm'
             )}>
               {message.role === 'user' ? (
-                <p className="text-white">{message.content}</p>
+                <p className="text-white">{getTextFromMessage(message)}</p>
               ) : (
                 <ReactMarkdown
                   remarkPlugins={remarkPlugins}
                   components={markdownComponents}
                 >
-                  {message.content}
+                  {getTextFromMessage(message)}
                 </ReactMarkdown>
               )}
             </div>

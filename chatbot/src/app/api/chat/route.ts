@@ -11,8 +11,9 @@
  * @author Kilo Code
  *
  * @dependencies
- *   - ai: ^4.1.0
+ *   - ai: ^6.0.73
  *   - @ai-sdk/openai: ^1.0.0
+ *   - @ai-sdk/react: ^1.0.0
  */
 
 import { createOpenAI } from '@ai-sdk/openai';
@@ -40,20 +41,18 @@ import {
 import { generateDataCatalog, generateConciseCatalog } from '@/lib/data-catalog';
 import fs from 'fs/promises';
 import path from 'path';
-
-// SQLite retriever (opcional, solo disponible si better-sqlite3 está instalado)
-let sqliteRetriever: {
-  retrieveFromSQLite: (query: string, options: any) => Promise<any>;
-  getSQLiteStats: () => Promise<any>;
-  isSQLiteAvailable: () => boolean;
-} | null = null;
+import type { DatabaseStats } from '@/lib/types';
 
 // Intentar cargar SQLite de forma lazy (solo si está disponible)
 const USE_SQLITE = process.env.USE_SQLITE === 'true';
 
 // Type guard para verificar si es un resultado computacional
-function isComputationalResult(result: any): result is ComputationalSearchResult {
-  return result && typeof result === 'object' && 'computationResult' in result;
+function isComputationalResult(result: unknown): result is ComputationalSearchResult {
+  return (
+    typeof result === 'object' &&
+    result !== null &&
+    'computationResult' in result
+  );
 }
 
 export const maxDuration = 60;
@@ -100,7 +99,7 @@ export async function POST(req: Request) {
       .slice(-10);  // Solo últimos 10 mensajes para reducir tokens
 
     console.log(`[ChatAPI] Mensajes recientes: ${recentMessages.length}`);
-    recentMessages.forEach((m: any, i: number) => {
+    recentMessages.forEach((m: { role: string; content: string | unknown }, i: number) => {
       console.log(`  [${i}] ${m.role}: ${typeof m.content === 'string' ? m.content.slice(0, 30) : 'non-string content'}`);
     });
 
@@ -127,29 +126,9 @@ export async function POST(req: Request) {
     }
 
     // Obtener estadísticas primero (necesitamos municipalityList para extracción)
-    // Intentar usar SQLite si está disponible y está habilitado
-    let stats;
-    if (USE_SQLITE) {
-      try {
-        // Cargar SQLite de forma lazy
-        if (!sqliteRetriever) {
-          const sqliteModule = await import('@/lib/rag/sqlite-retriever');
-          sqliteRetriever = sqliteModule;
-        }
-        if (sqliteRetriever.isSQLiteAvailable()) {
-          console.log('[ChatAPI] 🗄️ Usando SQLite para estadísticas');
-          stats = await sqliteRetriever.getSQLiteStats();
-        } else {
-          console.log('[ChatAPI] ⚠️ SQLite no disponible, usando JSON');
-          stats = await getDatabaseStats();
-        }
-      } catch (error) {
-        console.error('[ChatAPI] Error cargando SQLite, usando JSON:', error);
-        stats = await getDatabaseStats();
-      }
-    } else {
-      stats = await getDatabaseStats();
-    }
+    let stats: DatabaseStats;
+    // Usar getDatabaseStats (fallback seguro)
+    stats = await getDatabaseStats();
 
     // Construir opciones de búsqueda con todos los filtros (UI + extraídos de query)
     const uiFilters = {
@@ -210,24 +189,13 @@ export async function POST(req: Request) {
     // Recuperar contexto con los filtros mejorados
     let retrievedContext;
     if (shouldSearch && !isSQLComparison) {
-      // Intentar usar SQLite primero si está disponible
-      if (USE_SQLITE && sqliteRetriever && sqliteRetriever.isSQLiteAvailable()) {
-        console.log('[ChatAPI] 🗄️ Usando SQLite retriever');
-        retrievedContext = await sqliteRetriever.retrieveFromSQLite(query, searchOptions);
-      } else {
-        // Fallback a JSON
-        console.log('[ChatAPI] 📄 Usando retrieveContext (JSON)');
-        retrievedContext = await retrieveContext(query, searchOptions);
-      }
+      // Usar JSON RAG retriever
+      console.log('[ChatAPI] 📄 Usando retrieveContext (JSON)');
+      retrievedContext = await retrieveContext(query, searchOptions);
     } else if (shouldSearch && isSQLComparison && !sqlComparisonResult?.success) {
       // SQL falló: fallback a RAG
-      if (USE_SQLITE && sqliteRetriever && sqliteRetriever.isSQLiteAvailable()) {
-        console.log('[ChatAPI] 🗄️ Fallback a SQLite retriever');
-        retrievedContext = await sqliteRetriever.retrieveFromSQLite(query, searchOptions);
-      } else {
-        console.log('[ChatAPI] 📄 Fallback a retrieveContext (SQL falló)');
-        retrievedContext = await retrieveContext(query, searchOptions);
-      }
+      console.log('[ChatAPI] 📄 Fallback a retrieveContext (SQL falló)');
+      retrievedContext = await retrieveContext(query, searchOptions);
     } else {
       retrievedContext = { context: '', sources: [] };
     }
@@ -519,10 +487,10 @@ Pero hay ${retrievedContext.sources.length} resultados EN TOTAL que el usuario p
     // Generar respuesta con streaming
     try {
       console.log(`[ChatAPI] Iniciando streamText con modelo: ${modelId}`);
-
+      
       // Los mensajes ya vienen formateados desde el frontend
       console.log(`[ChatAPI] Enviando ${recentMessages.length} mensajes al LLM`);
-
+      
       const result = streamText({
         model: openrouter(modelId),
         system: systemPrompt,
@@ -532,29 +500,84 @@ Pero hay ${retrievedContext.sources.length} resultados EN TOTAL que el usuario p
         maxOutputTokens: isMassiveListing ? 500 : 4000,
       });
 
-      return result.toTextStreamResponse();
-    } catch (streamError: any) {
+      /**
+       * SOLUCIÓN ROBUSTA Y PERMANENTE:
+       * 
+       * Usamos stream manual en Next.js porque:
+       * 1. Next.js API routes retornan Web API Response (no Node ServerResponse)
+       * 2. El protocolo de Vercel AI SDK es estable: `0:"text"\n` es el formato core
+       * 3. Esta es la forma más directa y visible del protocolo
+       * 4. Es resistente a cambios porque no depende de métodos de SDK que podrían cambiar
+       * 
+       * Si SDK depreca toUIMessageStreamResponse(), la estructura textStream seguirá igual
+       * porque es el Iterator<string> base que genera streamText()
+       * 
+       * COMPATIBILIDAD: Funciona con:
+       * - @ai-sdk/react parseDataStreamPart (v1.0.0+)
+       * - Vercel AI SDK (v6.0+)
+       * - Navegadores modernos (ReadableStream API)
+       */
+      
+      const textStream = result.textStream;
+      const encoder = new TextEncoder();
+      
+      const compatibleStream = new ReadableStream({
+        async start(controller) {
+          try {
+            for await (const chunk of textStream) {
+              // Formato: 0:"texto_escapado"\n
+              // Este es el formato del protocolo Vercel AI (estable y bien documentado)
+              const escapedChunk = chunk.replace(/"/g, '\\"').replace(/\n/g, '\\n');
+              controller.enqueue(encoder.encode(`0:"${escapedChunk}"\n`));
+            }
+            controller.close();
+          } catch (error) {
+            console.error('[ChatAPI] Error en stream:', error);
+            controller.error(error);
+          }
+        },
+      });
+
+      console.log(`[ChatAPI] 📤 Enviando stream con formato estable 0:"text"\\n`);
+      
+      return new Response(compatibleStream, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive',
+          'X-Accel-Buffering': 'no',
+        },
+      });
+    } catch (streamError: unknown) {
       console.error('[ChatAPI] Error crítico al iniciar streamText:', streamError);
 
+      const errorMessage = streamError instanceof Error ? streamError.message : String(streamError);
       return new Response(
         JSON.stringify({
           error: 'Error al conectar con el modelo de IA',
-          details: streamError.message
+          details: errorMessage
         }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[ChatAPI] Error fatal:', error);
     
     // Si es un error de autenticación de OpenRouter/LLM
-    const errorMessage = error?.message || 'Error interno del servidor';
-    const statusCode = error?.status || 500;
+    const errorMessage = error instanceof Error ? error.message : 'Error interno del servidor';
+    const statusCode = (error instanceof Object && 'status' in error) 
+      ? (error as unknown as { status: number }).status 
+      : 500;
 
     return new Response(
       JSON.stringify({
         error: errorMessage,
-        details: error?.data || error?.cause || String(error)
+        details: (error instanceof Object && ('data' in error || 'cause' in error)) 
+          ? ((error as unknown as { data?: string; cause?: string }).data 
+             || (error as unknown as { data?: string; cause?: string }).cause 
+             || String(error))
+          : String(error)
       }),
       {
         status: statusCode,

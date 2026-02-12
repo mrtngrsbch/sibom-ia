@@ -155,7 +155,8 @@ export interface TokenUsage {
 }
 
 /**
- * Mensaje del chat
+ * Mensaje del chat (formato ModelMessage del AI SDK)
+ * @description Compatible con el formato ModelMessage del AI SDK v6.0+
  */
 export interface ChatMessage {
   id: string;

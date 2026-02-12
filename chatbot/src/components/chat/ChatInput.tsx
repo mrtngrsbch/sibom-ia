@@ -42,7 +42,7 @@ export function ChatInput({
           <textarea
             ref={inputRef}
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => onChange?.(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder={placeholder}
             rows={1}
@@ -53,7 +53,7 @@ export function ChatInput({
               maxHeight: '200px',
             }}
             onInput={(e) => {
-              // Auto-resize del textarea
+              // Auto-resize del textarea (sin llamar a onChange para evitar bucle)
               const target = e.target as HTMLTextAreaElement;
               target.style.height = 'auto';
               target.style.height = Math.min(target.scrollHeight, 200) + 'px';
@@ -61,7 +61,7 @@ export function ChatInput({
           />
           <button
             type="submit"
-            disabled={isLoading || !value.trim()}
+            disabled={isLoading || !value?.trim()}
             className="absolute right-2 bottom-3 p-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             aria-label="Enviar mensaje"
           >

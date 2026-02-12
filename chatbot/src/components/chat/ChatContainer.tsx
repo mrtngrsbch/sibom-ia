@@ -9,7 +9,7 @@
 
 import { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { useChat } from '@ai-sdk/react';
-import type { ChatFilters, ChatMessage } from '@/lib/types';
+import type { ChatFilters } from '@/lib/types';
 import { extractFiltersFromQuery } from '@/lib/query-filter-extractor';
 import type { SearchOptions } from '@/lib/rag/retriever';
 import { ChatWelcome } from './ChatWelcome';
@@ -54,27 +54,45 @@ export function ChatContainer({
   onFiltersChange
 }: ChatContainerProps) {
   const [chatKey, setChatKey] = useState(0);
+  // Estado local para el input (el SDK no lo maneja en esta versión)
+  const [localInput, setLocalInput] = useState('');
 
-  const {
-    messages,
-    input,
-    handleInputChange,
-    handleSubmit,
-    isLoading,
-    error,
-    append,
-    data,
-    setMessages,
-    reload,
-    setInput
-  } = useChat({
+  const chatHelpers = useChat({
     api: '/api/chat',
     id: `chat-${chatKey}`,
-    streamProtocol: 'text',
-    onError: (err) => {
+    onError: (err: Error) => {
       console.error('Chat error:', err);
     }
   });
+
+  // 🔍 DIAGNÓSTICO: Log de todas las propiedades devueltas por useChat
+  // console.log('[ChatContainer] chatHelpers keys:', Object.keys(chatHelpers));
+  // console.log('[ChatContainer] chatHelpers:', chatHelpers);
+  // console.log('[ChatContainer] messages (raw):', chatHelpers.messages);
+  // if (chatHelpers.messages && chatHelpers.messages.length > 0) {
+  //   console.log('[ChatContainer] Primer mensaje:', JSON.stringify(chatHelpers.messages[0], null, 2));
+  //   console.log('[ChatContainer] ¿Tiene "content"?', 'content' in chatHelpers.messages[0]);
+  //   console.log('[ChatContainer] ¿Tiene "parts"?', 'parts' in chatHelpers.messages[0]);
+  //   if ('parts' in chatHelpers.messages[0]) {
+  //     console.log('[ChatContainer] parts:', chatHelpers.messages[0].parts);
+  //   }
+  // }
+
+  // Extraer helpers con tipos correctos del SDK
+  const messages = (chatHelpers.messages as any[]) || [];
+  const isLoading = (chatHelpers.status as any) === 'streaming' || (chatHelpers.status as any) === 'pending' || (chatHelpers.status as any) === 'submitted';
+  const error = chatHelpers.error;
+  const data = chatHelpers.data;
+
+  // Funciones disponibles en el SDK
+  const setMessages = chatHelpers.setMessages;
+  const reload = chatHelpers.reload;
+  const append = chatHelpers.append as any;
+  
+  // Handler para el componente ChatInput - usa estado local ya que el SDK no maneja input
+  const handleChatInputChange = useCallback((val: string) => {
+    setLocalInput(val);
+  }, []); // Dependencias vacías porque esta función no depende de nada externo
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const isUserAtBottom = useRef(true);
@@ -94,7 +112,20 @@ export function ChatContainer({
       try {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          setMessages(parsed);
+          // Convertir mensajes del formato antiguo (content) al nuevo (parts)
+          const convertedMessages = parsed.map((msg: any) => {
+            // Si el mensaje tiene 'content' pero no 'parts', convertirlo
+            if (msg.content && !msg.parts) {
+              return {
+                ...msg,
+                parts: [{ type: 'text', text: msg.content }],
+                // Mantener 'content' para compatibilidad pero usar 'parts' como fuente de verdad
+              };
+            }
+            // Si ya tiene 'parts', dejarlo tal como está
+            return msg;
+          });
+          setMessages(convertedMessages);
         }
       } catch (e) {
         console.error('Error loading history:', e);
@@ -118,6 +149,7 @@ export function ChatContainer({
 
   // Manejar click en pregunta frecuente
   const handleFaqClick = useCallback((question: string) => {
+    // Formato correcto para backend: usar 'content' en lugar de 'parts'
     append({
       role: 'user',
       content: question,
@@ -128,7 +160,7 @@ export function ChatContainer({
   const handleFormSubmit = useCallback((e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!input.trim()) return;
+    if (!localInput.trim()) return;
 
     // Extraer filtros automáticamente de la query
     const uiFilters: Partial<SearchOptions> = {
@@ -138,7 +170,7 @@ export function ChatContainer({
       dateTo: filters.dateTo || undefined
     };
 
-    const extractedFilters = extractFiltersFromQuery(input, municipalities, uiFilters);
+    const extractedFilters = extractFiltersFromQuery(localInput, municipalities, uiFilters);
 
     // Construir filtros finales para enviar al backend
     const finalFilters = {
@@ -172,12 +204,14 @@ export function ChatContainer({
     }
 
     // Enviar al chat con filtros aplicados
-    handleSubmit(e, {
-      body: {
-        filters: finalFilters
-      }
-    });
-  }, [input, filters, municipalities, onFiltersChange, handleSubmit]);
+    const messageToSend = {
+      role: 'user',
+      content: localInput,
+    };
+    append(messageToSend);
+    // Limpiar el input después de enviar
+    setLocalInput('');
+  }, [localInput, filters, municipalities, onFiltersChange, append]);
 
   // Manejar Enter para enviar, Shift+Enter para nueva línea
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -224,8 +258,8 @@ export function ChatContainer({
 
       {/* Área de entrada */}
       <ChatInput
-        value={input}
-        onChange={setInput}
+        value={localInput}
+        onChange={handleChatInputChange}
         onSubmit={handleFormSubmit}
         onKeyDown={handleKeyDown}
         isLoading={isLoading}

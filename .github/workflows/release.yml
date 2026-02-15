@@ -1,0 +1,63 @@
+name: Crear Release (Manual)
+
+# NOTA: Este workflow es para releases manuales con tags
+# Para releases automáticos, ver release-please.yml
+
+on:
+  push:
+    tags:
+      - 'v*'  # Ejecutar en push de tags que empiecen con 'v' (ej: v1.2.0)
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Necesario para crear releases
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch completo para obtener historial
+      
+      - name: Extraer versión del tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+      
+      - name: Extraer cambios del CHANGELOG
+        id: changelog
+        run: |
+          # Extraer la sección de la versión actual del CHANGELOG
+          VERSION=${{ steps.get_version.outputs.VERSION }}
+          
+          # Buscar entre [VERSION] y la siguiente versión o final
+          CHANGELOG=$(sed -n "/## \[$VERSION\]/,/## \[/p" CHANGELOG.md | sed '$ d')
+          
+          # Si no encontró nada, usar mensaje por defecto
+          if [ -z "$CHANGELOG" ]; then
+            CHANGELOG="Ver commits para detalles de cambios."
+          fi
+          
+          # Guardar a archivo para evitar problemas con caracteres especiales
+          echo "$CHANGELOG" > release_notes.md
+      
+      - name: Crear GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release v${{ steps.get_version.outputs.VERSION }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: ${{ contains(steps.get_version.outputs.VERSION, '-') }}
+          generate_release_notes: true  # GitHub genera notas automáticas de commits
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Notificar en Discord (opcional)
+        if: env.DISCORD_WEBHOOK_URL != ''
+        run: |
+          VERSION=${{ steps.get_version.outputs.VERSION }}
+          curl -H "Content-Type: application/json" \
+               -d "{\"content\": \"🚀 Nueva versión publicada: **v${VERSION}**\nhttps://github.com/${{ github.repository }}/releases/tag/v${VERSION}\"}" \
+               ${{ secrets.DISCORD_WEBHOOK_URL }}
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}

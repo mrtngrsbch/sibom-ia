@@ -11,6 +11,7 @@ import {
   HelpCircle
 } from '@/lib/icons';
 import { WeatherBadge } from '@/components/chat/WeatherBadge';
+import packageJson from '../../../package.json';
 
 /**
  * Tipos de estadísticas
@@ -154,10 +155,11 @@ export function Sidebar({ showNavigation = true, currentMunicipality = null }: S
           </div>
           <div className="min-w-0">
             <h2 className="font-semibold text-slate-900 dark:text-white truncate">
-              SIBOM Chat
+              Mangrullo
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Observatorio de transparencia municipal de la Provincia de Buenos Aires
+              Observatorio independiente de la decepción municipal
+
             </p>
           </div>
         </div>
@@ -245,10 +247,21 @@ export function Sidebar({ showNavigation = true, currentMunicipality = null }: S
       {/* Footer */}
       <div className="p-4 border-t border-slate-200 dark:border-slate-800">
         <div className="px-3 py-2 text-sm text-slate-500 dark:text-slate-400 space-y-2">
+          {/* Versión del producto */}
+          <div className="flex items-center justify-between text-xs pb-2 border-b border-slate-200 dark:border-slate-700">
+            <span className="font-medium text-slate-600 dark:text-slate-400">
+              Mangrullo
+            </span>
+            <span className="text-slate-500 dark:text-slate-500">
+              v{packageJson.version}
+            </span>
+          </div>
+          
+          {/* Estado del sistema */}
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
             <span>
-              {loading ? 'Cargando...' : `${stats?.totalDocuments || 0} documentos`}
+              {loading ? 'Cargando...' : `${stats?.totalDocuments.toLocaleString('es-AR') || 0} documentos`}
             </span>
           </div>
           {stats?.lastUpdated && (
@@ -258,6 +271,7 @@ export function Sidebar({ showNavigation = true, currentMunicipality = null }: S
           )}
           {/* Botón de actualización manual */}
           <button
+            type="button"
             onClick={handleManualRefresh}
             disabled={refreshing}
             className="flex items-center gap-2 text-xs px-2 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed w-full justify-center"

@@ -1,0 +1,28 @@
+{
+  "packages": {
+    ".": {
+      "release-type": "node",
+      "package-name": "sibom-ia",
+      "changelog-path": "CHANGELOG.md",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false,
+      "draft": false,
+      "prerelease": false,
+      "extra-files": [
+        "chatbot/package.json"
+      ],
+      "changelog-sections": [
+        {"type": "feat", "section": "✨ Nuevas Funcionalidades", "hidden": false},
+        {"type": "fix", "section": "🐛 Correcciones", "hidden": false},
+        {"type": "perf", "section": "⚡ Performance", "hidden": false},
+        {"type": "refactor", "section": "♻️ Refactoring", "hidden": false},
+        {"type": "docs", "section": "📚 Documentación", "hidden": false},
+        {"type": "style", "section": "💄 Estilos", "hidden": true},
+        {"type": "chore", "section": "🔧 Mantenimiento", "hidden": true},
+        {"type": "test", "section": "✅ Tests", "hidden": true},
+        {"type": "build", "section": "🏗️ Build", "hidden": true},
+        {"type": "ci", "section": "👷 CI/CD", "hidden": true}
+      ]
+    }
+  }
+}

@@ -1,0 +1,83 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: googleapis/release-please-action@v4
+        id: release
+        with:
+          # Tipo de proyecto
+          release-type: node
+          
+          # Path al package.json
+          package-name: sibom-ia
+          
+          # Incluir commits de tipo adicionales en CHANGELOG
+          extra-files: |
+            chatbot/package.json
+          
+          # Configuración de changelog
+          changelog-types: |
+            [
+              {"type":"feat","section":"✨ Nuevas Funcionalidades","hidden":false},
+              {"type":"fix","section":"🐛 Correcciones","hidden":false},
+              {"type":"perf","section":"⚡ Performance","hidden":false},
+              {"type":"refactor","section":"♻️ Refactoring","hidden":false},
+              {"type":"docs","section":"📚 Documentación","hidden":false},
+              {"type":"chore","section":"🔧 Mantenimiento","hidden":true},
+              {"type":"style","section":"💄 Estilos","hidden":true},
+              {"type":"test","section":"✅ Tests","hidden":true},
+              {"type":"build","section":"🏗️ Build","hidden":true},
+              {"type":"ci","section":"👷 CI/CD","hidden":true}
+            ]
+      
+      # Estos outputs están disponibles solo si se creó un release
+      - name: Notificar Release Creado
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          echo "🎉 Release creado!"
+          echo "Tag: ${{ steps.release.outputs.tag_name }}"
+          echo "Version: ${{ steps.release.outputs.version }}"
+          echo "Release URL: ${{ steps.release.outputs.html_url }}"
+      
+      # Opcional: Deploy a Vercel automáticamente después del release
+      - name: Deploy a Vercel (opcional)
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          echo "🚀 Aquí podrías agregar deploy automático a Vercel"
+          # curl -X POST https://api.vercel.com/v1/deployments/...
+      
+      # Opcional: Notificar en Discord
+      - name: Notificar en Discord
+        if: ${{ steps.release.outputs.release_created && env.DISCORD_WEBHOOK_URL != '' }}
+        run: |
+          VERSION="${{ steps.release.outputs.version }}"
+          TAG="${{ steps.release.outputs.tag_name }}"
+          URL="${{ steps.release.outputs.html_url }}"
+          
+          curl -H "Content-Type: application/json" \
+               -d "{
+                 \"embeds\": [{
+                   \"title\": \"🚀 Nueva Versión: v${VERSION}\",
+                   \"description\": \"Se ha publicado una nueva versión de SIBOM IA\",
+                   \"url\": \"${URL}\",
+                   \"color\": 5814783,
+                   \"fields\": [
+                     {\"name\": \"Tag\", \"value\": \"${TAG}\", \"inline\": true},
+                     {\"name\": \"Version\", \"value\": \"v${VERSION}\", \"inline\": true}
+                   ]
+                 }]
+               }" \
+               ${{ secrets.DISCORD_WEBHOOK_URL }}
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}

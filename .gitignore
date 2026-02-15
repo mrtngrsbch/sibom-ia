@@ -142,3 +142,4 @@ sat-analysis/session-*.md
 chatbot/robots.txt
 chatbot/yarn.lock
 
+.mcp.json

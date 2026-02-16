@@ -1,4 +1,4 @@
-# Hook de Deployment Automático - SIBOM Scraper Assistant
+# Hook de Deployment Automático - Mangrullo Scraper Assistant
 
 ## Configuración del Hook
 
@@ -656,7 +656,7 @@ def notify_slack(message, status='info'):
         'attachments': [{
             'color': colors.get(status, colors['info']),
             'fields': [{
-                'title': 'SIBOM Chatbot Deployment',
+                'title': 'Mangrullo Chatbot Deployment',
                 'value': message,
                 'short': False
             }],

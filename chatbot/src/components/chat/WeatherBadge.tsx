@@ -178,10 +178,10 @@ export function WeatherBadge({ municipality, className = '' }: WeatherBadgeProps
   // Loading state
   if (loading) {
     return (
-      <div className={`flex items-center gap-2 p-4 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl ${className}`}>
-        <Loader2 className="w-5 h-5 animate-spin text-slate-400" />
-        <span className="text-sm text-slate-600 dark:text-slate-400">
-          Cargando clima de {municipality}...
+      <div className={`flex items-center gap-2 p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg ${className}`}>
+        <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-400" />
+        <span className="text-xs text-slate-600 dark:text-slate-400">
+          Cargando...
         </span>
       </div>
     );
@@ -190,10 +190,10 @@ export function WeatherBadge({ municipality, className = '' }: WeatherBadgeProps
   // Error state
   if (error) {
     return (
-      <div className={`flex items-center gap-2 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl ${className}`}>
-        <CloudOff className="w-5 h-5 text-red-600 dark:text-red-400" />
-        <span className="text-sm text-red-600 dark:text-red-400">
-          No se pudo obtener el clima
+      <div className={`flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg ${className}`}>
+        <CloudOff className="w-3.5 h-3.5 text-red-600 dark:text-red-400" />
+        <span className="text-xs text-red-600 dark:text-red-400">
+          Error de clima
         </span>
       </div>
     );
@@ -206,7 +206,7 @@ export function WeatherBadge({ municipality, className = '' }: WeatherBadgeProps
   const gradient = getBackgroundGradient(weather.weatherCode, weather.isDay, currentHour);
 
   return (
-    <div className={`relative overflow-hidden rounded-2xl ${className}`}>
+    <div className={`relative overflow-hidden rounded-xl ${className}`}>
       {/* Fondo con gradiente dinámico */}
       <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-90`} />
 
@@ -214,66 +214,63 @@ export function WeatherBadge({ municipality, className = '' }: WeatherBadgeProps
       <WeatherAnimation weatherCode={weather.weatherCode} />
 
       {/* Contenido */}
-      <div className="relative z-10 p-6 text-white">
+      <div className="relative z-10 p-3 text-white">
         {/* Header */}
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-center justify-between mb-2">
           <div>
-            <h3 className="text-2xl font-bold mb-1 drop-shadow-lg">
+            <h3 className="text-lg font-bold leading-tight drop-shadow-lg">
               {weather.municipality}
             </h3>
-            <p className="text-sm opacity-90 drop-shadow">
+            <p className="text-[10px] opacity-90 drop-shadow">
               {weather.description}
             </p>
           </div>
-          <span className="text-6xl drop-shadow-lg">
+          <span className="text-3xl drop-shadow-lg leading-none">
             {weather.emoji}
           </span>
         </div>
 
         {/* Temperatura principal */}
-        <div className="mb-6">
-          <div className="flex items-baseline gap-2">
-            <span className="text-7xl font-bold drop-shadow-lg">
+        <div className="mb-3 flex items-end gap-2">
+          <div className="flex items-baseline gap-1">
+            <span className="text-4xl font-bold drop-shadow-lg leading-none">
               {weather.temperature}°
             </span>
-            <span className="text-2xl opacity-80">C</span>
+            <span className="text-lg opacity-80">C</span>
           </div>
-          <p className="text-sm opacity-90 mt-1 drop-shadow">
-            Sensación térmica: {weather.feelsLike}°C
+          <p className="text-[10px] opacity-90 drop-shadow mb-1">
+            ST: {weather.feelsLike}°
           </p>
         </div>
 
         {/* Grid de detalles */}
-        <div className="grid grid-cols-3 gap-4 mb-4">
+        <div className="grid grid-cols-3 gap-2 mb-2">
           {/* Humedad */}
-          <div className="flex flex-col items-center p-3 bg-white/10 backdrop-blur-sm rounded-lg">
-            <Droplets className="w-5 h-5 mb-1 opacity-90" />
-            <span className="text-lg font-semibold">{weather.humidity}%</span>
-            <span className="text-xs opacity-80">Humedad</span>
+          <div className="flex flex-col items-center p-1.5 bg-white/10 backdrop-blur-sm rounded-md">
+            <Droplets className="w-3.5 h-3.5 mb-0.5 opacity-90" />
+            <span className="text-sm font-semibold leading-none">{weather.humidity}%</span>
           </div>
 
           {/* Viento */}
-          <div className="flex flex-col items-center p-3 bg-white/10 backdrop-blur-sm rounded-lg">
-            <Wind className="w-5 h-5 mb-1 opacity-90" />
-            <span className="text-lg font-semibold">{weather.windSpeed}</span>
-            <span className="text-xs opacity-80">km/h</span>
+          <div className="flex flex-col items-center p-1.5 bg-white/10 backdrop-blur-sm rounded-md">
+            <Wind className="w-3.5 h-3.5 mb-0.5 opacity-90" />
+            <span className="text-sm font-semibold leading-none">{weather.windSpeed}</span>
           </div>
 
           {/* Precipitación */}
-          <div className="flex flex-col items-center p-3 bg-white/10 backdrop-blur-sm rounded-lg">
-            <Cloud className="w-5 h-5 mb-1 opacity-90" />
-            <span className="text-lg font-semibold">{weather.precipitation}</span>
-            <span className="text-xs opacity-80">mm</span>
+          <div className="flex flex-col items-center p-1.5 bg-white/10 backdrop-blur-sm rounded-md">
+            <Cloud className="w-3.5 h-3.5 mb-0.5 opacity-90" />
+            <span className="text-sm font-semibold leading-none">{weather.precipitation}</span>
           </div>
         </div>
 
         {/* Sunrise/Sunset si está disponible */}
         {(weather.sunrise || weather.sunset) && (
-          <div className="flex items-center justify-around py-3 border-t border-white/20">
+          <div className="flex items-center justify-around py-1.5 border-t border-white/20">
             {weather.sunrise && (
-              <div className="flex items-center gap-2">
-                <Sunrise className="w-4 h-4 opacity-80" />
-                <span className="text-sm opacity-90">
+              <div className="flex items-center gap-1.5">
+                <Sunrise className="w-3 h-3 opacity-80" />
+                <span className="text-[10px] opacity-90">
                   {new Date(weather.sunrise).toLocaleTimeString('es-AR', {
                     hour: '2-digit',
                     minute: '2-digit'
@@ -282,9 +279,9 @@ export function WeatherBadge({ municipality, className = '' }: WeatherBadgeProps
               </div>
             )}
             {weather.sunset && (
-              <div className="flex items-center gap-2">
-                <Sunset className="w-4 h-4 opacity-80" />
-                <span className="text-sm opacity-90">
+              <div className="flex items-center gap-1.5">
+                <Sunset className="w-3 h-3 opacity-80" />
+                <span className="text-[10px] opacity-90">
                   {new Date(weather.sunset).toLocaleTimeString('es-AR', {
                     hour: '2-digit',
                     minute: '2-digit'
@@ -296,18 +293,17 @@ export function WeatherBadge({ municipality, className = '' }: WeatherBadgeProps
         )}
 
         {/* Footer */}
-        <div className="mt-4 pt-3 border-t border-white/20">
-          <p className="text-xs opacity-70 text-center">
-            Datos de{' '}
+        <div className="mt-1 pt-1.5 border-t border-white/20">
+          <p className="text-[9px] opacity-70 text-center">
             <a
               href="https://open-meteo.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline hover:opacity-100 transition-opacity"
+              className="hover:underline hover:opacity-100 transition-opacity"
             >
               Open-Meteo
             </a>
-            {weather.cached && ' (en caché)'}
+            {weather.cached && ' • caché'}
           </p>
         </div>
       </div>

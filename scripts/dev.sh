@@ -15,9 +15,9 @@ NC='\033[0m' # No Color
 echo -e "${CYAN}"
 cat <<'EOF'
 ╔════════════════════════════════════════════════════════════╗
-║                                                          ║
-║        🚀 SIBOM Dev - Entorno de Desarrollo              ║
-║                                                          ║
+║                                                            ║
+║        🚀 Mangrullo Dev - Entorno de Desarrollo            ║
+║                                                           ║
 ╚════════════════════════════════════════════════════════════╝
 EOF
 echo -e "${NC}"

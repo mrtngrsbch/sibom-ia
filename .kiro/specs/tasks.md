@@ -10,7 +10,7 @@
 
 ## Resumen Ejecutivo
 
-Este documento define el plan de implementación detallado para el SIBOM Scraper Assistant, organizando las tareas en sprints ejecutables con prioridades claras. La mayoría de la funcionalidad ya está implementada, por lo que este plan se enfoca en mejoras de calidad, testing automatizado y optimizaciones pendientes.
+Este documento define el plan de implementación detallado para el Mangrullo Scraper Assistant, organizando las tareas en sprints ejecutables con prioridades claras. La mayoría de la funcionalidad ya está implementada, por lo que este plan se enfoca en mejoras de calidad, testing automatizado y optimizaciones pendientes.
 
 ## Metodología de Implementación
 
@@ -242,7 +242,7 @@ Configurar pytest para el backend Python con tests básicos.
 
 **Criterios de Aceptación:**
 - pytest configurado con coverage
-- Tests básicos para SIBOMScraper class
+- Tests básicos para MangrulloScraper class
 - Mocking de OpenRouter API calls
 - Tests para rate limiting y retry logic
 

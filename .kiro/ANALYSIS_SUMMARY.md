@@ -187,7 +187,7 @@ interface IndexEntry {
 
 ## Conclusiones
 
-El proyecto SIBOM Scraper Assistant representa una implementación técnica sólida y bien arquitecturada de un sistema RAG completo. La combinación de scraping inteligente, procesamiento con LLM y búsqueda semántica crea una herramienta poderosa para consultas de legislación municipal.
+El proyecto Mangrullo Scraper Assistant representa una implementación técnica sólida y bien arquitecturada de un sistema RAG completo. La combinación de scraping inteligente, procesamiento con LLM y búsqueda semántica crea una herramienta poderosa para consultas de legislación municipal.
 
 ### Fortalezas Identificadas
 1. **Arquitectura robusta** con separación clara de responsabilidades

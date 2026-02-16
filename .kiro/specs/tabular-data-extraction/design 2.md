@@ -2,7 +2,7 @@
 
 ## Overview
 
-Este diseño implementa la extracción estructurada de datos tabulares del scraper SIBOM. El objetivo es transformar tablas HTML en estructuras de datos computables que preserven la semántica columna-fila, permitiendo al sistema RAG responder queries que requieran cálculos, comparaciones y agregaciones.
+Este diseño implementa la extracción estructurada de datos tabulares del scraper Mangrullo. El objetivo es transformar tablas HTML en estructuras de datos computables que preserven la semántica columna-fila, permitiendo al sistema RAG responder queries que requieran cálculos, comparaciones y agregaciones.
 
 ### Problema Actual
 El scraper actual (`parse_final_content`) extrae tablas como texto plano, perdiendo:

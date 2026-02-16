@@ -1,4 +1,4 @@
-# Análisis Arquitectónico Completo - SIBOM Scraper Assistant
+# Análisis Arquitectónico Completo - Mangrullo Scraper Assistant
 
 **Fecha:** 2026-02-04  
 **Versión:** 1.0.0  
@@ -25,7 +25,7 @@
 
 ### 1.1 Visión General
 
-**SIBOM Scraper Assistant** es un ecosistema completo de dos aplicaciones integradas diseñado para extraer, procesar y consultar boletines oficiales municipales de la Provincia de Buenos Aires, Argentina. El proyecto combina técnicas avanzadas de web scraping, inteligencia artificial y búsqueda semántica para proporcionar acceso democrático a la información legislativa municipal.
+**Mangrullo Scraper Assistant** es un ecosistema completo de dos aplicaciones integradas diseñado para extraer, procesar y consultar boletines oficiales municipales de la Provincia de Buenos Aires, Argentina. El proyecto combina técnicas avanzadas de web scraping, inteligencia artificial y búsqueda semántica para proporcionar acceso democrático a la información legislativa municipal.
 
 ### 1.2 Objetivos Estratégicos
 
@@ -54,7 +54,7 @@
 ### 2.1 Contexto del Negocio
 
 **Problema Identificado:**
-- El buscador oficial de SIBOM es ineficiente y confuso
+- El buscador oficial de Mangrullo es ineficiente y confuso
 - Los ciudadanos tienen dificultades para encontrar normativas específicas
 - No existe una herramienta unificada para consultar múltiples municipios
 - La información legislativa está fragmentada y de difícil acceso
@@ -90,7 +90,7 @@
 - ⚠️ Costos asociados a modelos premium
 - ⚠️ Complejidad del sistema RAG
 - ⚠️ Requiere mantenimiento continuo de scrapers
-- ⚠️ Dependencia de la estructura de SIBOM
+- ⚠️ Dependencia de la estructura de Mangrullo
 
 #### Oportunidades (Opportunities)
 - 🚀 Expandir a otras provincias argentinas
@@ -100,7 +100,7 @@
 - 🚀 Monetización mediante servicios premium
 
 #### Amenazas (Threats)
-- ⚡ Cambios en la estructura de SIBOM
+- ⚡ Cambios en la estructura de Mangrullo
 - ⚡ Aumento de costos de LLMs
 - ⚡ Competencia de soluciones comerciales
 - ⚡ Limitaciones de rate limiting
@@ -174,7 +174,7 @@ graph TB
 
 | Componente               | Función                            | Tecnologías                   |
 | ------------------------ | ---------------------------------- | ----------------------------- |
-| **SIBOM Scraper**        | Extrae boletines de SIBOM          | BeautifulSoup, OpenRouter LLM |
+| **Mangrullo Scraper**        | Extrae boletines de SIBOM          | BeautifulSoup, OpenRouter LLM |
 | **Web Scraper**          | Extrae de sitios municipales       | requests, lxml                |
 | **Transparency Scraper** | Extrae documentos de transparencia | pdfplumber, Vision API        |
 

@@ -684,7 +684,7 @@ Contenido: ${contentChunk}...`;
 
 ## Rol
 Asistente legal para legislación municipal (Prov. Buenos Aires).
-Datos de SIBOM (https://sibom.slyt.gba.gob.ar/) - fuente oficial.
+Datos de Mangrullo (https://sibom.slyt.gba.gob.ar/) - fuente oficial.
 
 ## Reglas de Respuesta
 1. **Respuesta directa**: Respondé EXACTAMENTE lo que el usuario pregunta.

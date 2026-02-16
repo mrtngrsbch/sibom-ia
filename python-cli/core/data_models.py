@@ -21,6 +21,7 @@ import json
 try:
     from extractors.normativas_extractor import Normativa as _NormativaBase
     # Crear un wrapper que agregue tablas_md
+
     @dataclass
     class Normativa(_NormativaBase):
         tablas_md: List[str] = field(default_factory=list)
@@ -52,7 +53,8 @@ except ImportError:
         """
         id: str
         municipality: str
-        type: str  # ordenanza, decreto, resolucion, disposicion, convenio, licitacion, etc.
+        # ordenanza, decreto, resolucion, disposicion, convenio, licitacion, etc.
+        type: str
         number: str
         year: str
         date: str
@@ -85,17 +87,21 @@ class TransparencyDocument:
     Para Balances, Presupuestos, Licitaciones, Concursos, etc.
     que NO son normativas legales sino documentos administrativos.
     """
+    # Campos obligatorios (sin default) DEBEN ir primero
     municipio: str
     tipo_documento: str  # balance_sumas_saldos, presupuesto, licitacion, etc.
-    tipo_detalle: str = ""  # NUEVO: tipo específico (ej: "BALANCE DE SUMAS Y SALDOS")
     periodo: str  # 2025-Q2, 2025, etc.
     fecha_documento: str
-    contenido: str = ""  # CRÍTICO: texto completo extraído del PDF
-    cabecera: Dict[str, Any] = field(default_factory=dict)  # NUEVO: datos de cabecera completa
     url_origen: str
     tablas_md: List[str]  # Tablas en Markdown
     calidad: Dict[str, Any]
     metadata: Dict[str, Any]
+    # Campos opcionales (con default) van AL FINAL
+    # NUEVO: tipo específico (ej: "BALANCE DE SUMAS Y SALDOS")
+    tipo_detalle: str = ""
+    contenido: str = ""  # CRÍTICO: texto completo extraído del PDF
+    # NUEVO: datos de cabecera completa
+    cabecera: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         """Convierte el dataclass a diccionario."""
@@ -157,7 +163,8 @@ def detect_normativa_type(text: str) -> tuple[str, str, str]:
         match = re.search(pattern, text, re.IGNORECASE)
         if match:
             numero = match.group(1) if match.group(1) else "0"
-            year_raw = match.group(2) if match.lastindex and match.lastindex >= 2 and match.group(2) else ""
+            year_raw = match.group(
+                2) if match.lastindex and match.lastindex >= 2 and match.group(2) else ""
             return tipo, numero, year_raw
 
     return "normativa", "0", ""

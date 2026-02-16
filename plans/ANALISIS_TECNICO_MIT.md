@@ -18,7 +18,7 @@ El proyecto **SIBOM Scraper Python-CLI** es un sistema de extracción automatiza
 ┌─────────────────────┐
 │   CLI Interface     │ ← argparse, Rich UI
 ├─────────────────────┤
-│   Business Logic    │ ← SIBOMScraper class
+│   Business Logic    │ ← Mangrullo Scraper class
 ├─────────────────────┤
 │   Processing Layer  │ ← BeautifulSoup + LLM hybrid
 ├─────────────────────┤

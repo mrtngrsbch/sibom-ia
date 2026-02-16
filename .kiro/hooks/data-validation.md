@@ -717,7 +717,7 @@ def generate_quality_dashboard():
     <!DOCTYPE html>
     <html>
     <head>
-        <title>SIBOM Data Quality Dashboard</title>
+        <title>Mangrullo Data Quality Dashboard</title>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     </head>
     <body>

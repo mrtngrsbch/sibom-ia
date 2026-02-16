@@ -28,6 +28,7 @@ import { calculateContentLimit, isComputationalQuery } from '@/lib/query-classif
 import { BM25Index, tokenize } from './bm25';
 import { formatTablesForLLM, filterRelevantTables } from './table-formatter';
 import { vectorSearch, isVectorSearchAvailable } from './vector-search';
+import { routeQuery, filterChunksByTier, explainRouting } from './semantic-router';
 import type { StructuredTable } from '@/lib/types';
 
 const gunzipAsync = promisify(gunzip);
@@ -151,6 +152,9 @@ const USE_NORMATIVAS_INDEX = process.env.USE_NORMATIVAS_INDEX !== 'false'; // tr
 function parseDate(dateStr: string): Date | null {
   if (!dateStr || typeof dateStr !== 'string') return null;
   
+  // Casos especiales
+  if (dateStr === 's/d' || dateStr === 'N/A' || dateStr === '—') return null;
+  
   // Si la fecha tiene formato "Municipio, DD/MM/YYYY", extraer solo la fecha
   let cleanDate = dateStr;
   if (dateStr.includes(',')) {
@@ -160,8 +164,55 @@ function parseDate(dateStr: string): Date | null {
     }
   }
   
-  const parsed = parse(cleanDate, 'dd/MM/yyyy', new Date());
-  return isValid(parsed) ? parsed : null;
+  // Intentar formato DD/MM/YYYY (normativas estándar)
+  let parsed = parse(cleanDate, 'dd/MM/yyyy', new Date());
+  if (isValid(parsed)) return parsed;
+  
+  // Intentar formato YYYY-MM-DD (ISO)
+  parsed = parse(cleanDate, 'yyyy-MM-dd', new Date());
+  if (isValid(parsed)) return parsed;
+  
+  // Intentar parsear formatos especiales de Balance: "2024-T1", "2024-S2", "2024"
+  // Extraer año de formatos como "2024-T1", "2024-S2", "2024"
+  const yearMatch = cleanDate.match(/^(\d{4})/);
+  if (yearMatch) {
+    const year = parseInt(yearMatch[1], 10);
+    // Retornar 1 enero del año (como fecha representativa)
+    return new Date(year, 0, 1);
+  }
+  
+  return null;
+}
+
+function extractBalancePeriodFromQuery(query: string): string | null {
+  const yearMatch = query.match(/\b(20\d{2})\b/);
+  if (!yearMatch) return null;
+
+  const year = yearMatch[1];
+
+  // Match forms like "T1", "t2", "trimestre 3", "1er trimestre"
+  const trimesterMatch = query.match(/\b[tT]\s*([1-4])\b/);
+  if (trimesterMatch?.[1]) {
+    return `${year}-T${trimesterMatch[1]}`;
+  }
+
+  const ordinalTrimesterMatch = query.match(/\b(1|2|3|4)(?:er|ro|do|to)?\s*trimestre\b/i);
+  if (ordinalTrimesterMatch?.[1]) {
+    return `${year}-T${ordinalTrimesterMatch[1]}`;
+  }
+
+  const wordTrimesterMatch = query.match(/\b(primer|segundo|tercer|cuarto)\s*trimestre\b/i);
+  if (wordTrimesterMatch?.[1]) {
+    const mapping: Record<string, string> = {
+      primer: '1',
+      segundo: '2',
+      tercer: '3',
+      cuarto: '4',
+    };
+    return `${year}-T${mapping[wordTrimesterMatch[1].toLowerCase()]}`;
+  }
+
+  return null;
 }
 
 // Cache de archivos JSON completos (30 min - ahorro masivo de bandwidth)
@@ -254,6 +305,13 @@ function getDataBasePath(): string {
     return process.env.DATA_PATH;
   }
   return path.join(process.cwd(), '..', 'python-cli', 'data', 'indexes');
+}
+
+function getBoletinesPath(): string {
+  if (process.env.DATA_PATH) {
+    return path.join(process.env.DATA_PATH, 'boletines');
+  }
+  return path.join(process.cwd(), '..', 'python-cli', 'boletines');
 }
 
 // ============================================================================
@@ -584,8 +642,7 @@ async function readLocalFile(filename: string): Promise<any> {
     return cached.content;
   }
 
-  const basePath = getDataBasePath();
-  const boletinesPath = path.join(basePath, 'boletines');
+  const boletinesPath = getBoletinesPath();
   const filePath = path.join(boletinesPath, filename);
 
   // Intentar leer el archivo normalmente
@@ -775,6 +832,15 @@ async function retrieveContextFromNormativas(
     console.log(`[RAG] 📅 Filtro fecha: ${beforeSize} → ${filtered.length} normativas`);
   }
 
+  if (options.type === 'balances') {
+    const balancePeriod = extractBalancePeriodFromQuery(query);
+    if (balancePeriod) {
+      const beforeSize = filtered.length;
+      filtered = filtered.filter(n => (n.d || '').toLowerCase() === balancePeriod.toLowerCase());
+      console.log(`[RAG] 🧾 Filtro período balance "${balancePeriod}": ${beforeSize} → ${filtered.length} normativas`);
+    }
+  }
+
   console.log(`[RAG] ✅ Después de filtros: ${filtered.length} normativas`);
 
   // 3. Construir índice BM25 sobre metadatos (título + tipo + número + año)
@@ -823,20 +889,28 @@ async function retrieveContextFromNormativas(
   }
 
   // Cargar contenido de cada boletín necesario
-  const bulletinContents = new Map<string, string>();
+  const bulletinContents = new Map<string, any>();
   for (const [bulletinName] of bulletinGroups) {
     try {
       const data = await readFileContent(`${bulletinName}.json`);
-      bulletinContents.set(bulletinName, data.fullText || '');
+      bulletinContents.set(bulletinName, data); // Guardar  datos completos, no solo fullText
     } catch (err) {
       console.warn(`[RAG] Error cargando ${bulletinName}:`, err);
-      bulletinContents.set(bulletinName, '');
+      bulletinContents.set(bulletinName, { fullText: '' });
     }
   }
 
   // 6. Construir contexto
   const contentLimit = calculateContentLimit(query);
   const isMetadataOnly = contentLimit <= 200;
+
+  // LAYER 3: Routing semántico para queries Balance
+  const isBalanceQuery = options.type === 'balances' || resultNormativas.some(n => n.t === 'balances');
+  let routingDecision = null;
+  if (isBalanceQuery) {
+    routingDecision = routeQuery(query, options.type);
+    console.log('[RAG] 🎯 Layer 3 Active:', explainRouting(routingDecision));
+  }
 
   // Para listados masivos, limitar el contexto para no explotar los tokens del LLM
   // Si hay más de 100 resultados, solo incluir un resumen en el contexto
@@ -862,9 +936,39 @@ Las primeras ${MAX_CONTEXT_ENTRIES} se muestran abajo como referencia:
     // Modo detallado: incluir extracto de contenido
     context = resultNormativas
       .map(n => {
-        const fullContent = bulletinContents.get(n.sb) || '';
-        // Buscar el documento específico dentro del boletín
-        const docMarker = `[DOC `;
+        const bulletinData = bulletinContents.get(n.sb) || { fullText: '' };
+        const fullContent = bulletinData.fullText || '';
+        
+        // LAYER 3: Para documentos Balance, usar chunks jerárquicos si existen
+        if (n.t === 'balances' && bulletinData.rag_chunks && Array.isArray(bulletinData.rag_chunks) && routingDecision) {
+          console.log(`[RAG] 🎯 Using hierarchical chunks for Balance ${n.n}/${n.y}`);
+          console.log(`[RAG] Total chunks available: ${bulletinData.rag_chunks.length}`);
+          
+          // Filtrar chunks por tier según routing decision
+          const filteredChunks = filterChunksByTier(bulletinData.rag_chunks, routingDecision);
+          console.log(`[RAG] Chunks after tier filtering: ${filteredChunks.length} (tiers: ${routingDecision.tiers.join(', ')})`);
+          
+          if (filteredChunks.length > 0) {
+            // Construir contexto desde chunks jerárquicos
+            const chunksContext = filteredChunks
+              .map(chunk => {
+                const tierLabel = chunk.tier === 1 ? 'EXECUTIVE SUMMARY' : chunk.tier === 2 ? 'SUBSECTION' : 'DETAIL';
+                const embeddingText = chunk.embedding_text || '';
+                const completeness = chunk.completeness_score ? `(${(chunk.completeness_score * 100).toFixed(0)}% complete)` : '';
+                return `[${tierLabel} ${completeness}] ${embeddingText}`;
+              })
+              .join('\n\n');
+            
+            return `[${n.m}] ${n.t.toUpperCase()} N° ${n.n}/${n.y}
+Título: ${n.ti}
+Fecha: ${n.d}
+Estado: vigente
+Fuente: ${n.sb}
+Contenido (chunks jerárquicos):\n${chunksContext}...`;
+          }
+        }
+        
+        // Fallback: usar fullText (documentos no-Balance o sin rag_chunks)
         const contentChunk = extractNormativaContent(fullContent, n.n, n.t, contentLimit);
 
         return `[${n.m}] ${n.t.toUpperCase()} N° ${n.n}/${n.y}
@@ -1007,14 +1111,21 @@ async function retrieveContextFromBoletines(
 
   await Promise.all(filteredIndex.map(async (entry) => {
     try {
-      const data = await readFileContent(entry.filename);
+      // FIX 2026-02-15: Usar 'sb' si 'filename' es null (para documentos de transparencia)
+      const fileToLoad = entry.filename || (entry as any).sb;
+      if (!fileToLoad) {
+        console.warn(`[RAG] Sin filename ni sb para:`, entry);
+        return;
+      }
+      
+      const data = await readFileContent(fileToLoad);
       docsWithContent.push({
         entry,
         content: data.fullText || ''
       });
     } catch (err) {
       if (process.env.NODE_ENV !== 'production') {
-        console.warn(`[RAG] Error cargando ${entry.filename}:`, err instanceof Error ? err.message : err);
+        console.warn(`[RAG] Error cargando ${(entry as any).sb || entry.filename}:`, err instanceof Error ? err.message : err);
       }
     }
   }));

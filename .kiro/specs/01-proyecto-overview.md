@@ -10,7 +10,7 @@ El **SIBOM Scraper Assistant** es un ecosistema completo de dos partes integrada
 
 ```mermaid
 graph TB
-    A[SIBOM Web Portal] --> B[Backend Python CLI]
+    A[Mangrullo Web Portal] --> B[Backend Python CLI]
     B --> C[JSON Estructurados]
     C --> D[Frontend Next.js Chatbot]
     D --> E[Usuario Final]

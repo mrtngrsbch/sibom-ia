@@ -290,7 +290,7 @@ Eliminar la dependencia de OpenRouter y usar directamente el SDK de Vercel con O
      apiKey: apiKey,
      headers: {
        'HTTP-Referer': 'https://github.com/mrtngrsbch/sibom-ia',
-       'X-Title': 'SIBOM Scraper Assistant',
+       'X-Title': 'Mangrullo Scraper Assistant',
      }
    });
    

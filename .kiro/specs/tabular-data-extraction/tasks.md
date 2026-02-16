@@ -2,7 +2,7 @@
 
 ## Resumen
 
-Implementar extracción estructurada de tablas HTML en el scraper SIBOM, preservando la semántica columna-fila para queries computacionales en el sistema RAG.
+Implementar extracción estructurada de tablas HTML en el scraper Mangrullo, preservando la semántica columna-fila para queries computacionales en el sistema RAG.
 
 ## Tareas
 
@@ -85,7 +85,7 @@ Implementar extracción estructurada de tablas HTML en el scraper SIBOM, preserv
   - ✅ Ejecutar todos los tests, verificar que pasen (33/33 passed)
   - Preguntar al usuario si hay dudas
 
-- [x] 5. Integrar con SIBOMScraper
+- [x] 5. Integrar con Mangrullo Scraper
   - [x] 5.1 Crear método `parse_final_content_structured()`
     - Nuevo método en `SIBOMScraper` que usa `TableExtractor`
     - Retorna dict con `text_content`, `tables`, `metadata`

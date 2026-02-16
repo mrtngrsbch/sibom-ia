@@ -80,7 +80,12 @@ export function extractOrdinanceType(query: string): string | null {
     { pattern: /\bdisposición|disposicion/i, type: 'disposicion' },
     { pattern: /\bconvenio/i, type: 'convenio' },
     { pattern: /\blicitación|licitacion/i, type: 'licitacion' },
-    { pattern: /\bboletín|boletin/i, type: 'boletin' }
+    { pattern: /\bboletín|boletin/i, type: 'boletin' },
+    { pattern: /\bbalance(s)?\b/i, type: 'balances' },
+    { pattern: /\btesorer[ií]a\b/i, type: 'balances' },
+    { pattern: /\bsaldo\b/i, type: 'balances' },
+    { pattern: /\bingresos\b|\begresos\b/i, type: 'balances' },
+    { pattern: /\bpresupuesto(s)?\b/i, type: 'presupuestos' }
   ];
 
   for (const { pattern, type } of typePatterns) {

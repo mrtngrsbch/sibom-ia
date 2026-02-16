@@ -6,7 +6,7 @@ Este documento presenta un análisis completo del proyecto Python CLI SIBOM Scra
 
 ## Glossary
 
-- **SIBOM**: Sistema de Información de Boletines Oficiales Municipales
+- **Mangrullo**: Sistema de Información de Boletines Oficiales Municipales
 - **Scraper**: Herramienta de extracción de datos web
 - **LLM**: Large Language Model (Modelo de Lenguaje Grande)
 - **OpenRouter**: Servicio de API para acceso a múltiples modelos LLM

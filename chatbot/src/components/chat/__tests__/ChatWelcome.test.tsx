@@ -13,7 +13,7 @@ describe('ChatWelcome', () => {
     render(<ChatWelcome isLoading={false} onQuestionClick={vi.fn()} />);
 
     expect(screen.getByText('¿En qué puedo ayudarte?')).toBeInTheDocument();
-    expect(screen.getByText(/Consultá legislación/)).toBeInTheDocument();
+    expect(screen.getByText(/observatorio independiente de la decepción municipal/i)).toBeInTheDocument();
   });
 
   it('should render all FAQ questions', () => {

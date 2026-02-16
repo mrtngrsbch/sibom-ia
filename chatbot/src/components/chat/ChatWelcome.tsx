@@ -7,7 +7,6 @@
 'use client';
 
 import { Sparkles, Bot } from '@/lib/icons';
-import type { ChatMessage } from '@/lib/types';
 
 interface ChatWelcomeProps {
   isLoading: boolean;
@@ -32,7 +31,7 @@ export function ChatWelcome({ isLoading, onQuestionClick }: ChatWelcomeProps) {
           ¿En qué puedo ayudarte?
         </h2>
         <p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto">
-          Consultá legislación, ordenanzas y decretos de municipios de la Provincia de Buenos Aires.
+          Mangrullo es un observatorio independiente de la decepción municipal.
         </p>
       </div>
 

@@ -16,43 +16,70 @@
  *   - @ai-sdk/react: ^1.0.0
  */
 
-import { createOpenAI } from '@ai-sdk/openai';
-import { createOpenRouter } from '@openrouter/ai-sdk-provider';
-import { streamText, tool } from 'ai';
-import { z } from 'zod';
-import { retrieveContext, getDatabaseStats, type Source } from '@/lib/rag/retriever';
-import { retrieveWithComputation, type ComputationalSearchResult } from '@/lib/rag/computational-retriever';
-import { rerankSources, filterByRelevance, isSpecificSearch } from '@/lib/rag/reranker';
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { streamText, generateText } from "ai";
 import {
-  needsRAGSearch,
-  calculateOptimalLimit,
-  getOffTopicResponse,
-  isFAQQuestion,
-  isComputationalQuery,
-  classifyQueryIntent,
-  generateDirectResponse
-} from '@/lib/query-classifier';
-import { extractFiltersFromQuery } from '@/lib/query-filter-extractor';
+	retrieveContext,
+	getDatabaseStats,
+	type Source,
+} from "@/lib/rag/retriever";
 import {
-  isComparisonQuery,
-  handleComparisonQuery,
-  type ComparisonResult
-} from '@/lib/rag/sql-retriever';
-import { generateDataCatalog, generateConciseCatalog } from '@/lib/data-catalog';
-import fs from 'fs/promises';
-import path from 'path';
-import type { DatabaseStats } from '@/lib/types';
+	retrieveWithComputation,
+	type ComputationalSearchResult,
+} from "@/lib/rag/computational-retriever";
+import {
+	rerankSources,
+	filterByRelevance,
+	isSpecificSearch,
+} from "@/lib/rag/reranker";
+import {
+	isBalanceQuery,
+	isBalanceRetrieverAvailable,
+	extractMunicipalityFromQuery,
+	extractPeriodFromQuery,
+	retrieveBalanceContext,
+	buildBalanceSystemMessage,
+} from "@/lib/rag/balance-retriever-integration";
+import {
+	needsRAGSearch,
+	calculateOptimalLimit,
+	getOffTopicResponse,
+	isFAQQuestion,
+	isComputationalQuery,
+	classifyQueryIntent,
+	generateDirectResponse,
+} from "@/lib/query-classifier";
+import {
+	needsVerification,
+	verifyResponse,
+	addConfidenceBadge,
+} from "@/lib/rag/verification-engine";
+import { extractFiltersFromQuery } from "@/lib/query-filter-extractor";
+import {
+	isComparisonQuery,
+	handleComparisonQuery,
+	type ComparisonResult,
+} from "@/lib/rag/sql-retriever";
+import {
+	generateDataCatalog,
+	generateConciseCatalog,
+} from "@/lib/data-catalog";
+import fs from "fs/promises";
+import path from "path";
+import type { DatabaseStats } from "@/lib/types";
 
 // Intentar cargar SQLite de forma lazy (solo si está disponible)
-const USE_SQLITE = process.env.USE_SQLITE === 'true';
+const USE_SQLITE = process.env.USE_SQLITE === "true";
 
 // Type guard para verificar si es un resultado computacional
-function isComputationalResult(result: unknown): result is ComputationalSearchResult {
-  return (
-    typeof result === 'object' &&
-    result !== null &&
-    'computationResult' in result
-  );
+function isComputationalResult(
+	result: unknown,
+): result is ComputationalSearchResult {
+	return (
+		typeof result === "object" &&
+		result !== null &&
+		"computationResult" in result
+	);
 }
 
 export const maxDuration = 60;
@@ -62,222 +89,339 @@ export const maxDuration = 60;
  * @route POST /api/chat
  */
 export async function POST(req: Request) {
-  console.log('[ChatAPI] Nueva petición recibida');
-  const startTime = Date.now();
+	console.log("[ChatAPI] Nueva petición recibida");
+	const startTime = Date.now();
 
-  try {
-    const body = await req.json();
-    console.log(`[ChatAPI] Body recibido: ${JSON.stringify(body).slice(0, 200)}...`);
+	try {
+		const body = await req.json();
+		console.log(
+			`[ChatAPI] Body recibido: ${JSON.stringify(body).slice(0, 200)}...`,
+		);
 
-    // Extraer mensajes y filtros
-    const { messages, municipality, filters = {} } = body;
+		// Extraer mensajes y filtros
+		const { messages, municipality, filters = {} } = body;
 
-    const apiKey = process.env.OPENROUTER_API_KEY;
-    if (!apiKey) {
-      console.error('[ChatAPI] Error: OPENROUTER_API_KEY no encontrada');
-      return new Response(JSON.stringify({ error: 'Configuración incompleta: Falta API Key' }), { status: 500 });
-    }
+		const apiKey = process.env.OPENROUTER_API_KEY;
+		if (!apiKey) {
+			console.error("[ChatAPI] Error: OPENROUTER_API_KEY no encontrada");
+			return new Response(
+				JSON.stringify({ error: "Configuración incompleta: Falta API Key" }),
+				{ status: 500 },
+			);
+		}
 
-    console.log(`[ChatAPI] API Key detectada (longitud: ${apiKey.length}, comienza con: ${apiKey.slice(0, 10)}...)`);
+		console.log(
+			`[ChatAPI] API Key detectada (longitud: ${apiKey.length}, comienza con: ${apiKey.slice(0, 10)}...)`,
+		);
 
-    // Configurar OpenRouter dentro de la petición para asegurar acceso a env vars
-    const openrouter = createOpenRouter({
-      apiKey: apiKey,
-      headers: {
-        'HTTP-Referer': 'https://github.com/mrtngrsbch/sibom-ia',
-        'X-Title': 'SIBOM Scraper Assistant',
-      }
-    });
+		// Configurar OpenRouter dentro de la petición para asegurar acceso a env vars
+		const openrouter = createOpenRouter({
+			apiKey: apiKey,
+			headers: {
+				"HTTP-Referer": "https://github.com/mrtngrsbch/sibom-ia",
+				"X-Title": "Mangrullo",
+			},
+		});
 
-    if (!messages || !Array.isArray(messages)) {
-      return new Response('Mensajes inválidos', { status: 400 });
-    }
+		if (!messages || !Array.isArray(messages)) {
+			return new Response("Mensajes inválidos", { status: 400 });
+		}
 
-    // Obtener mensajes anteriores (excluir system) - Limitar a 10 mensajes (5 intercambios)
-    const recentMessages = messages
-      .filter((m: { role: string }) => m.role !== 'system')
-      .slice(-10);  // Solo últimos 10 mensajes para reducir tokens
+		// Obtener mensajes anteriores (excluir system) - Limitar a 10 mensajes (5 intercambios)
+		const recentMessages = messages
+			.filter((m: { role: string }) => m.role !== "system")
+			.slice(-10); // Solo últimos 10 mensajes para reducir tokens
 
-    console.log(`[ChatAPI] Mensajes recientes: ${recentMessages.length}`);
-    recentMessages.forEach((m: { role: string; content: string | unknown }, i: number) => {
-      console.log(`  [${i}] ${m.role}: ${typeof m.content === 'string' ? m.content.slice(0, 30) : 'non-string content'}`);
-    });
+		console.log(`[ChatAPI] Mensajes recientes: ${recentMessages.length}`);
+		recentMessages.forEach(
+			(m: { role: string; content: string | unknown }, i: number) => {
+				console.log(
+					`  [${i}] ${m.role}: ${typeof m.content === "string" ? m.content.slice(0, 30) : "non-string content"}`,
+				);
+			},
+		);
 
-    // Recuperar contexto relevante usando RAG
-    const lastUserMessage = recentMessages.findLast(
-      (m: { role: string }) => m.role === 'user'
-    );
-    const query =
-      typeof lastUserMessage?.content === 'string'
-        ? lastUserMessage.content
-        : '';
+		// Recuperar contexto relevante usando RAG
+		const lastUserMessage = recentMessages.findLast(
+			(m: { role: string }) => m.role === "user",
+		);
+		const query =
+			typeof lastUserMessage?.content === "string"
+				? lastUserMessage.content
+				: "";
 
-    console.log(`[ChatAPI] Consulta: "${query.slice(0, 50)}..."`);
+		console.log(`[ChatAPI] Consulta: "${query.slice(0, 50)}..."`);
 
-    // Determinar si necesita búsqueda RAG
-    // PRIORIDAD: 1. FAQ, 2. RAG normal
-    const isFAQ = isFAQQuestion(query);
-    const shouldSearch = !isFAQ && needsRAGSearch(query);
-    console.log(`[ChatAPI] Necesita RAG: ${shouldSearch} (isFAQ: ${isFAQ})`);
+		// Determinar si necesita búsqueda RAG
+		// PRIORIDAD: 1. FAQ, 2. RAG normal
+		const isFAQ = isFAQQuestion(query);
+		const shouldSearch = !isFAQ && needsRAGSearch(query);
+		console.log(`[ChatAPI] Necesita RAG: ${shouldSearch} (isFAQ: ${isFAQ})`);
 
-    // Si es off-topic, marcar para debugging
-    if (!shouldSearch && !isFAQ) {
-      console.log(`[ChatAPI] Pregunta fuera de tema detectada: "${query.slice(0, 50)}..."`);
-    }
+		// Si es off-topic, marcar para debugging
+		if (!shouldSearch && !isFAQ) {
+			console.log(
+				`[ChatAPI] Pregunta fuera de tema detectada: "${query.slice(0, 50)}..."`,
+			);
+		}
 
-    // Obtener estadísticas primero (necesitamos municipalityList para extracción)
-    let stats: DatabaseStats;
-    // Usar getDatabaseStats (fallback seguro)
-    stats = await getDatabaseStats();
+		// Obtener estadísticas primero (necesitamos municipalityList para extracción)
+		let stats: DatabaseStats;
+		// Usar getDatabaseStats (fallback seguro)
+		stats = await getDatabaseStats();
 
-    // Construir opciones de búsqueda con todos los filtros (UI + extraídos de query)
-    const uiFilters = {
-      municipality: filters.municipality || municipality, // Soportar ambos formatos
-      type: filters.ordinanceType !== 'all' ? filters.ordinanceType : undefined,
-      dateFrom: filters.dateFrom,
-      dateTo: filters.dateTo
-    };
+		// Construir opciones de búsqueda con todos los filtros (UI + extraídos de query)
+		const uiFilters = {
+			municipality: filters.municipality || municipality, // Soportar ambos formatos
+			type: filters.ordinanceType !== "all" ? filters.ordinanceType : undefined,
+			dateFrom: filters.dateFrom,
+			dateTo: filters.dateTo,
+		};
 
-    // Extraer filtros automáticamente de la query
-    // Estrategia A: Auto-aplicar municipio/año/tipo detectado en la query
-    const enhancedFilters = extractFiltersFromQuery(query, stats.municipalityList, uiFilters);
+		// Extraer filtros automáticamente de la query
+		// Estrategia A: Auto-aplicar municipio/año/tipo detectado en la query
+		const enhancedFilters = extractFiltersFromQuery(
+			query,
+			stats.municipalityList,
+			uiFilters,
+		);
 
-    const hasFilters = !!(enhancedFilters.municipality || enhancedFilters.type || enhancedFilters.dateFrom || enhancedFilters.dateTo);
-    const optimalLimit = calculateOptimalLimit(query, hasFilters);
+		const hasFilters = !!(
+			enhancedFilters.municipality ||
+			enhancedFilters.type ||
+			enhancedFilters.dateFrom ||
+			enhancedFilters.dateTo
+		);
+		const optimalLimit = calculateOptimalLimit(query, hasFilters);
 
-    // Determinar si el filtro de tipo es MANUAL (UI) o AUTOMÁTICO (detectado de query)
-    // isManualTypeFilter = true solo cuando el usuario seleccionó explícitamente en el dropdown
-    const isManualTypeFilter = uiFilters.type !== undefined && uiFilters.type === enhancedFilters.type;
+		// Determinar si el filtro de tipo es MANUAL (UI) o AUTOMÁTICO (detectado de query)
+		// isManualTypeFilter = true solo cuando el usuario seleccionó explícitamente en el dropdown
+		const isManualTypeFilter =
+			uiFilters.type !== undefined && uiFilters.type === enhancedFilters.type;
 
-    // Detectar si es query de listado masivo (muchos resultados esperados)
-    const isMassiveListing = optimalLimit >= 100 && hasFilters;
-    
-    // Para listados masivos, NO limitar (recuperar todos los que coincidan)
-    // El usuario quiere ver TODOS los resultados, no una muestra
-    const adjustedLimit = isMassiveListing ? 10000 : optimalLimit; // Sin límite práctico para listados
+		// Detectar si es query de listado masivo (muchos resultados esperados)
+		const isMassiveListing = optimalLimit >= 100 && hasFilters;
 
-    const searchOptions = {
-      ...enhancedFilters,
-      limit: adjustedLimit,
-      isManualTypeFilter
-    };
+		// Para listados masivos, NO limitar (recuperar todos los que coincidan)
+		// El usuario quiere ver TODOS los resultados, no una muestra
+		const adjustedLimit = isMassiveListing ? 10000 : optimalLimit; // Sin límite práctico para listados
 
-    console.log(`[ChatAPI] Filtros UI: ${JSON.stringify(uiFilters)}`);
-    console.log(`[ChatAPI] Filtros extraídos de query: ${JSON.stringify(enhancedFilters)}`);
-    console.log(`[ChatAPI] Tipo manual: ${isManualTypeFilter}`);
-    console.log(`[ChatAPI] Límite dinámico: ${adjustedLimit} docs (filtros: ${hasFilters}, listado masivo: ${isMassiveListing})`);
+		const searchOptions = {
+			...enhancedFilters,
+			limit: adjustedLimit,
+			isManualTypeFilter,
+		};
 
-    // Detectar si es query de comparación entre municipios (usar SQL)
-    const isSQLComparison = isComparisonQuery(query);
-    
-    console.log(`[ChatAPI] Query de comparación SQL: ${isSQLComparison}`);
-    
-    // Si es comparación SQL, usar SQL retriever directamente
-    let sqlComparisonResult: ComparisonResult | null = null;
-    if (shouldSearch && isSQLComparison) {
-      console.log('[ChatAPI] 🗄️ Usando SQL retriever para query comparativa');
-      sqlComparisonResult = await handleComparisonQuery(query);
-      
-      if (sqlComparisonResult.success) {
-        console.log(`[ChatAPI] ✅ SQL comparison exitosa: ${sqlComparisonResult.answer}`);
-        console.log(`[ChatAPI] 📊 Datos: ${sqlComparisonResult.data.length} municipios`);
-      } else {
-        console.log(`[ChatAPI] ❌ SQL comparison falló, usando RAG normal`);
-      }
-    }
+		console.log(`[ChatAPI] Filtros UI: ${JSON.stringify(uiFilters)}`);
+		console.log(
+			`[ChatAPI] Filtros extraídos de query: ${JSON.stringify(enhancedFilters)}`,
+		);
+		console.log(`[ChatAPI] Tipo manual: ${isManualTypeFilter}`);
+		console.log(
+			`[ChatAPI] Límite dinámico: ${adjustedLimit} docs (filtros: ${hasFilters}, listado masivo: ${isMassiveListing})`,
+		);
 
-    // Recuperar contexto con los filtros mejorados
-    let retrievedContext;
-    if (shouldSearch && !isSQLComparison) {
-      // Usar JSON RAG retriever
-      console.log('[ChatAPI] 📄 Usando retrieveContext (JSON)');
-      retrievedContext = await retrieveContext(query, searchOptions);
-    } else if (shouldSearch && isSQLComparison && !sqlComparisonResult?.success) {
-      // SQL falló: fallback a RAG
-      console.log('[ChatAPI] 📄 Fallback a retrieveContext (SQL falló)');
-      retrievedContext = await retrieveContext(query, searchOptions);
-    } else {
-      retrievedContext = { context: '', sources: [] };
-    }
+		// Detectar si es query de comparación entre municipios (usar SQL)
+		const isSQLComparison = isComparisonQuery(query);
 
-    // ============================================================================
-    // 🎯 RE-RANKING - Mejora de precisión (técnica MIT RAG-end2end)
-    // ============================================================================
-    // Aplicar re-ranking para mejorar Top-5/Top-20 accuracy y reducir alucinaciones
-    if (retrievedContext.sources.length > 0 && shouldSearch) {
-      const beforeRerank = retrievedContext.sources.length;
-      const queryIsSpecific = isSpecificSearch(query);
+		console.log(`[ChatAPI] Query de comparación SQL: ${isSQLComparison}`);
 
-      if (queryIsSpecific) {
-        // Para búsquedas específicas, ser más estricto con el filtro
-        const { relevant, irrelevant } = filterByRelevance(retrievedContext.sources, query, 30);
-        retrievedContext.sources = rerankSources(relevant, query);
+		// Detectar si es query sobre balances (usar Qdrant)
+		const isBalance = isBalanceQuery(query);
+		console.log(`[ChatAPI] Query de balance: ${isBalance}`);
+		const canUseBalanceRetriever = isBalance && isBalanceRetrieverAvailable();
+		console.log(
+			`[ChatAPI] Balance retriever disponible: ${canUseBalanceRetriever}`,
+		);
 
-        console.log(`[ChatAPI] 🎯 Re-ranking específico: ${beforeRerank} → ${retrievedContext.sources.length} fuentes (${irrelevant.length} filtradas por baja relevancia)`);
+		// Si es balance query, extraer municipio y período
+		let balanceResult: {
+			context: string;
+			sources: Array<{ title: string; file: string; relevance: number }>;
+		} | null = null;
+		if (shouldSearch && isBalance && canUseBalanceRetriever) {
+			console.log("[ChatAPI] ☁️ Usando Qdrant retriever para query de balance");
+			const balanceMunicipio = extractMunicipalityFromQuery(query);
+			const balancePeriodo = extractPeriodFromQuery(query);
+			console.log(
+				`[ChatAPI]   Municipio: ${balanceMunicipio ?? "auto"}, Período: ${balancePeriodo ?? "cualquiera"}`,
+			);
 
-        // Si después del filtro no quedan fuentes relevantes, dejar warning
-        if (retrievedContext.sources.length === 0) {
-          console.log(`[ChatAPI] ⚠️ Todas las fuentes fueron filtradas por baja relevancia en búsqueda específica`);
-        }
-      } else {
-        // Para búsquedas generales, solo re-rankear sin filtrar
-        retrievedContext.sources = rerankSources(retrievedContext.sources, query);
-        console.log(`[ChatAPI] 🎯 Re-ranking general: ${beforeRerank} fuentes re-rankeadas`);
-      }
-    }
+			balanceResult = await retrieveBalanceContext(
+				query,
+				balanceMunicipio,
+				balancePeriodo,
+			);
 
-    // Log de fuentes recuperadas (después de re-ranking)
-    console.log(`[ChatAPI] 📊 Fuentes finales (post-rerank): ${retrievedContext.sources?.length || 0}`);
+			if (
+				balanceResult &&
+				balanceResult.context &&
+				balanceResult.context.length > 0
+			) {
+				console.log(
+					`[ChatAPI] ✅ Balance retrieval exitoso: ${balanceResult.sources.length} fuentes`,
+				);
+			} else {
+				console.log(`[ChatAPI] ❌ Balance retrieval vacío, usando RAG normal`);
+				balanceResult = null;
+			}
+		} else if (shouldSearch && isBalance && !canUseBalanceRetriever) {
+			console.log(
+				"[ChatAPI] ⚠️ Balance retriever no disponible, usando RAG normal",
+			);
+			balanceResult = null;
+		}
 
-    // ============================================================================
-    // 🗄️ SQL COMPARISON - BYPASS COMPLETO DEL LLM (ÚNICO BYPASS PERMITIDO)
-    // ============================================================================
-    // Si es comparación SQL exitosa, generar respuesta directa sin LLM
-    if (sqlComparisonResult?.success) {
-      console.log(`[ChatAPI] 🗄️ SQL COMPARISON EXITOSA - Generando respuesta directa`);
-      console.log(`[ChatAPI] 💰 Ahorro estimado: ~150,000 tokens (~$0.45)`);
+		// Si es comparación SQL, usar SQL retriever directamente
+		let sqlComparisonResult: ComparisonResult | null = null;
+		if (shouldSearch && isSQLComparison && !isBalance) {
+			console.log("[ChatAPI] 🗄️ Usando SQL retriever para query comparativa");
+			sqlComparisonResult = await handleComparisonQuery(query);
 
-      // Construir respuesta con markdown table
-      const directResponse = sqlComparisonResult.answer + (sqlComparisonResult.markdown || '');
+			if (sqlComparisonResult.success) {
+				console.log(
+					`[ChatAPI] ✅ SQL comparison exitosa: ${sqlComparisonResult.answer}`,
+				);
+				console.log(
+					`[ChatAPI] 📊 Datos: ${sqlComparisonResult.data.length} municipios`,
+				);
+			} else {
+				console.log(`[ChatAPI] ❌ SQL comparison falló, usando RAG normal`);
+			}
+		}
 
-      // Crear stream compatible con Vercel AI SDK manualmente
-      const encoder = new TextEncoder();
-      const stream = new ReadableStream({
-        start(controller) {
-          // Enviar el texto en formato de stream de Vercel AI
-          controller.enqueue(encoder.encode(`0:"${directResponse.replace(/"/g, '\\"').replace(/\n/g, '\\n')}"\n`));
-          controller.close();
-        }
-      });
+		// Recuperar contexto con los filtros mejorados
+		let retrievedContext: { context: string; sources: Source[] };
+		if (balanceResult) {
+			// Si tenemos balance result, convertir a formato de retrievedContext
+			retrievedContext = {
+				context: balanceResult.context,
+				sources: balanceResult.sources.map((s) => ({
+					title: s.title,
+					url: `https://sibom.local/balances/${s.file}`,
+					municipality: s.title.split(" - ")[0] || "Unknown",
+					type: "balances",
+					relevance: s.relevance,
+				})) as Source[],
+			};
+		} else if (shouldSearch && !isSQLComparison && !isBalance) {
+			// Usar JSON RAG retriever
+			console.log("[ChatAPI] 📄 Usando retrieveContext (JSON)");
+			retrievedContext = await retrieveContext(query, searchOptions);
+		} else if (
+			shouldSearch &&
+			isSQLComparison &&
+			!sqlComparisonResult?.success
+		) {
+			// SQL falló: fallback a RAG
+			console.log("[ChatAPI] 📄 Fallback a retrieveContext (SQL falló)");
+			retrievedContext = await retrieveContext(query, searchOptions);
+		} else {
+			retrievedContext = { context: "", sources: [] };
+		}
 
-      return new Response(stream, {
-        headers: {
-          'Content-Type': 'text/plain; charset=utf-8',
-          'X-Vercel-AI-Data-Stream': 'v1'
-        }
-      });
-    }
+		// ============================================================================
+		// 🎯 RE-RANKING - Mejora de precisión (técnica MIT RAG-end2end)
+		// ============================================================================
+		// Aplicar re-ranking para mejorar Top-5/Top-20 accuracy y reducir alucinaciones
+		if (retrievedContext.sources.length > 0 && shouldSearch) {
+			const beforeRerank = retrievedContext.sources.length;
+			const queryIsSpecific = isSpecificSearch(query);
 
-    // ============================================================================
-    // 🤖 SIEMPRE USAR LLM PARA QUERIES DE NORMATIVAS
-    // ============================================================================
-    // El LLM es lo suficientemente inteligente para entender cualquier query:
-    // - "sueldos de carlos tejedor 2025" → busca en contenido sobre salarios
-    // - "decretos de carlos tejedor 2025" → lista todos los decretos
-    // - "ordenanza 2947" → encuentra la ordenanza específica
-    // - "cuántas ordenanzas hay" → cuenta y explica
-    //
-    // STOP TRYING TO BE CLEVER! Let the LLM do its job.
-    console.log(`[ChatAPI] 🤖 Usando LLM para interpretar query y generar respuesta`);
+			if (queryIsSpecific) {
+				// Para búsquedas específicas, ser más estricto con el filtro
+				const { relevant, irrelevant } = filterByRelevance(
+					retrievedContext.sources,
+					query,
+					30,
+				);
+				retrievedContext.sources = rerankSources(relevant, query);
 
-    // Determinar tipo de respuesta según el contexto
-    let systemPromptTemplate = '';
+				console.log(
+					`[ChatAPI] 🎯 Re-ranking específico: ${beforeRerank} → ${retrievedContext.sources.length} fuentes (${irrelevant.length} filtradas por baja relevancia)`,
+				);
 
-    if (!shouldSearch && isFAQQuestion(query)) {
-      // Caso 2: Pregunta sugerida/FAQ - responder promoviendo NUESTRO CHAT
-      const dataCatalog = generateConciseCatalog();
-      
-      systemPromptTemplate = `Eres un asistente para nuestro chatbot de legislación municipal.
+				// Si después del filtro no quedan fuentes relevantes, dejar warning
+				if (retrievedContext.sources.length === 0) {
+					console.log(
+						`[ChatAPI] ⚠️ Todas las fuentes fueron filtradas por baja relevancia en búsqueda específica`,
+					);
+				}
+			} else {
+				// Para búsquedas generales, solo re-rankear sin filtrar
+				retrievedContext.sources = rerankSources(
+					retrievedContext.sources,
+					query,
+				);
+				console.log(
+					`[ChatAPI] 🎯 Re-ranking general: ${beforeRerank} fuentes re-rankeadas`,
+				);
+			}
+		}
+
+		// Log de fuentes recuperadas (después de re-ranking)
+		console.log(
+			`[ChatAPI] 📊 Fuentes finales (post-rerank): ${retrievedContext.sources?.length || 0}`,
+		);
+
+		// ============================================================================
+		// 🗄️ SQL COMPARISON - BYPASS COMPLETO DEL LLM (ÚNICO BYPASS PERMITIDO)
+		// ============================================================================
+		// Si es comparación SQL exitosa, generar respuesta directa sin LLM
+		if (sqlComparisonResult?.success) {
+			console.log(
+				`[ChatAPI] 🗄️ SQL COMPARISON EXITOSA - Generando respuesta directa`,
+			);
+			console.log(`[ChatAPI] 💰 Ahorro estimado: ~150,000 tokens (~$0.45)`);
+
+			// Construir respuesta con markdown table
+			const directResponse =
+				sqlComparisonResult.answer + (sqlComparisonResult.markdown || "");
+
+			// Crear stream compatible con Vercel AI SDK manualmente
+			const encoder = new TextEncoder();
+			const stream = new ReadableStream({
+				start(controller) {
+					// Enviar el texto en formato de stream de Vercel AI
+					controller.enqueue(
+						encoder.encode(
+							`0:"${directResponse.replace(/"/g, '\\"').replace(/\n/g, "\\n")}"\n`,
+						),
+					);
+					controller.close();
+				},
+			});
+
+			return new Response(stream, {
+				headers: {
+					"Content-Type": "text/plain; charset=utf-8",
+					"X-Vercel-AI-Data-Stream": "v1",
+				},
+			});
+		}
+
+		// ============================================================================
+		// 🤖 SIEMPRE USAR LLM PARA QUERIES DE NORMATIVAS
+		// ============================================================================
+		// El LLM es lo suficientemente inteligente para entender cualquier query:
+		// - "sueldos de carlos tejedor 2025" → busca en contenido sobre salarios
+		// - "decretos de carlos tejedor 2025" → lista todos los decretos
+		// - "ordenanza 2947" → encuentra la ordenanza específica
+		// - "cuántas ordenanzas hay" → cuenta y explica
+		//
+		// STOP TRYING TO BE CLEVER! Let the LLM do its job.
+		console.log(
+			`[ChatAPI] 🤖 Usando LLM para interpretar query y generar respuesta`,
+		);
+
+		// Determinar tipo de respuesta según el contexto
+		let systemPromptTemplate = "";
+
+		if (!shouldSearch && isFAQQuestion(query)) {
+			// Caso 2: Pregunta sugerida/FAQ - responder promoviendo NUESTRO CHAT
+			const dataCatalog = generateConciseCatalog();
+
+			systemPromptTemplate = `Eres un asistente para nuestro chatbot de legislación municipal.
 
 CONTEXTO CRÍTICO DEL PROYECTO:
 - Nuestro chat es la ALTERNATIVA SUPERIOR al buscador de SIBOM
@@ -300,7 +444,7 @@ CÓMO BUSCAR EN NUESTRO CHAT:
 4. **Usar fechas** mencionándolas en la pregunta (ej: "decretos de 2024")
 
 MUNICIPIOS CON DATOS DISPONIBLES (${stats.municipalities} de 135):
-${stats.municipalityList.join(', ')}
+${stats.municipalityList.join(", ")}
 
 TOTAL DE DOCUMENTOS DISPONIBLES: ${stats.totalDocuments}
 
@@ -311,116 +455,158 @@ El resto (${135 - stats.municipalities} municipios) NO tienen información aún.
 
 Responde a la pregunta del usuario explicando cómo usar NUESTRO CHAT (no SIBOM).
 Sé conciso, claro y promociona nuestras ventajas sobre el buscador de SIBOM.`;
-    } else if (!shouldSearch && !isFAQQuestion(query)) {
-      // Caso 3: Pregunta fuera de tema (NO es FAQ) - usar prompt off-topic
-      const offTopicResponse = getOffTopicResponse(query);
+		} else if (!shouldSearch && !isFAQQuestion(query)) {
+			// Caso 3: Pregunta fuera de tema (NO es FAQ) - usar prompt off-topic
+			const offTopicResponse = getOffTopicResponse(query);
 
-      // ✅ FIX: En vez de devolver JSON plano (rompe el stream parser),
-      // usar un systemPrompt simple con la respuesta off-topic
-      systemPromptTemplate = `Responde EXACTAMENTE este mensaje al usuario (no agregues nada más):
+			// ✅ FIX: En vez de devolver JSON plano (rompe el stream parser),
+			// usar un systemPrompt simple con la respuesta off-topic
+			systemPromptTemplate = `Responde EXACTAMENTE este mensaje al usuario (no agregues nada más):
 
 ${offTopicResponse || "Disculpá, pero mi especialidad son las ordenanzas y normativas municipales. ¿Tenés alguna consulta sobre ese tema? 📋"}`;
-    } else {
-      // Caso 4: Búsqueda normal - cargar prompt desde archivo
-      const promptPath = path.join(process.cwd(), 'src', 'prompts', 'system.md');
-      try {
-        // Verificar que el archivo existe y es un archivo regular
-        const stats = await fs.stat(promptPath);
-        if (!stats.isFile()) {
-          throw new Error(`${promptPath} no es un archivo regular`);
-        }
-        systemPromptTemplate = await fs.readFile(promptPath, 'utf-8');
-        
-        // Inyectar catálogo de datos en el prompt
-        const dataCatalog = generateDataCatalog();
-        systemPromptTemplate = systemPromptTemplate.replace('{{data_catalog}}', dataCatalog);
-      } catch (err) {
-        console.error('[ChatAPI] Error leyendo system prompt:', err instanceof Error ? err.message : err);
-        // Fallback básico si falla la lectura
-        systemPromptTemplate = 'Eres un asistente legal municipal. Contexto: {{context}}';
-      }
-    }
+		} else {
+			// Caso 4: Búsqueda normal - cargar prompt desde archivo
+			const promptPath = path.join(
+				process.cwd(),
+				"src",
+				"prompts",
+				"system.md",
+			);
+			try {
+				// Verificar que el archivo existe y es un archivo regular
+				const stats = await fs.stat(promptPath);
+				if (!stats.isFile()) {
+					throw new Error(`${promptPath} no es un archivo regular`);
+				}
+				systemPromptTemplate = await fs.readFile(promptPath, "utf-8");
 
-    // Construir system prompt final
-    let systemPrompt = systemPromptTemplate;
+				// Inyectar catálogo de datos en el prompt
+				const dataCatalog = generateDataCatalog();
+				systemPromptTemplate = systemPromptTemplate.replace(
+					"{{data_catalog}}",
+					dataCatalog,
+				);
+			} catch (err) {
+				console.error(
+					"[ChatAPI] Error leyendo system prompt:",
+					err instanceof Error ? err.message : err,
+				);
+				// Fallback básico si falla la lectura
+				systemPromptTemplate =
+					"Eres un asistente legal municipal. Contexto: {{context}}";
+			}
+		}
 
-    // Solo inyectar contexto RAG si es búsqueda normal (no off-topic)
-    if (shouldSearch) {
-      const needsStats = /municipios.*disponibles|cuántos municipios|qué municipios/i.test(query);
-      const statsText = needsStats
-        ? `IMPORTANTE: La Provincia de Buenos Aires tiene 135 municipios en total.
+		// Construir system prompt final
+		let systemPrompt = systemPromptTemplate;
+
+		// ✅ INYECCIÓN DE PROMPT ANTI-ALUCINACIÓN PARA BALANCES
+		// Si es balance query, FORZAR el uso del prompt especial anti-alucinación
+		if (isBalance && balanceResult && balanceResult.context?.length > 0) {
+			console.log(
+				"[ChatAPI] 💰 Inyectando prompt anti-alucinación para balance query",
+			);
+			systemPrompt = buildBalanceSystemMessage().content;
+		}
+
+		// Solo inyectar contexto RAG si es búsqueda normal (no off-topic)
+		if (shouldSearch) {
+			const needsStats =
+				/municipios.*disponibles|cuántos municipios|qué municipios/i.test(
+					query,
+				);
+			const statsText = needsStats
+				? `IMPORTANTE: La Provincia de Buenos Aires tiene 135 municipios en total.
 
 MUNICIPIOS CON DATOS SCRAPEADOS (${stats.municipalities} de 135):
-${stats.municipalityList.join(', ')}
+${stats.municipalityList.join(", ")}
 
 TOTAL DE DOCUMENTOS DISPONIBLES: ${stats.totalDocuments}
 
 NOTA CRÍTICA: Los municipios listados arriba son los ÚNICOS que tienen información disponible en la base de datos. El resto de los municipios (${135 - stats.municipalities}) NO tienen datos scrapeados aún.`
-        : '';
+				: "";
 
-      // 🚨 WARNING: Verificar si hay fuentes relevantes para evitar alucinaciones
-      // Si no hay fuentes, agregar un warning explícito en el prompt
-      const hasRelevantSources = retrievedContext.sources.length > 0;
+			// 🚨 WARNING: Verificar si hay fuentes relevantes para evitar alucinaciones
+			// Si no hay fuentes, agregar un warning explícito en el prompt
+			const hasRelevantSources = retrievedContext.sources.length > 0;
 
-      // Para búsquedas específicas (por número o tema), verificar si hay resultados
-      const isSpecificSearch = /\d{2,5}\/\d{2,4}/.test(query) ||  // Busca número específico
-                               /ordenanza \d+|decreto \d+/i.test(query) ||
-                               /impositiva|tasa vial|sueldos|habilitación/i.test(query); // Búsqueda por contenido
+			// Para búsquedas específicas (por número o tema), verificar si hay resultados
+			const isSpecificSearch =
+				/\d{2,5}\/\d{2,4}/.test(query) || // Busca número específico
+				/ordenanza \d+|decreto \d+/i.test(query) ||
+				/impositiva|tasa vial|sueldos|habilitación/i.test(query); // Búsqueda por contenido
 
-      let noSourcesWarning = '';
-      if (!hasRelevantSources && isSpecificSearch) {
-        noSourcesWarning = `\n\n🚨🚨🚨 ADVERTENCIA CRÍTICA - NO SE ENCONTRARON FUENTES 🚨🚨🚨\n\n` +
-          `La búsqueda "${query.slice(0, 50)}..." NO arrojó resultados en la base de datos.\n\n` +
-          `REGLAS ABSOLUTAS:\n` +
-          `1. ❌ NO INVENTAR normativas, números o fechas\n` +
-          `2. ❌ NO MENCIONAR ordenanzas o decretos que no estén en {{sources}}\n` +
-          `3. ✅ DECIR CLARAMENTE: "No encontré información específica sobre..."\n` +
-          `4. ✅ OFRECER alternativas: buscarse por otros criterios\n\n` +
-          `Respuesta esperada:\n` +
-          `"No encontré ${/ordenanza|decreto/i.test(query) ? 'esa ' + (query.match(/ordenanza/i) ? 'ordenanza' : 'decreto') : 'información específica'} ` +
-          `en ${enhancedFilters.municipality || 'los documentos disponibles'}. ` +
-          `${enhancedFilters.municipality ? `Podés intentar:` : ''}"\n`;
-        if (enhancedFilters.municipality) {
-          noSourcesWarning += `- Buscar sin filtrar por municipio\n- Usar otros términos de búsqueda\n- Verificar el número o año\n`;
-        }
-        console.log(`[ChatAPI] ⚠️ No hay fuentes para búsqueda específica - agregando warning anti-alucinación`);
-      }
+			let noSourcesWarning = "";
+			if (!hasRelevantSources && isSpecificSearch) {
+				noSourcesWarning =
+					`\n\n🚨🚨🚨 ADVERTENCIA CRÍTICA - NO SE ENCONTRARON FUENTES 🚨🚨🚨\n\n` +
+					`La búsqueda "${query.slice(0, 50)}..." NO arrojó resultados en la base de datos.\n\n` +
+					`REGLAS ABSOLUTAS:\n` +
+					`1. ❌ NO INVENTAR normativas, números o fechas\n` +
+					`2. ❌ NO MENCIONAR ordenanzas o decretos que no estén en {{sources}}\n` +
+					`3. ✅ DECIR CLARAMENTE: "No encontré información específica sobre..."\n` +
+					`4. ✅ OFRECER alternativas: buscarse por otros criterios\n\n` +
+					`Respuesta esperada:\n` +
+					`"No encontré ${/ordenanza|decreto/i.test(query) ? "esa " + (query.match(/ordenanza/i) ? "ordenanza" : "decreto") : "información específica"} ` +
+					`en ${enhancedFilters.municipality || "los documentos disponibles"}. ` +
+					`${enhancedFilters.municipality ? `Podés intentar:` : ""}"\n`;
+				if (enhancedFilters.municipality) {
+					noSourcesWarning += `- Buscar sin filtrar por municipio\n- Usar otros términos de búsqueda\n- Verificar el número o año\n`;
+				}
+				console.log(
+					`[ChatAPI] ⚠️ No hay fuentes para búsqueda específica - agregando warning anti-alucinación`,
+				);
+			}
 
-      // ✅ FIX: Para listados masivos (>50), NO enviar todas las sources al LLM
-      // Solo enviar resumen agregado para ahorrar tokens
-      const sourcesText = hasRelevantSources
-        ? (retrievedContext.sources.length > 50
-            ? `RESUMEN: ${retrievedContext.sources.length} normativas encontradas (listado completo disponible en UI)`
-            : retrievedContext.sources.map((s: any) => {
-                const typeLabel = s.documentTypes && s.documentTypes.length > 0
-                  ? s.documentTypes.map((t: string) => t.toUpperCase()).join(', ')
-                  : s.type.toUpperCase();
-                return `- ${typeLabel} ${s.title} - ${s.municipality} [Estado: ${s.status}] (${s.url})`;
-              }).join('\n')
-          )
-        : '';
+			// ✅ FIX: Para listados masivos (>50), NO enviar todas las sources al LLM
+			// Solo enviar resumen agregado para ahorrar tokens
+			const sourcesText = hasRelevantSources
+				? retrievedContext.sources.length > 50
+					? `RESUMEN: ${retrievedContext.sources.length} normativas encontradas (listado completo disponible en UI)`
+					: retrievedContext.sources
+							.map((s: Source) => {
+								const typeLabel =
+									s.documentTypes && s.documentTypes.length > 0
+										? s.documentTypes
+												.map((t: string) => t.toUpperCase())
+												.join(", ")
+										: s.type.toUpperCase();
+								return `- ${typeLabel} ${s.title} - ${s.municipality} [Estado: ${s.status}] (${s.url})`;
+							})
+							.join("\n")
+				: "";
 
-      // Construir texto de filtros aplicados
-      const filtersApplied = filters.municipality || filters.ordinanceType || filters.dateFrom || filters.dateTo
-        ? `\n\nFILTROS APLICADOS EN ESTA BÚSQUEDA:\n${filters.municipality ? `- Municipio: ${filters.municipality}\n` : ''}${filters.ordinanceType && filters.ordinanceType !== 'all' ? `- Tipo de norma: ${filters.ordinanceType}\n` : ''}${filters.dateFrom ? `- Desde: ${filters.dateFrom}\n` : ''}${filters.dateTo ? `- Hasta: ${filters.dateTo}\n` : ''}`
-        : '';
+			// Construir texto de filtros aplicados
+			const filtersApplied =
+				filters.municipality ||
+				filters.ordinanceType ||
+				filters.dateFrom ||
+				filters.dateTo
+					? `\n\nFILTROS APLICADOS EN ESTA BÚSQUEDA:\n${filters.municipality ? `- Municipio: ${filters.municipality}\n` : ""}${filters.ordinanceType && filters.ordinanceType !== "all" ? `- Tipo de norma: ${filters.ordinanceType}\n` : ""}${filters.dateFrom ? `- Desde: ${filters.dateFrom}\n` : ""}${filters.dateTo ? `- Hasta: ${filters.dateTo}\n` : ""}`
+					: "";
 
-      // Para queries computacionales, agregar el resultado al contexto
-      let contextToUse = retrievedContext.context || 'No se encontró información específica.';
-      if (isComputationalResult(retrievedContext) && retrievedContext.computationResult?.success) {
-        const compResult = retrievedContext.computationResult;
-        let computationContext = `\n\n## 🔢 RESULTADO COMPUTACIONAL\n\n${compResult.answer}\n`;
-        if (compResult.markdown) {
-          computationContext += `\n${compResult.markdown}\n`;
-        }
-        contextToUse = contextToUse + computationContext;
-        console.log('[ChatAPI] ✅ Resultado computacional agregado al contexto');
-      }
+			// Para queries computacionales, agregar el resultado al contexto
+			let contextToUse =
+				retrievedContext.context || "No se encontró información específica.";
+			if (
+				isComputationalResult(retrievedContext) &&
+				retrievedContext.computationResult?.success
+			) {
+				const compResult = retrievedContext.computationResult;
+				let computationContext = `\n\n## 🔢 RESULTADO COMPUTACIONAL\n\n${compResult.answer}\n`;
+				if (compResult.markdown) {
+					computationContext += `\n${compResult.markdown}\n`;
+				}
+				contextToUse = contextToUse + computationContext;
+				console.log(
+					"[ChatAPI] ✅ Resultado computacional agregado al contexto",
+				);
+			}
 
-      // Para listados masivos, agregar instrucción especial
-      let massiveListingInstruction = '';
-      if (isMassiveListing && retrievedContext.sources.length > 50) {
-        massiveListingInstruction = `\n\n## ⚠️ INSTRUCCIÓN CRÍTICA - LISTADO MASIVO (${retrievedContext.sources.length} RESULTADOS)
+			// Para listados masivos, agregar instrucción especial
+			let massiveListingInstruction = "";
+			if (isMassiveListing && retrievedContext.sources.length > 50) {
+				massiveListingInstruction = `\n\n## ⚠️ INSTRUCCIÓN CRÍTICA - LISTADO MASIVO (${retrievedContext.sources.length} RESULTADOS)
 
 **🚨 REGLAS ABSOLUTAS - NO NEGOCIABLES:**
 
@@ -429,7 +615,7 @@ NOTA CRÍTICA: Los municipios listados arriba son los ÚNICOS que tienen informa
 3. ❌ **PROHIBIDO DUPLICAR** - La lista ya se muestra automáticamente en "Fuentes Consultadas"
 
 4. ✅ **SOLO PERMITIDO:** Resumen de 2-3 líneas máximo:
-   - Línea 1: "Se encontraron ${retrievedContext.sources.length} ${enhancedFilters.type || 'normativas'} de ${enhancedFilters.municipality || 'este municipio'}${enhancedFilters.dateFrom ? ' del año ' + new Date(enhancedFilters.dateFrom).getFullYear() : ''}."
+   - Línea 1: "Se encontraron ${retrievedContext.sources.length} ${enhancedFilters.type || "normativas"} de ${enhancedFilters.municipality || "este municipio"}${enhancedFilters.dateFrom ? " del año " + new Date(enhancedFilters.dateFrom).getFullYear() : ""}."
    - Línea 2 (opcional): Mencionar rango de números si es relevante
    - Línea 3: "La lista completa con enlaces está disponible en la sección 'Fuentes Consultadas' más abajo."
 
@@ -437,7 +623,7 @@ NOTA CRÍTICA: Los municipios listados arriba son los ÚNICOS que tienen informa
 Pero hay ${retrievedContext.sources.length} resultados EN TOTAL que el usuario puede ver en "Fuentes Consultadas".
 
 **EJEMPLO CORRECTO:**
-"Se encontraron ${retrievedContext.sources.length} decretos de Carlos Tejedor del año ${new Date(enhancedFilters.dateFrom || '').getFullYear() || '2025'}. La lista completa con enlaces está disponible en la sección 'Fuentes Consultadas' más abajo."
+"Se encontraron ${retrievedContext.sources.length} decretos de Carlos Tejedor del año ${new Date(enhancedFilters.dateFrom || "").getFullYear() || "2025"}. La lista completa con enlaces está disponible en la sección 'Fuentes Consultadas' más abajo."
 
 **EJEMPLO INCORRECTO (NO HACER):**
 "Encontré 100 decretos de Carlos Tejedor en 2025:
@@ -446,143 +632,248 @@ Pero hay ${retrievedContext.sources.length} resultados EN TOTAL que el usuario p
 [...]"
 
 **RECORDATORIO:** El usuario ya verá TODOS los ${retrievedContext.sources.length} resultados en "Fuentes Consultadas". Tu trabajo es SOLO resumir, NO listar.`;
-      }
+			}
 
-      systemPrompt = systemPromptTemplate
-        .replace('{{stats}}', statsText)
-        .replace('{{context}}', contextToUse)
-        .replace('{{sources}}', sourcesText) + noSourcesWarning + filtersApplied + massiveListingInstruction;
+			systemPrompt =
+				systemPromptTemplate
+					.replace("{{stats}}", statsText)
+					.replace("{{context}}", contextToUse)
+					.replace("{{sources}}", sourcesText) +
+				noSourcesWarning +
+				filtersApplied +
+				massiveListingInstruction;
 
-      // Log para debug de consumo de tokens
-      console.log(`[ChatAPI] 📊 System Prompt size: ${systemPrompt.length} chars (~${Math.round(systemPrompt.length / 3)} tokens est.)`);
-      console.log(`[ChatAPI] 📊 Context size: ${contextToUse.length} chars, Sources: ${sourcesText.length} chars`);
-    }
-    // Para off-topic, systemPrompt ya está completo (no necesita contexto RAG)
+			// Log para debug de consumo de tokens
+			console.log(
+				`[ChatAPI] 📊 System Prompt size: ${systemPrompt.length} chars (~${Math.round(systemPrompt.length / 3)} tokens est.)`,
+			);
+			console.log(
+				`[ChatAPI] 📊 Context size: ${contextToUse.length} chars, Sources: ${sourcesText.length} chars`,
+			);
+		}
+		// Para off-topic, systemPrompt ya está completo (no necesita contexto RAG)
 
-    // Log del prompt para depuración (solo los primeros 200 caracteres)
-    console.log(`[ChatAPI] System Prompt construido (${systemPrompt.length} caracteres): ${systemPrompt.slice(0, 200)}...`);
+		// Log del prompt para depuración (solo los primeros 200 caracteres)
+		console.log(
+			`[ChatAPI] System Prompt construido (${systemPrompt.length} caracteres): ${systemPrompt.slice(0, 200)}...`,
+		);
 
-    // Determinar modelo según tipo de query
-    let modelId: string;
+		// Determinar modelo según tipo de query
+		let modelId: string;
 
-    if (isFAQ) {
-      // Modelo económico para FAQ (configurable via env)
-      modelId = process.env.LLM_MODEL_ECONOMIC || 'google/gemini-flash-1.5';
-      console.log(`[ChatAPI] Usando modelo económico para FAQ: ${modelId}`);
-    } else {
-      // Modelo premium para búsquedas complejas (configurable via env)
-      // Prioridad: LLM_MODEL_PRIMARY > ANTHROPIC_MODEL (legacy) > default
-      modelId = process.env.LLM_MODEL_PRIMARY ||
-                process.env.ANTHROPIC_MODEL ||
-                'anthropic/claude-3.5-sonnet';
+		if (isFAQ) {
+			// Modelo económico para FAQ (configurable via env)
+			modelId = process.env.LLM_MODEL_ECONOMIC || "google/gemini-flash-1.5";
+			console.log(`[ChatAPI] Usando modelo económico para FAQ: ${modelId}`);
+		} else {
+			// Modelo premium para búsquedas complejas (configurable via env)
+			// Prioridad: LLM_MODEL_PRIMARY > ANTHROPIC_MODEL (legacy) > default
+			modelId =
+				process.env.LLM_MODEL_PRIMARY ||
+				process.env.ANTHROPIC_MODEL ||
+				"anthropic/claude-3.5-sonnet";
 
-      // Asegurar formato correcto para OpenRouter si viene de env var
-      if (modelId.startsWith('claude-') && !modelId.includes('/')) {
-        modelId = `anthropic/${modelId}`;
-      }
+			// Asegurar formato correcto para OpenRouter si viene de env var
+			if (modelId.startsWith("claude-") && !modelId.includes("/")) {
+				modelId = `anthropic/${modelId}`;
+			}
 
-      console.log(`[ChatAPI] Usando modelo premium para búsqueda: ${modelId}`);
-    }
+			console.log(`[ChatAPI] Usando modelo premium para búsqueda: ${modelId}`);
+		}
 
-    // Generar respuesta con streaming
-    try {
-      console.log(`[ChatAPI] Iniciando streamText con modelo: ${modelId}`);
-      
-      // Los mensajes ya vienen formateados desde el frontend
-      console.log(`[ChatAPI] Enviando ${recentMessages.length} mensajes al LLM`);
-      
-      const result = streamText({
-        model: openrouter(modelId),
-        system: systemPrompt,
-        messages: recentMessages,
-        temperature: 0.3,
-        // Para listados masivos, reducir tokens para forzar respuesta breve
-        maxOutputTokens: isMassiveListing ? 500 : 4000,
-      });
+	// LAYER 4: Detectar si necesita verificación
+	const shouldVerify = needsVerification(query, enhancedFilters.type);
+	console.log(`[ChatAPI] 🔍 Verificación necesaria: ${shouldVerify}`);
 
-      /**
-       * SOLUCIÓN ROBUSTA Y PERMANENTE:
-       * 
-       * Usamos stream manual en Next.js porque:
-       * 1. Next.js API routes retornan Web API Response (no Node ServerResponse)
-       * 2. El protocolo de Vercel AI SDK es estable: `0:"text"\n` es el formato core
-       * 3. Esta es la forma más directa y visible del protocolo
-       * 4. Es resistente a cambios porque no depende de métodos de SDK que podrían cambiar
-       * 
-       * Si SDK depreca toUIMessageStreamResponse(), la estructura textStream seguirá igual
-       * porque es el Iterator<string> base que genera streamText()
-       * 
-       * COMPATIBILIDAD: Funciona con:
-       * - @ai-sdk/react parseDataStreamPart (v1.0.0+)
-       * - Vercel AI SDK (v6.0+)
-       * - Navegadores modernos (ReadableStream API)
-       */
-      
-      const textStream = result.textStream;
-      const encoder = new TextEncoder();
-      
-      const compatibleStream = new ReadableStream({
-        async start(controller) {
-          try {
-            for await (const chunk of textStream) {
-              // Formato: 0:"texto_escapado"\n
-              // Este es el formato del protocolo Vercel AI (estable y bien documentado)
-              const escapedChunk = chunk.replace(/"/g, '\\"').replace(/\n/g, '\\n');
-              controller.enqueue(encoder.encode(`0:"${escapedChunk}"\n`));
-            }
-            controller.close();
-          } catch (error) {
-            console.error('[ChatAPI] Error en stream:', error);
-            controller.error(error);
-          }
-        },
-      });
+	// Extraer source chunks para verificación
+	const sourceChunks: string[] = [];
+	if (shouldVerify && retrievedContext) {
+		// Extract text from sources for verification
+		// Note: Las sources no tienen campo 'content', usar bulletinContents desde retrieveContext
+		console.log(`[ChatAPI] 📄 Intentando extraer chunks desde retrievedContext...`);
+		// Por ahora, extraer context text directamente
+		if (retrievedContext.context && retrievedContext.context.length > 0) {
+			sourceChunks.push(retrievedContext.context);
+		}
+		console.log(`[ChatAPI] 📄 Source chunks para verificación: ${sourceChunks.length}`);
+	}
 
-      console.log(`[ChatAPI] 📤 Enviando stream con formato estable 0:"text"\\n`);
-      
-      return new Response(compatibleStream, {
-        status: 200,
-        headers: {
-          'Content-Type': 'text/event-stream',
-          'Cache-Control': 'no-cache',
-          'Connection': 'keep-alive',
-          'X-Accel-Buffering': 'no',
-        },
-      });
-    } catch (streamError: unknown) {
-      console.error('[ChatAPI] Error crítico al iniciar streamText:', streamError);
+	// LAYER 4: Verificación si es query Balance con números
+	if (shouldVerify && sourceChunks.length > 0) {
+		console.log(`[ChatAPI] 🔍 Layer 4 activo: Generando respuesta con verificación`);
+		try {
+			const result = await generateText({
+				model: openrouter(modelId),
+				system: systemPrompt,
+				messages: recentMessages,
+				temperature: 0.3,
+				maxOutputTokens: isMassiveListing ? 500 : 4000,
+			});
 
-      const errorMessage = streamError instanceof Error ? streamError.message : String(streamError);
-      return new Response(
-        JSON.stringify({
-          error: 'Error al conectar con el modelo de IA',
-          details: errorMessage
-        }),
-        { status: 500, headers: { 'Content-Type': 'application/json' } }
-      );
-    }
-  } catch (error: unknown) {
-    console.error('[ChatAPI] Error fatal:', error);
-    
-    // Si es un error de autenticación de OpenRouter/LLM
-    const errorMessage = error instanceof Error ? error.message : 'Error interno del servidor';
-    const statusCode = (error instanceof Object && 'status' in error) 
-      ? (error as unknown as { status: number }).status 
-      : 500;
+			const generatedResponse = result.text;
+			console.log(`[ChatAPI] ✅ Respuesta generada: ${generatedResponse.length} chars`);
 
-    return new Response(
-      JSON.stringify({
-        error: errorMessage,
-        details: (error instanceof Object && ('data' in error || 'cause' in error)) 
-          ? ((error as unknown as { data?: string; cause?: string }).data 
-             || (error as unknown as { data?: string; cause?: string }).cause 
-             || String(error))
-          : String(error)
-      }),
-      {
-        status: statusCode,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    );
-  }
+			// Verificar números en la respuesta
+			const verificationReport = verifyResponse(generatedResponse, sourceChunks);
+			console.log(`[ChatAPI] 📊 Verificación completada:`);
+			console.log(`[ChatAPI]   - Números totales: ${verificationReport.totalNumbers}`);
+			console.log(`[ChatAPI]   - Verificados: ${verificationReport.verifiedNumbers}`);
+			console.log(`[ChatAPI]   - Confidence: ${(verificationReport.overallConfidence * 100).toFixed(1)}%`);
+			console.log(`[ChatAPI]   - Hallucination: ${verificationReport.possibleHallucination ? 'YES ⚠️' : 'NO ✅'}`);
+
+			// Agregar badge de confianza
+			const verifiedResponse = addConfidenceBadge(generatedResponse, verificationReport);
+			console.log(`[ChatAPI] ✅ Badge agregado, enviando respuesta`);
+
+			// Convertir respuesta verificada a stream
+			const encoder = new TextEncoder();
+			const verifiedStream = new ReadableStream({
+				start(controller) {
+					// Enviar respuesta completa en chunks pequeños para simular streaming
+					const chunkSize = 50;
+					for (let i = 0; i < verifiedResponse.length; i += chunkSize) {
+						const chunk = verifiedResponse.slice(i, i + chunkSize);
+						const escapedChunk = chunk
+							.replace(/"/g, '\\"')
+							.replace(/\n/g, "\\n");
+						controller.enqueue(encoder.encode(`0:"${escapedChunk}"\n`));
+					}
+					controller.close();
+				},
+			});
+
+			return new Response(verifiedStream, {
+				status: 200,
+				headers: {
+					"Content-Type": "text/event-stream",
+					"Cache-Control": "no-cache",
+					Connection: "keep-alive",
+					"X-Accel-Buffering": "no",
+				},
+			});
+		} catch (verifyError: unknown) {
+			console.error(
+				"[ChatAPI] Error en generación con verificación:",
+				verifyError,
+			);
+			// Fallback: intentar streaming normal
+			console.log("[ChatAPI] Fallback: usando streamText sin verificación");
+		}
+	}
+
+	// Generar respuesta con streaming (sin verificación o fallback)
+	try {
+		console.log(`[ChatAPI] Iniciando streamText con modelo: ${modelId}`);
+
+			console.log(
+				`[ChatAPI] Enviando ${recentMessages.length} mensajes al LLM`,
+			);
+
+			const result = streamText({
+				model: openrouter(modelId),
+				system: systemPrompt,
+				messages: recentMessages,
+				temperature: 0.3,
+				// Para listados masivos, reducir tokens para forzar respuesta breve
+				maxOutputTokens: isMassiveListing ? 500 : 4000,
+			});
+
+			/**
+			 * SOLUCIÓN ROBUSTA Y PERMANENTE:
+			 *
+			 * Usamos stream manual en Next.js porque:
+			 * 1. Next.js API routes retornan Web API Response (no Node ServerResponse)
+			 * 2. El protocolo de Vercel AI SDK es estable: `0:"text"\n` es el formato core
+			 * 3. Esta es la forma más directa y visible del protocolo
+			 * 4. Es resistente a cambios porque no depende de métodos de SDK que podrían cambiar
+			 *
+			 * Si SDK depreca toUIMessageStreamResponse(), la estructura textStream seguirá igual
+			 * porque es el Iterator<string> base que genera streamText()
+			 *
+			 * COMPATIBILIDAD: Funciona con:
+			 * - @ai-sdk/react parseDataStreamPart (v1.0.0+)
+			 * - Vercel AI SDK (v6.0+)
+			 * - Navegadores modernos (ReadableStream API)
+			 */
+
+			const textStream = result.textStream;
+			const encoder = new TextEncoder();
+
+			const compatibleStream = new ReadableStream({
+				async start(controller) {
+					try {
+						for await (const chunk of textStream) {
+							// Formato: 0:"texto_escapado"\n
+							// Este es el formato del protocolo Vercel AI (estable y bien documentado)
+							const escapedChunk = chunk
+								.replace(/"/g, '\\"')
+								.replace(/\n/g, "\\n");
+							controller.enqueue(encoder.encode(`0:"${escapedChunk}"\n`));
+						}
+						controller.close();
+					} catch (error) {
+						console.error("[ChatAPI] Error en stream:", error);
+						controller.error(error);
+					}
+				},
+			});
+
+			console.log(
+				`[ChatAPI] 📤 Enviando stream con formato estable 0:"text"\\n`,
+			);
+
+			return new Response(compatibleStream, {
+				status: 200,
+				headers: {
+					"Content-Type": "text/event-stream",
+					"Cache-Control": "no-cache",
+					Connection: "keep-alive",
+					"X-Accel-Buffering": "no",
+				},
+			});
+		} catch (streamError: unknown) {
+			console.error(
+				"[ChatAPI] Error crítico al iniciar streamText:",
+				streamError,
+			);
+
+			const errorMessage =
+				streamError instanceof Error
+					? streamError.message
+					: String(streamError);
+			return new Response(
+				JSON.stringify({
+					error: "Error al conectar con el modelo de IA",
+					details: errorMessage,
+				}),
+				{ status: 500, headers: { "Content-Type": "application/json" } },
+			);
+		}
+	} catch (error: unknown) {
+		console.error("[ChatAPI] Error fatal:", error);
+
+		// Si es un error de autenticación de OpenRouter/LLM
+		const errorMessage =
+			error instanceof Error ? error.message : "Error interno del servidor";
+		const statusCode =
+			error instanceof Object && "status" in error
+				? (error as unknown as { status: number }).status
+				: 500;
+
+		return new Response(
+			JSON.stringify({
+				error: errorMessage,
+				details:
+					error instanceof Object && ("data" in error || "cause" in error)
+						? (error as unknown as { data?: string; cause?: string }).data ||
+							(error as unknown as { data?: string; cause?: string }).cause ||
+							String(error)
+						: String(error),
+			}),
+			{
+				status: statusCode,
+				headers: { "Content-Type": "application/json" },
+			},
+		);
+	}
 }

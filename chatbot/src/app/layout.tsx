@@ -11,11 +11,11 @@ const inter = Inter({ subsets: ['latin'] });
  */
 export const metadata: Metadata = {
   title: {
-    default: 'Asistente Legal Municipal',
-    template: '%s | Asistente Legal Municipal',
+    default: 'Mangrullo',
+    template: '%s | Mangrullo',
   },
   description:
-    'Chatbot especializado en legislación, ordenanzas y decretos de municipios de la Provincia de Buenos Aires, Argentina.',
+    'Observatorio independiente de la decepción municipal | Chatbot especializado en legislación, ordenanzas y decretos de municipios de la Provincia de Buenos Aires, Argentina.',
   keywords: [
     'legislación municipal',
     'ordenanzas',
@@ -25,14 +25,14 @@ export const metadata: Metadata = {
     'municipios',
     'SIBOM',
   ],
-  authors: [{ name: 'SIBOM Scraper Assistant' }],
+  authors: [{ name: 'Mangrullo' }],
   openGraph: {
     type: 'website',
     locale: 'es_AR',
-    siteName: 'Asistente Legal Municipal',
-    title: 'Asistente Legal Municipal - Buenos Aires',
+    siteName: 'Mangrullo',
+    title: 'Mangrullo',
     description:
-      'Consultá legislación, ordenanzas y decretos de municipios de la Provincia de Buenos Aires.',
+      'Observatorio independiente de la decepción municipal | Chatbot especializado en legislación, ordenanzas y decretos de municipios de la Provincia de Buenos Aires, Argentina.',
   },
 };
 

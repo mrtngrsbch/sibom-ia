@@ -25,14 +25,13 @@ export default function ProyectoPage() {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950">
-      {/* Header */}
-      <Header onMenuClick={() => setIsDrawerOpen(true)} />
+    <div className="flex h-screen overflow-hidden">
+      <main className="flex flex-1 flex-col min-w-0">
+        <header className="flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800 px-4 bg-white dark:bg-slate-900">
+          <Header onMenuClick={() => setIsDrawerOpen(true)} />
+        </header>
 
-      {/* Contenedor principal */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Contenido principal */}
-        <main className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950">
           <div className="max-w-4xl mx-auto p-6 sm:p-8">
             {/* Contenido en Markdown */}
             <article className="prose prose-slate dark:prose-invert max-w-none
@@ -72,13 +71,13 @@ export default function ProyectoPage() {
               </ReactMarkdown>
             </article>
           </div>
-        </main>
+        </div>
+      </main>
 
-        {/* Sidebar - solo desktop */}
-        <aside className="hidden lg:block w-80 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-          <Sidebar showNavigation={true} />
-        </aside>
-      </div>
+      {/* Sidebar - solo desktop */}
+      <aside className="hidden lg:block w-80 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <Sidebar showNavigation={true} />
+      </aside>
 
       {/* Mobile Drawer */}
       <MobileDrawer

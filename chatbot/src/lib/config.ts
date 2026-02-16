@@ -39,10 +39,10 @@ export function buildBulletinUrl(relativePath: string): string {
  */
 export const APP_CONFIG = {
   /** Nombre de la aplicación */
-  appName: 'Asistente Legal Municipal',
+  appName: 'Mangrullo',
   
   /** Descripción breve */
-  description: 'Chatbot especializado en legislación municipal de Buenos Aires',
+  description: 'Observatorio independiente de la decepción municipal | Chatbot especializado en legislación, ordenanzas y decretos de municipios de la Provincia de Buenos Aires, Argentina.',
   
   /** Duración del cache del índice en milisegundos */
   indexCacheDuration: 10 * 60 * 1000, // 10 minutos

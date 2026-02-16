@@ -28,14 +28,13 @@ export default function FAQPage() {
   }, []);
 
   return (
-    <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950">
-      {/* Header */}
-      <Header onMenuClick={() => setIsDrawerOpen(true)} />
+    <div className="flex h-screen overflow-hidden">
+      <main className="flex flex-1 flex-col min-w-0">
+        <header className="flex h-16 items-center justify-between border-b border-slate-200 dark:border-slate-800 px-4 bg-white dark:bg-slate-900">
+          <Header onMenuClick={() => setIsDrawerOpen(true)} />
+        </header>
 
-      {/* Layout principal */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Contenido principal */}
-        <main className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950">
           <div className="max-w-4xl mx-auto p-6 sm:p-8">
             <article className="prose prose-slate dark:prose-invert max-w-none prose-headings:text-slate-800 dark:prose-headings:text-slate-200 prose-p:text-slate-700 dark:prose-p:text-slate-300 prose-strong:text-slate-800 dark:prose-strong:text-slate-200 prose-li:text-slate-700 dark:prose-li:text-slate-300 prose-a:text-primary-600 dark:prose-a:text-primary-400 prose-code:text-slate-800 dark:prose-code:text-slate-200 prose-pre:bg-slate-800 dark:prose-pre:bg-slate-900">
               <ReactMarkdown
@@ -90,13 +89,13 @@ export default function FAQPage() {
               </ReactMarkdown>
             </article>
           </div>
-        </main>
+        </div>
+      </main>
 
-        {/* Sidebar (desktop) */}
-        <aside className="hidden lg:block w-80 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-          <Sidebar showNavigation={true} />
-        </aside>
-      </div>
+      {/* Sidebar (desktop) */}
+      <aside className="hidden lg:block w-80 border-l border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <Sidebar showNavigation={true} />
+      </aside>
 
       {/* Drawer móvil */}
       <MobileDrawer

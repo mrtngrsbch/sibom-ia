@@ -1,7 +1,7 @@
 /**
  * query-classifier.ts
  *
- * Unified query classification system for SIBOM Scraper Assistant.
+ * Unified query classification system for Mangrullo.
  * Determines query intent, RAG requirements, LLM bypass eligibility, and optimal retrieval parameters.
  *
  * @version 2.0.0 - Consolidated from query-classifier, query-intent-classifier, query-analyzer

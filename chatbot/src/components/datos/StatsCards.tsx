@@ -7,7 +7,8 @@ interface GlobalStats {
   totalMunicipios: number;
   municipiosConDatos: number;
   municipiosSinDatos: number;
-  totalDocumentos: number;
+  totalBoletines: number;
+  totalNormativas: number;
 }
 
 interface StatsCardsProps {
@@ -15,7 +16,8 @@ interface StatsCardsProps {
     totalMunicipios: number;
     municipiosConDatos: number;
     municipiosSinDatos: number;
-    totalDocumentos: number;
+    totalBoletines: number;
+    totalNormativas: number;
   };
 }
 
@@ -54,17 +56,25 @@ export function StatsCards({ stats }: StatsCardsProps) {
       bgColor: 'bg-orange-100 dark:bg-orange-900/20',
     },
     {
-      title: 'Total Documentos',
-      value: stats.totalDocumentos.toLocaleString('es-AR'),
+      title: 'Boletines Oficiales',
+      value: stats.totalBoletines.toLocaleString('es-AR'),
       icon: FileText,
-      description: 'Boletines oficiales recopilados',
+      description: 'Archivos PDF procesados',
       color: 'text-purple-600 dark:text-purple-400',
       bgColor: 'bg-purple-100 dark:bg-purple-900/20',
+    },
+    {
+      title: 'Normativas Indexadas',
+      value: stats.totalNormativas.toLocaleString('es-AR'),
+      icon: FileText,
+      description: 'Ordenanzas, Decretos, etc.',
+      color: 'text-indigo-600 dark:text-indigo-400',
+      bgColor: 'bg-indigo-100 dark:bg-indigo-900/20',
     },
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
       {cards.map((card) => {
         const Icon = card.icon;
         return (

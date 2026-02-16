@@ -40,8 +40,17 @@ interface GlobalStats {
   totalMunicipios: number;
   municipiosConDatos: number;
   municipiosSinDatos: number;
-  totalDocumentos: number;
+  totalBoletines: number;
+  totalNormativas: number;
   municipios: MunicipioStats[];
+}
+
+interface AnalyticsSnapshot {
+  global: {
+    total_municipalities: number;
+    total_documents: number;
+    total_bulletins: number;
+  };
 }
 
 /**
@@ -174,6 +183,8 @@ export function generateMunicipiosStats(): GlobalStats {
   const mdPath = join(rootPath, '..', 'docs', 'Municipios_contenidos.md');
   const indexPath = join(rootPath, '..', 'python-cli', 'data', 'indexes', 'boletines_index.json');
 
+  const analyticsPath = join(rootPath, '..', 'python-cli', 'data', 'indexes', 'analytics_snapshot.json');
+
   // Leer archivo MD
   const mdContent = readFileSync(mdPath, 'utf-8');
   const municipiosData = parseMunicipiosFromMd(mdContent);
@@ -181,6 +192,15 @@ export function generateMunicipiosStats(): GlobalStats {
   // Leer índice de boletines
   const indexContent = readFileSync(indexPath, 'utf-8');
   const boletinesIndex: BoletinIndexEntry[] = JSON.parse(indexContent);
+
+  // Leer snapshot de analíticas si existe
+  let analyticsData: AnalyticsSnapshot | null = null;
+  try {
+      const analyticsContent = readFileSync(analyticsPath, 'utf-8');
+      analyticsData = JSON.parse(analyticsContent);
+  } catch (e) {
+    // Silencioso si falla, usaremos 0
+  }
 
   // Procesar cada municipio
   const municipiosStats: MunicipioStats[] = municipiosData.map(m => {
@@ -199,7 +219,7 @@ export function generateMunicipiosStats(): GlobalStats {
   });
 
   // Calcular estadísticas globales
-  const totalDocumentos = municipiosStats.reduce(
+  const totalBoletines = municipiosStats.reduce(
     (sum, m) => sum + m.cantidadBoletines,
     0
   );
@@ -208,7 +228,8 @@ export function generateMunicipiosStats(): GlobalStats {
     totalMunicipios: municipiosData.length,
     municipiosConDatos: municipiosData.filter(m => m.datos === 'yes').length,
     municipiosSinDatos: municipiosData.filter(m => m.datos === 'no').length,
-    totalDocumentos,
+    totalBoletines,
+    totalNormativas: analyticsData?.global.total_documents || 0,
     municipios: municipiosStats
   };
 }

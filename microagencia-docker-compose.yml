@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  placeholder:
+    image: nginx:alpine
+    container_name: microagencia-placeholder
+    ports:
+      - "8100:80"
+    restart: unless-stopped
+    volumes:
+      - placeholder-data:/usr/share/nginx/html
+    environment:
+      - TZ=America/Argentina/Buenos_Aires
+
+volumes:
+  placeholder-data:
+
+networks:
+  default:
+    name: microagencia-network

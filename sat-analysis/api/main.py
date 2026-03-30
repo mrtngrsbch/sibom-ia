@@ -6,9 +6,23 @@ Reemplaza la interfaz Gradio con una API REST moderna.
 import asyncio
 import logging
 import os
+import sys
 import uuid
 from datetime import datetime
 from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+SRC_DIR = PROJECT_ROOT / "src"
+
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
+
+# Cargar variables de entorno desde .env (si existe)
+try:
+    from dotenv import load_dotenv
+    load_dotenv(PROJECT_ROOT / ".env")
+except ImportError:
+    pass
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
@@ -45,14 +59,21 @@ app = FastAPI(
 
 # Configurar CORS para Next.js frontend
 # Leer orígenes permitidos desde variable de entorno o usar defaults
-allowed_origins = os.getenv(
+_origins_static = os.getenv(
     "ALLOWED_ORIGINS",
     "http://localhost:3000,http://localhost:3001,https://sibom-assistant.vercel.app"
 ).split(",")
 
+# Patrones regex adicionales para dominios dinámicos (ngrok, etc.)
+_origin_regex = os.getenv(
+    "ALLOWED_ORIGINS_REGEX",
+    r"https://.*\.ngrok-free\.app|https://.*\.ngrok\.io"
+)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=[o.strip() for o in _origins_static],
+    allow_origin_regex=_origin_regex,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

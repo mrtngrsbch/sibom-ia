@@ -566,28 +566,31 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          cache-dependency-path: chatbot/package-lock.json
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.2
       
       - name: Install dependencies
         run: |
           cd chatbot
-          npm ci
+          pnpm install --frozen-lockfile
       
       - name: Run linter
         run: |
           cd chatbot
-          npm run lint
+          pnpm run lint
       
       - name: Run type check
         run: |
           cd chatbot
-          npm run type-check
+          pnpm run type-check
       
       - name: Run tests
         run: |
           cd chatbot
-          npm run test:coverage
+          pnpm run test:coverage
       
       - name: Upload coverage
         uses: codecov/codecov-action@v4
@@ -615,7 +618,7 @@ jobs:
       - name: Run E2E tests
         run: |
           cd chatbot
-          npm run test:e2e
+          pnpm run test:e2e
       
       - name: Upload test results
         uses: actions/upload-artifact@v4

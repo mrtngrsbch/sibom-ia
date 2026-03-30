@@ -301,7 +301,7 @@ sequenceDiagram
 graph LR
     subgraph "Development"
         DEV[Local Dev]
-        BUN[Bun Runtime]
+        PNPM[pnpm]
     end
     
     subgraph "Version Control"

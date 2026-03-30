@@ -22,11 +22,11 @@ Chatbot especializado en responder consultas sobre legislación, ordenanzas y de
 
 ## 📋 Requisitos
 
-- **Bun 1.0+** (recomendado para desarrollo) - [Instalar Bun](https://bun.sh/install)
+- pnpm 10+
 - Node.js 18+ (para producción/Vercel)
 - API Key de OpenRouter (para el modelo LLM)
 
-> **Nota:** Este proyecto usa Bun como runtime de desarrollo para mayor velocidad. El deployment a Vercel usa Node.js sin cambios necesarios.
+> **Nota:** Este proyecto usa pnpm como gestor oficial de paquetes en desarrollo y CI.
 
 ## 🛠️ Instalación
 
@@ -34,13 +34,8 @@ Chatbot especializado en responder consultas sobre legislación, ordenanzas y de
 
 ```bash
 cd chatbot
-bun install
+pnpm install
 ```
-
-> Si usas npm o yarn:
-> ```bash
-> npm install   # o: yarn install
-> ```
 
 ### 2. Configurar variables de entorno
 
@@ -74,7 +69,7 @@ Esto inicia:
 **Opción B: Solo frontend (con backend Docker)**
 
 ```bash
-bun run dev
+pnpm run dev
 ```
 
 Abre [http://localhost:3000](http://localhost:3000)
@@ -259,34 +254,32 @@ El script `scripts/dev.sh` maneja tanto el backend como el frontend:
 ```bash
 # Terminal 1 - Backend sat-analysis
 cd sat-analysis
-source venv/bin/activate
+source .venv/bin/activate
 python -m uvicorn api.main:app --reload --host 0.0.0.0 --port 8001
 
 # Terminal 2 - Frontend chatbot
 cd chatbot
-bun run dev
+pnpm run dev
 ```
 
 ### Comandos de Build
 
 ```bash
-# Modo desarrollo (usa Bun runtime - muy rápido)
-bun run dev
+# Modo desarrollo
+pnpm run dev
 
 # Build para producción
-bun run build
+pnpm run build
 
 # Ver producción localmente
-bun run start
+pnpm run start
 
 # Linting
-bun run lint
+pnpm run lint
 
 # Tests
-bun run test
+pnpm run test
 ```
-
-> Si usas npm o yarn, reemplaza `bun` con `npm` o `yarn`.
 
 ## 🚀 Deployment
 
@@ -298,13 +291,13 @@ El proyecto está configurado para deployment en Vercel. El deployment usa Node.
 2. Configura las variables de entorno
 3. Deploy automático en cada push a `main`
 
-### Self-hosted con Bun
+### Self-hosted con pnpm
 
-Para usar Bun en producción:
+Para correr self-hosted:
 
 ```bash
-bun run build
-bun run start
+pnpm run build
+pnpm run start
 ```
 
 ## 📄 Licencia

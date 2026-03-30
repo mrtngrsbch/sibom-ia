@@ -15,6 +15,7 @@ services:
 volumes:
   placeholder-data:
 
+
 networks:
   default:
     name: microagencia-network

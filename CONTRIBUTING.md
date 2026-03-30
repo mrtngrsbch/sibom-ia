@@ -75,7 +75,7 @@ cd sibom-scraper-assistant
 git remote add upstream https://github.com/mrtn/sibom-scraper-assistant.git
 
 # 4. Instalar dependencias
-cd chatbot && bun install
+cd chatbot && pnpm install
 cd ../python-cli && pip install -r requirements.txt
 
 # 5. Copiar .env.example a .env y configurar
@@ -106,9 +106,9 @@ git push origin feature/nombre-descriptivo
 
 **Checklist obligatorio:**
 
-- [ ] Tests pasan localmente (`bun run test`)
-- [ ] Build funciona (`bun run build`)
-- [ ] Linter pasa (`bun run lint`)
+- [ ] Tests pasan localmente (`pnpm run test`)
+- [ ] Build funciona (`pnpm run build`)
+- [ ] Linter pasa (`pnpm run lint`)
 - [ ] Código sigue las convenciones del proyecto
 - [ ] Documentación actualizada (si aplica)
 - [ ] Commits siguen Conventional Commits

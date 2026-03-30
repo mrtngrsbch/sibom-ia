@@ -44,7 +44,7 @@ Resultado:
 **Opcion B: Wrangler CLI (recomendado)**
 ```bash
 # Instalar wrangler
-npm install -g wrangler
+pnpm add -g wrangler
 
 # Login
 wrangler login

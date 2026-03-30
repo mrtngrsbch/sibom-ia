@@ -35,7 +35,7 @@ pytest --cov=. --cov-report=term-missing
 
 # TypeScript
 cd chatbot
-npm run test:coverage
+pnpm run test:coverage
 ```
 
 #### Objetivos
@@ -146,9 +146,9 @@ mypy .  # Type checking
 
 # TypeScript
 cd chatbot
-npm run lint  # ESLint
-npm run type-check  # TypeScript
-npm run format:check  # Prettier
+pnpm run lint  # ESLint
+pnpm run type-check  # TypeScript
+pnpm run format:check  # Prettier
 ```
 
 #### Objetivos

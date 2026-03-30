@@ -31,8 +31,8 @@ El servidor API permite integración con aplicaciones web como el chatbot Next.j
 ```bash
 # Desarrollo con auto-reload
 cd sat-analysis
-source venv/bin/activate
-python -m uvicorn api.main:app --reload --host 0.0.0.0 --port 8001
+uv sync
+uv run uvicorn api.main:app --reload --host 0.0.0.0 --port 8001
 ```
 
 ### Endpoints
@@ -148,14 +148,8 @@ sat-analysis/
 ### Instalación con dependencias web
 
 ```bash
-# Crear entorno virtual
-python -m venv .venv
-source .venv/bin/activate  # Linux/macOS
-# o
-.venv\Scripts\activate  # Windows
-
-# Instalar dependencias
-pip install -e .
+# Sincronizar dependencias con uv
+uv sync --extra web
 ```
 
 ## Uso Básico
@@ -650,7 +644,7 @@ ARBA devuelve coordenadas en **EPSG:5347** (UTM Zona 20S). El sistema las convie
 | `Partida no encontrada` | Usa formato 8 dígitos: `002004606` |
 | `No se encontraron imágenes` | Aumenta `--years`, `--samples-per-year` o `--max-clouds` |
 | `Timeout al consultar ARBA` | Reintenta, el servicio puede estar saturado |
-| `Error descargando bandas: No module named 'dask'` | Reinstala: `pip install -e .` |
+| `Error descargando bandas: No module named 'dask'` | Reinstala: `uv sync --extra web` |
 | `--samples-per-year debe estar entre 1 y 12` | El valor debe ser entre 1 y 12 imágenes por año |
 
 ---

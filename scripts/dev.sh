@@ -37,12 +37,12 @@ fi
 echo -e "${BLUE}📦 Verificando dependencias...${NC}"
 
 # Verificar virtualenv de Python
-if [ ! -d "sat-analysis/venv" ]; then
+if [ ! -d "sat-analysis/.venv" ]; then
     echo -e "${YELLOW}   Creando virtualenv para sat-analysis...${NC}"
     cd sat-analysis
-    python3 -m venv venv
-    source venv/bin/activate
-    pip install -q -r requirements.txt
+    uv venv .venv
+    source .venv/bin/activate
+    uv pip install -q -r requirements.txt
     cd ..
 fi
 
@@ -50,7 +50,7 @@ fi
 if [ ! -d "chatbot/node_modules" ]; then
     echo -e "${YELLOW}   Instalando dependencias de chatbot...${NC}"
     cd chatbot
-    npm install --silent
+    pnpm install --frozen-lockfile --silent
     cd ..
 fi
 

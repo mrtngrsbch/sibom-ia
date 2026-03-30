@@ -13,7 +13,7 @@ echo ""
 # Verificar que wrangler esté instalado
 if ! command -v wrangler &> /dev/null; then
     echo "❌ Wrangler no está instalado"
-    echo "Instala con: npm install -g wrangler"
+    echo "Instala con: pnpm add -g wrangler"
     exit 1
 fi
 

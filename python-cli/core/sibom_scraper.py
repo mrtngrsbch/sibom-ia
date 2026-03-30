@@ -313,10 +313,10 @@ class SIBOMScraper:
     def _get_city_name_from_url(self, url: str) -> Optional[str]:
         """
         Extrae el nombre de la ciudad desde la URL usando el mapeo CITY_MAP.json.
-        
+
         Args:
             url: URL de la ciudad
-            
+
         Returns:
             Nombre de la ciudad o None si no se puede obtener
         """
@@ -966,18 +966,21 @@ HTML: {html[:200000]}"""
                         existing_data = json.load(f)
                     municipio = existing_data.get('municipio', 'Desconocido')
 
-                    console.print(f"[green]✓ Saltando boletín {bulletin['number']} (ya existe)[/green]")
+                    console.print(
+                        f"[green]✓ Saltando boletín {bulletin['number']} (ya existe)[/green]")
                     console.print(f"[dim]    Archivo: {filepath.name}[/dim]")
                     console.print(f"[dim]    Municipio: {municipio}[/dim]")
                     console.print(f"[dim]    Tamaño: {size_mb:.2f} MB[/dim]")
-                    console.print(f"[dim]    Modificado: {time.ctime(stat.st_mtime)}[/dim]")
+                    console.print(
+                        f"[dim]    Modificado: {time.ctime(stat.st_mtime)}[/dim]")
 
                     # Crear una copia con status="skipped" para el resultado
                     skipped_data = {**existing_data, 'status': 'skipped'}
 
                     # Actualizar índice con status "skipped"
                     if existing_data.get('status') != 'error':
-                        self._update_index_md(skipped_data, output_dir, base_url)
+                        self._update_index_md(
+                            skipped_data, output_dir, base_url)
 
                     return skipped_data
                 else:
@@ -1049,7 +1052,8 @@ HTML: {html[:200000]}"""
             normas_metadata = self.parse_bulletin_content_links(bulletin_html)
 
             if not normas_metadata:
-                municipio = self._extract_municipality_name(bulletin.get('description', ''))
+                municipio = self._extract_municipality_name(
+                    bulletin.get('description', ''))
                 console.print(
                     f"[yellow]⚠ Sin normas en {bulletin['number']} - {municipio}[/yellow]")
                 console.print(f"[dim]🔗 Verificar: {bulletin_url}[/dim]")
@@ -1081,13 +1085,19 @@ HTML: {html[:200000]}"""
                 '/bulletins/')[-1].split('?')[0] if '/bulletins/' in bulletin_url else filename
             progress_data = self._load_progress(bulletin_id, output_dir)
 
+            # Cargar índice global de normativas para persistencia entre boletines
+            from normativas_extractor import load_normativas_index
+            global_normas_index = load_normativas_index()
+
             if progress_data:
                 normas_procesadas_ids = set(
                     progress_data.get('normas_procesadas', []))
                 console.print(
                     f"[cyan]🔄 Resumiendo scraping: {len(normas_procesadas_ids)} normas ya procesadas[/cyan]")
             else:
-                normas_procesadas_ids = set()
+                normas_procesadas_ids = set(global_normas_index.keys())
+                console.print(
+                    f"[cyan]🔄 Resumiendo scraping: {len(normas_procesadas_ids)} normas ya procesadas (índice global)[/cyan]")
 
             # Nivel 3: Scrapear cada norma individual
             normas_completas = []
@@ -1475,7 +1485,8 @@ HTML: {bulletin_html[:50000]}"""
                 try:
                     # Consultar la página de la ciudad
                     url = f"{base_url}/cities/{city_id}"
-                    response = requests.get(url, headers=self.headers, timeout=10)
+                    response = requests.get(
+                        url, headers=self.headers, timeout=10)
 
                     if response.status_code == 200:
                         html = response.text
@@ -1497,7 +1508,8 @@ HTML: {bulletin_html[:50000]}"""
                             if name_match:
                                 name = name_match.group(1).strip()
                                 city_map[str(city_id)] = name
-                                console.print(f"[dim]  {city_id}: {name}[/dim]")
+                                console.print(
+                                    f"[dim]  {city_id}: {name}[/dim]")
 
                 except Exception:
                     # Silenciosamente continuar si una ciudad falla
@@ -1510,7 +1522,8 @@ HTML: {bulletin_html[:50000]}"""
             self.CITY_MAP_FILE.parent.mkdir(parents=True, exist_ok=True)
             with self.CITY_MAP_FILE.open('w', encoding='utf-8') as f:
                 json.dump(city_map, f, indent=2, ensure_ascii=False)
-            console.print(f"[green]✓ CITY_MAP guardado: {len(city_map)} ciudades[/green]")
+            console.print(
+                f"[green]✓ CITY_MAP guardado: {len(city_map)} ciudades[/green]")
         else:
             console.print("[yellow]⚠ No se pudo generar CITY_MAP[/yellow]")
 
@@ -1560,7 +1573,8 @@ HTML: {bulletin_html[:50000]}"""
             city_name = city_map.get(str(city_id), f"Ciudad {city_id}")
             city_start_time = time.time()
 
-            console.print(f"\n[bold cyan]═══ CIUDAD {idx}/{len(city_ids)}: {city_name} (ID: {city_id}) ═══[/bold cyan]")
+            console.print(
+                f"\n[bold cyan]═══ CIUDAD {idx}/{len(city_ids)}: {city_name} (ID: {city_id}) ═══[/bold cyan]")
 
             try:
                 # Construir URL de la ciudad
@@ -1581,16 +1595,20 @@ HTML: {bulletin_html[:50000]}"""
                     # Múltiples páginas
                     for page_num in range(1, total_pages + 1):
                         if page_num == 1:
-                            bulletins = self.parse_listing_page(list_html, city_url)
+                            bulletins = self.parse_listing_page(
+                                list_html, city_url)
                         else:
                             page_url = f"{city_url}?page={page_num}"
                             page_html = self.fetch_html(page_url)
-                            bulletins = self.parse_listing_page(page_html, page_url)
+                            bulletins = self.parse_listing_page(
+                                page_html, page_url)
                         all_bulletins.extend(bulletins)
-                        console.print(f"[dim]    Página {page_num}/{total_pages}: {len(bulletins)} boletines[/dim]")
+                        console.print(
+                            f"[dim]    Página {page_num}/{total_pages}: {len(bulletins)} boletines[/dim]")
 
                 if not all_bulletins:
-                    console.print(f"[yellow]⚠ No se encontraron boletines para {city_name} (ID: {city_id})[/yellow]")
+                    console.print(
+                        f"[yellow]⚠ No se encontraron boletines para {city_name} (ID: {city_id})[/yellow]")
                     console.print(f"[dim]🔗 Verificar: {city_url}[/dim]")
                     city_stats[city_id] = {
                         "nombre": city_name,
@@ -1601,7 +1619,8 @@ HTML: {bulletin_html[:50000]}"""
                     }
                     continue
 
-                console.print(f"[green]✓ Total boletines a procesar: {len(all_bulletins)}[/green]")
+                console.print(
+                    f"[green]✓ Total boletines a procesar: {len(all_bulletins)}[/green]")
 
                 # Procesar boletines de esta ciudad
                 city_results = []
@@ -1622,7 +1641,8 @@ HTML: {bulletin_html[:50000]}"""
 
                         with Progress(
                             SpinnerColumn(),
-                            TextColumn("[progress.description]{task.description}"),
+                            TextColumn(
+                                "[progress.description]{task.description}"),
                             BarColumn(),
                             TaskProgressColumn(),
                             console=console
@@ -1690,7 +1710,8 @@ HTML: {bulletin_html[:50000]}"""
             except Exception as e:
                 city_elapsed = time.time() - city_start_time
                 error_msg = str(e)
-                console.print(f"[red]✗ Error procesando {city_name}: {error_msg}[/red]")
+                console.print(
+                    f"[red]✗ Error procesando {city_name}: {error_msg}[/red]")
                 cities_with_errors.append((city_id, city_name, error_msg))
                 city_stats[city_id] = {
                     "nombre": city_name,
@@ -1705,7 +1726,8 @@ HTML: {bulletin_html[:50000]}"""
         total_elapsed = time.time() - total_start_time
 
         # Mostrar resumen final
-        self.print_multi_city_summary(city_stats, cities_with_errors, total_elapsed)
+        self.print_multi_city_summary(
+            city_stats, cities_with_errors, total_elapsed)
 
         return city_stats
 
@@ -1730,7 +1752,8 @@ HTML: {bulletin_html[:50000]}"""
         ))
 
         # Tabla de estadísticas por ciudad
-        table = Table(title=f"Estadísticas por Ciudad ({len(city_stats)} ciudades)")
+        table = Table(
+            title=f"Estadísticas por Ciudad ({len(city_stats)} ciudades)")
         table.add_column("ID", style="cyan", width=6)
         table.add_column("Ciudad", style="green", width=25)
         table.add_column("Total", justify="right", style="white")
@@ -1757,10 +1780,12 @@ HTML: {bulletin_html[:50000]}"""
         console.print(table)
 
         # Totales generales
-        total_boletines = sum(s['total_boletines'] for s in city_stats.values())
+        total_boletines = sum(s['total_boletines']
+                              for s in city_stats.values())
         total_completados = sum(s['completados'] for s in city_stats.values())
         total_omitidos = sum(s.get('omitidos', 0) for s in city_stats.values())
-        total_no_content = sum(s.get('sin_contenido', 0) for s in city_stats.values())
+        total_no_content = sum(s.get('sin_contenido', 0)
+                               for s in city_stats.values())
         total_errores = sum(s['errores'] for s in city_stats.values())
 
         console.print("\n")
@@ -1774,7 +1799,8 @@ HTML: {bulletin_html[:50000]}"""
         summary_table.add_row("Omitidos (existentes)", str(total_omitidos))
         summary_table.add_row("Sin contenido", str(total_no_content))
         summary_table.add_row("Errores", str(total_errores))
-        summary_table.add_row("Tiempo total", f"{total_time:.1f}s ({total_time/60:.1f}m)")
+        summary_table.add_row(
+            "Tiempo total", f"{total_time:.1f}s ({total_time/60:.1f}m)")
 
         if total_completados > 0:
             avg_time = total_time / total_completados
@@ -1791,7 +1817,8 @@ HTML: {bulletin_html[:50000]}"""
                 title="⚠️"
             ))
             for city_id, city_name, error in cities_with_errors:
-                console.print(f"[red]  ID {city_id} ({city_name}): {error[:60]}...[/red]")
+                console.print(
+                    f"[red]  ID {city_id} ({city_name}): {error[:60]}...[/red]")
 
 
 def parse_city_ranges(ranges_str: str) -> List[int]:
@@ -1845,7 +1872,8 @@ def update_sqlite_database(normativas: List[Normativa], db_path: str = "normativ
         # Importar el schema desde normativas_to_sqlite
         from normativas_to_sqlite import SCHEMA, create_database
 
-        console.print(f"\n[cyan]🗄️ Actualizando SQLite con {len(normativas):,} normativas nuevas...[/cyan]")
+        console.print(
+            f"\n[cyan]🗄️ Actualizando SQLite con {len(normativas):,} normativas nuevas...[/cyan]")
 
         # Crear/conectar a la BD
         conn = create_database(db_path)
@@ -1858,7 +1886,8 @@ def update_sqlite_database(normativas: List[Normativa], db_path: str = "normativ
         for normativa in normativas:
             try:
                 # Verificar si ya existe
-                cursor.execute("SELECT id FROM normativas WHERE id = ?", (normativa.id,))
+                cursor.execute(
+                    "SELECT id FROM normativas WHERE id = ?", (normativa.id,))
                 exists = cursor.fetchone()
 
                 if exists:
@@ -2040,12 +2069,14 @@ Ejemplos de uso:
 
             # Generar CITY_MAP si no existe
             if not scraper.CITY_MAP_FILE.exists():
-                console.print("[yellow]⚠ CITY_MAP.json no encontrado, generando...[/yellow]")
+                console.print(
+                    "[yellow]⚠ CITY_MAP.json no encontrado, generando...[/yellow]")
                 scraper.auto_generate_city_map(min(city_ids), max(city_ids))
 
             # Aplicar start-from si se especificó
             if args.start_from:
-                filtered_count = len([c for c in city_ids if c >= args.start_from])
+                filtered_count = len(
+                    [c for c in city_ids if c >= args.start_from])
                 console.print(
                     f"[cyan]📍 Filtrando ciudades: comenzando desde ID {args.start_from}[/cyan]")
                 console.print(
@@ -2074,9 +2105,11 @@ Ejemplos de uso:
                 json.dump(results, f, indent=2, ensure_ascii=False)
 
             # Mostrar resumen
-            completed = sum(1 for r in results if r.get('status') == 'completed')
+            completed = sum(1 for r in results if r.get(
+                'status') == 'completed')
             errors = sum(1 for r in results if r.get('status') == 'error')
-            no_content = sum(1 for r in results if r.get('status') == 'no_content')
+            no_content = sum(1 for r in results if r.get(
+                'status') == 'no_content')
 
             table = Table(title="📊 Resumen de Ejecución")
             table.add_column("Métrica", style="cyan")
@@ -2138,7 +2171,8 @@ Ejemplos de uso:
             if not args.no_sqlite:
                 update_sqlite_database(scraper.normativas_acumuladas)
             else:
-                console.print("[dim]⏭ Saltando actualización de SQLite (--no-sqlite activado)[/dim]")
+                console.print(
+                    "[dim]⏭ Saltando actualización de SQLite (--no-sqlite activado)[/dim]")
 
     except KeyboardInterrupt:
         console.print("\n[yellow]Proceso interrumpido por el usuario[/yellow]")

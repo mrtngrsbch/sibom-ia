@@ -25,8 +25,8 @@ RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
 # Copiar código fuente
 COPY --chown=appuser:appuser src/ /app/src/
 COPY --chown=appuser:appuser api/ /app/api/
-COPY --chown=appuser:appserver codigos_partidos_arba.json .
-COPY --chown=appuser:appserver thresholds.yaml .
+COPY --chown=appuser:appuser codigos_partidos_arba.json .
+COPY --chown=appuser:appuser thresholds.yaml .
 
 # Crear directorios de datos
 RUN mkdir -p /app/data/web_output /app/logs && \

@@ -6,10 +6,17 @@ Comandos esenciales para empezar a usar el scraper rápidamente.
 
 ```bash
 cd python-cli
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+
+# Opción 1: Con install.sh
+bash install.sh
 cp .env.example .env
+
+# Opción 2: Manual con uv
+uv venv .venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
+cp .env.example .env
+
 # Editar .env: OPENROUTER_API_KEY=sk-or-v1-tu-key
 ```
 
@@ -17,16 +24,16 @@ cp .env.example .env
 
 ```bash
 # Activar entorno (siempre primero)
-source venv/bin/activate
+source .venv/bin/activate
 
 # Probar scraper - 1 boletín
-python3 sibom_scraper.py --limit 1
+python3 cli.py sibom --limit 1
 
 # 5 boletines
-python3 sibom_scraper.py --limit 5
+python3 cli.py sibom --limit 5
 
 # Todas las páginas, automático
-python3 sibom_scraper.py --skip-existing
+python3 cli.py sibom --all --skip-existing
 
 # Boletín específico (modo individual)
 python3 sibom_scraper.py --url https://sibom.slyt.gba.gob.ar/bulletins/13556

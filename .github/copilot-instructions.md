@@ -1,6 +1,19 @@
 # SIBOM IA - Agent Instructions
 
-**Stack Actual (2026-02)**: Gemini 3 Flash + GLM 4.7, Qdrant, Next.js 16, React 19, Bun, FastAPI
+**Stack Actual (2026-02)**: Gemini 3 Flash + GLM 4.7, Qdrant, Next.js 16, React 19, pnpm, FastAPI
+
+## 🚨 CRITICAL: Coding Standards & Steering
+
+**Copilot MUST strictly follow the specialized patterns defined in `.agents/steering/`:**
+
+- **TypeScript/React**: [`.agents/steering/typescript-patterns.md`](../.agents/steering/typescript-patterns.md)
+  - *Key Rules*: No `any`, strict null checks, Zod for env vars, NO Server Actions (use API Routes).
+- **Python**: [`.agents/steering/python-patterns.md`](../.agents/steering/python-patterns.md)
+  - *Key Rules*: Type hints everywhere, Pydantic models, context managers for resources.
+- **Git Workflow**: [`.agents/steering/git-workflow.md`](../.agents/steering/git-workflow.md)
+  - *Key Rules*: Conventional Commits, atomic changes.
+
+---
 
 ## 🏗️ Arquitectura de 3 Componentes
 
@@ -14,7 +27,7 @@ Extrae boletines oficiales municipales desde SIBOM usando LLMs y genera índices
 
 ```bash
 cd python-cli
-source venv/bin/activate
+source .venv/bin/activate
 python cli.py sibom --municipality "Carlos Tejedor" --limit 5
 python cli.py transparency --municipality "X" --category balances
 python cli.py db --stats  # Ver estadísticas SQLite
@@ -36,7 +49,7 @@ Backend FastAPI para análisis de imágenes Sentinel-2, detección de anegamient
 
 ```bash
 cd sat-analysis
-source venv/bin/activate
+source .venv/bin/activate
 uvicorn api.main:app --reload --port 8001
 ```
 
@@ -46,18 +59,28 @@ uvicorn api.main:app --reload --port 8001
 
 Chat con búsqueda semántica sobre normativas municipales + visualización de análisis satelital.
 
-**Tech**: Next.js 16, React 19, TypeScript, Vercel AI SDK, Bun (dev), Qdrant, BM25
+**Tech**: Next.js 16, React 19, TypeScript, Vercel AI SDK, pnpm, Qdrant, BM25
 
 **Running**:
 
 ```bash
 cd chatbot
-bun install  # o npm install
-bun run dev  # o npm run dev
+pnpm install
+pnpm run dev
 # Abre http://localhost:3000
 ```
 
-**Deployment**: Vercel (usa Node.js automáticamente, ignora Bun)
+**Deployment**: Vercel con instalación vía pnpm
+
+## 🤖 Active Agents
+
+The `.agents/` folder contains autonomous agents and tooling:
+
+- **Commit Agent**: [`.agents/agents/commit-agent.yaml`](../.agents/agents/commit-agent.yaml)
+  - Automatically generates Conventional Commits messages.
+  - Script: `.agents/scripts/commit_agent.py`
+- **RAG Indexer**: [`.agents/agents/rag-indexer.yaml`](../.agents/agents/rag-indexer.yaml)
+  - Handles ingestion from R2 to Qdrant.
 
 ## 🔑 Convenciones del Proyecto
 
@@ -121,17 +144,17 @@ SIBOM scraper → JSON files → Índices JSON/SQLite → RAG retriever → LLM 
 
 ```bash
 # Terminal 1: Backend
-cd sat-analysis && source venv/bin/activate && uvicorn api.main:app --reload --port 8001
+cd sat-analysis && source .venv/bin/activate && uvicorn api.main:app --reload --port 8001
 
 # Terminal 2: Frontend
-cd chatbot && bun run dev
+cd chatbot && pnpm run dev
 ```
 
 ### Testing
 
 ```bash
 # Chatbot tests
-cd chatbot && bun run test  # Vitest
+cd chatbot && pnpm run test  # Vitest
 
 # Python CLI (no tiene tests formales, usar scripts)
 cd python-cli && python cli.py sibom --limit 1 --municipality "Azul"
@@ -160,7 +183,7 @@ docker-compose up -d  # Inicia todos los servicios
 - `README.md`: Overview + estado actual del proyecto
 - `python-cli/CLAUDE.md`: Comandos Python CLI + opciones
 - `chatbot/README.md`: Stack del frontend + características
-- `.agents/README.md`: Configuración de agentes IA (ver `.agents/agents/*.yaml`)
+- **Coding Standards**: `.agents/steering/*.md`
 
 ### LLM Configuration
 
@@ -227,7 +250,7 @@ const results = stmt.all(municipality);
 ## ⚠️ Important Gotchas
 
 1. **Path references**: Chatbot lee índices desde `/python-cli/data/indexes/` (path absoluto relativo a workspace root)
-2. **Bun vs Node**: Desarrollo usa Bun, producción/Vercel usa Node (no hay conflictos, package.json es compatible)
+2. **pnpm**: Desarrollo y CI usan pnpm; no mezclar lockfiles o gestores
 3. **Model defaults**: Si falta config, usa `google/gemini-3-flash-preview` (NO usar modelos caros sin confirmar)
 4. **Cache invalidation**: El chatbot NO cachea índices, los lee fresh en cada búsqueda (por diseño)
 5. **CORS**: Sat-analysis debe estar corriendo para que el módulo satelital funcione en el chatbot
@@ -244,7 +267,7 @@ const results = stmt.all(municipality);
 **Change LLM model**:
 
 1. Edit `.env`: `LLM_MODEL_PRIMARY=nuevo/modelo`
-2. Restart chatbot: `cd chatbot && bun run dev`
+2. Restart chatbot: `cd chatbot && pnpm run dev`
 
 **Fix RAG not finding results**:
 
@@ -261,5 +284,5 @@ const results = stmt.all(municipality);
 
 ---
 
-**Version**: 2.0 (2026-02-13)  
-**Last updated**: Post-cleanup, arquitectura estable desde 2026-01-17
+**Version**: 2.1 (2026-02-19)
+**Last updated**: Standardized Agent Integration

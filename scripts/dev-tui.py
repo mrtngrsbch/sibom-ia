@@ -81,7 +81,7 @@ class DevState:
             description="Next.js (chatbot)",
             port=3000,
             working_dir=PROJECT_ROOT / "chatbot",
-            command="npm run dev",
+            command="pnpm run dev",
             log_file=logs_dir / "frontend.log"
         )
 
@@ -158,7 +158,7 @@ class ServiceManager:
     def _get_keywords(self, service_name: str) -> list[str]:
         keywords = {
             "Backend": ["uvicorn", "api.main"],
-            "Frontend": ["next", "node", "bun"],
+            "Frontend": ["next", "node", "pnpm"],
         }
         return keywords.get(service_name, [])
 
@@ -172,15 +172,15 @@ class ServiceManager:
 
         # Verificar dependencias para backend
         if service.name == "Backend":
-            venv_dir = service.working_dir / "venv"
+            venv_dir = service.working_dir / ".venv"
             if not venv_dir.exists():
-                return False, "Virtualenv no encontrado. Ejecuta: cd sat-analysis && python3 -m venv venv"
+                return False, "Virtualenv no encontrado. Ejecuta: cd sat-analysis && uv venv .venv"
 
         # Verificar dependencias para frontend
         if service.name == "Frontend":
             node_modules = service.working_dir / "node_modules"
             if not node_modules.exists():
-                return False, "node_modules no encontrado. Ejecuta: cd chatbot && npm install"
+                return False, "node_modules no encontrado. Ejecuta: cd chatbot && pnpm install"
 
         try:
             log_file = open(service.log_file, "a")
@@ -299,14 +299,16 @@ class DevTUI:
             pid_text = f"PID: {service.pid}" if service.pid else "PID: -"
             print(f"\n  [{i}] {service.status_symbol} {service.name}")
             print(f"      {service.description}")
-            print(f"      Estado: {service.status.value.upper():<8} | {pid_text} | Puerto: {service.port}")
+            print(
+                f"      Estado: {service.status.value.upper():<8} | {pid_text} | Puerto: {service.port}")
 
     def print_menu(self):
         """Imprime el menú"""
         print("\n  " + "-" * 60)
         print("  Comandos:")
         print("    [1-2] Iniciar/Detener servicio  [l] Ver logs")
-        print("    [a]   Iniciar todos             [q] Salir (detener los iniciados)")
+        print(
+            "    [a]   Iniciar todos             [q] Salir (detener los iniciados)")
         print("    [x]   Salir (sin detener)       [r] Refrescar")
         print("  " + "-" * 60)
 
@@ -322,7 +324,8 @@ class DevTUI:
     def get_service_choice(self) -> Optional[Service]:
         """Permite seleccionar un servicio"""
         while True:
-            choice = input("\n  Número de servicio (o Enter para cancelar): ").strip()
+            choice = input(
+                "\n  Número de servicio (o Enter para cancelar): ").strip()
 
             if not choice:
                 return None
@@ -368,7 +371,8 @@ class DevTUI:
 
             while current_page * page_size < len(lines_list):
                 self.clear_screen()
-                print(f"\n  📄 Logs de {service.name} - Página {current_page + 1}")
+                print(
+                    f"\n  📄 Logs de {service.name} - Página {current_page + 1}")
                 print("  " + "-" * 60)
 
                 start = current_page * page_size

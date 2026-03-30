@@ -39,7 +39,7 @@ Guía para desplegar sat-analysis en Railway (https://railway.app/).
 
 1. **Instalar Railway CLI**
    ```bash
-   npm install -g @railway/cli
+   pnpm add -g @railway/cli
    ```
 
 2. **Login y deploy**

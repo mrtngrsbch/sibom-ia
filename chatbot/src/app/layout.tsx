@@ -1,52 +1,52 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css';
-import { ThemeProvider } from '@/contexts/ThemeContext';
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 /**
  * Metadatos de la aplicación
  * @description Chatbot Legal Municipal - Consultas de legislación BA
  */
 export const metadata: Metadata = {
-  title: {
-    default: 'Mangrullo',
-    template: '%s | Mangrullo',
-  },
-  description:
-    'Observatorio independiente de la decepción municipal | Chatbot especializado en legislación, ordenanzas y decretos de municipios de la Provincia de Buenos Aires, Argentina.',
-  keywords: [
-    'legislación municipal',
-    'ordenanzas',
-    'decretos',
-    'Buenos Aires',
-    'consulta legal',
-    'municipios',
-    'SIBOM',
-  ],
-  authors: [{ name: 'Mangrullo' }],
-  openGraph: {
-    type: 'website',
-    locale: 'es_AR',
-    siteName: 'Mangrullo',
-    title: 'Mangrullo',
-    description:
-      'Observatorio independiente de la decepción municipal | Chatbot especializado en legislación, ordenanzas y decretos de municipios de la Provincia de Buenos Aires, Argentina.',
-  },
+	title: {
+		default: "Mangrullo",
+		template: "%s | Mangrullo",
+	},
+	description:
+		"Observatorio independiente de la derrota municipal | Chatbot especializado en legislación, ordenanzas y decretos de municipios de la Provincia de Buenos Aires, Argentina.",
+	keywords: [
+		"legislación municipal",
+		"ordenanzas",
+		"decretos",
+		"Buenos Aires",
+		"consulta legal",
+		"municipios",
+		"SIBOM",
+	],
+	authors: [{ name: "Mangrullo" }],
+	openGraph: {
+		type: "website",
+		locale: "es_AR",
+		siteName: "Mangrullo",
+		title: "Mangrullo",
+		description:
+			"Observatorio independiente de la decepción municipal | Chatbot especializado en legislación, ordenanzas y decretos de municipios de la Provincia de Buenos Aires, Argentina.",
+	},
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: {
-  children: React.ReactNode;
+	children: React.ReactNode;
 }) {
-  return (
-    <html lang="es" suppressHydrationWarning>
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
+	return (
+		<html lang="es" suppressHydrationWarning>
+			<head>
+				<script
+					dangerouslySetInnerHTML={{
+						__html: `
               (function() {
                 const theme = localStorage.getItem('theme-preference') || 'system';
                 const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -57,16 +57,16 @@ export default function RootLayout({
                 }
               })();
             `,
-          }}
-        />
-      </head>
-      <body className={inter.className}>
-        <ThemeProvider defaultTheme="system">
-          <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
-            {children}
-          </div>
-        </ThemeProvider>
-      </body>
-    </html>
-  );
+					}}
+				/>
+			</head>
+			<body className={inter.className}>
+				<ThemeProvider defaultTheme="system">
+					<div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+						{children}
+					</div>
+				</ThemeProvider>
+			</body>
+		</html>
+	);
 }

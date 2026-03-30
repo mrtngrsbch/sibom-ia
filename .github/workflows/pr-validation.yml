@@ -18,28 +18,35 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v4
       
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
-          bun-version: latest
+          version: 10.28.2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: ./chatbot/pnpm-lock.yaml
       
       - name: Instalar dependencias
-        run: bun install
+        run: pnpm install --frozen-lockfile
       
       - name: Type checking (TypeScript)
-        run: bun run type-check || npx tsc --noEmit
+        run: pnpm run type-check
       
       - name: Linting (ESLint)
-        run: bun run lint
+        run: pnpm run lint
       
       - name: Build
-        run: bun run build
+        run: pnpm run build
         env:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
       
       - name: Tests (Vitest)
-        run: bun run test --run
+        run: pnpm run test -- --run
         if: always()  # Correr tests incluso si falló build
 
   validate-backend:
@@ -160,14 +167,23 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v4
       
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v1
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: ./chatbot/pnpm-lock.yaml
       
       - name: Build frontend
         working-directory: ./chatbot
         run: |
-          bun install
-          bun run build
+          pnpm install --frozen-lockfile
+          pnpm run build
       
       - name: Analizar tamaño de bundle
         uses: andresz1/size-limit-action@v1

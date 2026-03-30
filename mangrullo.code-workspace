@@ -1,0 +1,13 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "markdown.validate.enabled": true,
+        "cSpell.enabledFileTypes": {
+            "markdown": false
+        }
+    }
+}

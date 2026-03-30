@@ -285,7 +285,7 @@ class BalanceEnhancer:
             print("💡 Próximos pasos:")
             print(
                 "   1. Re-migrar a Qdrant: python scripts/migrate_balances_to_qdrant.py --yes")
-            print("   2. Test en chatbot: cd ../chatbot && npm run dev")
+            print("   2. Test en chatbot: cd ../chatbot && pnpm run dev")
 
 
 def main():

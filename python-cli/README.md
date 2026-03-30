@@ -6,9 +6,14 @@ Scraper de normativas municipales argentinas. Extrae datos de SIBOM, sitios web 
 
 ```bash
 cd python-cli
-python -m venv venv
-source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+
+# Opción 1: Usar install.sh (recomendado)
+bash install.sh
+
+# Opción 2: Manual con uv
+uv venv .venv
+source .venv/bin/activate  # macOS/Linux: .venv\Scripts\activate (Windows)
+uv pip install -r requirements.txt
 
 # Instalar poppler (requerido para Vision API)
 # macOS: brew install poppler

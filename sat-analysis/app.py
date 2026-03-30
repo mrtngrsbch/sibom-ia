@@ -5,9 +5,16 @@ Prueba de concepto para análisis satelital de parcelas catastrales.
 """
 import json
 import os
+import sys
 from pathlib import Path
 import gradio as gr
 from datetime import datetime, timedelta
+
+PROJECT_ROOT = Path(__file__).resolve().parent
+SRC_DIR = PROJECT_ROOT / "src"
+
+if str(SRC_DIR) not in sys.path:
+    sys.path.insert(0, str(SRC_DIR))
 
 from sat_analysis.services import ArbaService, StacService, PixelClassifier, PartidaParser
 from sat_analysis.services.arba import ArbaError

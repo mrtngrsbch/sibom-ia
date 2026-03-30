@@ -5,10 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ImageIcon, Download, Package, Satellite } from '@/lib/icons';
+import { ImageIcon, Package, Satellite } from '@/lib/icons';
 import { ImageCard } from './ImageCard';
 import { ImageModal } from './ImageModal';
-import { getSatAnalysisClient } from '@/lib/sat-api';
+import { getSatAnalysisClient, getSatAssetUrl } from '@/lib/sat-api';
 import type { SatelliteImageResult } from '@/lib/types';
 
 interface ImagesPanelProps {
@@ -82,16 +82,7 @@ export function ImagesPanel({ results, partida, taskId }: ImagesPanelProps) {
     });
   };
 
-  // Obtener URL base para imágenes
-  // En producción usa ruta relativa (nginx hace proxy), en desarrollo local usa URL completa
-  const getFullImageUrl = (relativePath: string) => {
-    // Si estamos en desarrollo local (no en Docker), usar URL directa del backend
-    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-      return `http://localhost:8001${relativePath}`;
-    }
-    // En producción/Docker, usar ruta relativa (nginx hace proxy)
-    return relativePath;
-  };
+  const getFullImageUrl = (relativePath: string) => getSatAssetUrl(relativePath);
 
   if (!results || results.length === 0) {
     return (

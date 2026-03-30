@@ -23,7 +23,7 @@ y un módulo de análisis satelital de parcelas agrícolas.
 | **Vector DB** | Qdrant |
 | **Storage** | Cloudflare R2 |
 | **Deploy** | Vercel (frontend), Dokploy/VPS (backend) |
-| **Runtime** | Bun (frontend), Python 3.13 (backend) |
+| **Runtime** | pnpm + Node.js (frontend), Python 3.13 (backend) |
 
 ---
 
@@ -32,7 +32,7 @@ y un módulo de análisis satelital de parcelas agrícolas.
 ```
 .agents/
 ├── README.md              ← Este archivo (punto de entrada único)
-├── ROADMAP.md             ← Plan de progresión a 12 meses
+├── QUICKSTART.md          ← Guía rápida de inicio
 ├── .gitignore             ← Ignora logs, cache, backups
 ├── agents/
 │   ├── commit-agent.yaml  ← Agente de commits automáticos
@@ -91,7 +91,6 @@ y un módulo de análisis satelital de parcelas agrícolas.
 1. Leer este README como punto de entrada
 2. Consultar `steering/` para patrones de código del lenguaje relevante
 3. Consultar `prompts/` para personalidad y tareas de agentes
-4. Consultar `ROADMAP.md` para contexto de prioridades
 
 ### Para desarrolladores
 1. Seguir patrones en `steering/` al escribir código
@@ -102,7 +101,7 @@ y un módulo de análisis satelital de parcelas agrícolas.
 
 ## Links rápidos
 
-- **Roadmap completo:** [`ROADMAP.md`](ROADMAP.md)
+- **Guía rápida:** [`QUICKSTART.md`](QUICKSTART.md)
 - **Patrones Python:** [`steering/python-patterns.md`](steering/python-patterns.md)
 - **Patrones TypeScript:** [`steering/typescript-patterns.md`](steering/typescript-patterns.md)
 - **Git workflow:** [`steering/git-workflow.md`](steering/git-workflow.md)

@@ -1,33 +1,28 @@
 #!/bin/bash
 
-# Script de instalación rápida para SIBOM Scraper CLI
+# Script de instalación rápida para SIBOM Scraper CLI con uv
 
 echo "🚀 Instalando SIBOM Scraper CLI..."
 echo ""
 
-# Verificar Python 3
-if ! command -v python3 &> /dev/null; then
-    echo "❌ Error: Python 3 no está instalado"
-    echo "Por favor instala Python 3.8 o superior"
+# Verificar que uv esté instalado
+if ! command -v uv &> /dev/null; then
+    echo "❌ Error: uv no está instalado"
+    echo "Instala uv primero:"
+    echo "  curl -LsSf https://astral.sh/uv/install.sh | sh"
     exit 1
 fi
 
-PYTHON_VERSION=$(python3 --version 2>&1 | awk '{print $2}')
-echo "✓ Python detectado: $PYTHON_VERSION"
+echo "✓ uv detectado: $(uv --version)"
 
-# Crear entorno virtual
+# Crear entorno virtual con uv
 echo ""
 echo "📦 Creando entorno virtual..."
-python3 -m venv venv
-
-# Activar entorno virtual
-echo "🔌 Activando entorno virtual..."
-source venv/bin/activate
+uv venv .venv
 
 # Instalar dependencias
 echo "📚 Instalando dependencias..."
-pip install --upgrade pip > /dev/null 2>&1
-pip install -r requirements.txt
+uv pip install -r requirements.txt
 
 # Verificar .env
 echo ""
@@ -43,14 +38,17 @@ else
 fi
 
 # Hacer ejecutable el script
-chmod +x sibom_scraper.py
+chmod +x cli.py
 
 echo ""
-echo "✅ Instalación completada!"
+echo "✅ ¡Instalación completada!"
 echo ""
+echo "Para activar el entorno:"
+echo "  source .venv/bin/activate  # macOS/Linux"
+echo "  .venv\\Scripts\\activate     # Windows"
 echo "📖 Próximos pasos:"
 echo "   1. Edita .env y agrega tu OPENROUTER_API_KEY (si no lo hiciste)"
-echo "   2. Activa el entorno virtual: source venv/bin/activate"
-echo "   3. Ejecuta: python sibom_scraper.py --limit 5"
+echo "   2. Activa el entorno virtual: source .venv/bin/activate"
+echo "   3. Ejecuta: python cli.py sibom --limit 5"
 echo ""
-echo "💡 Ver ayuda: python sibom_scraper.py --help"
+echo "💡 Ver ayuda: python cli.py --help"

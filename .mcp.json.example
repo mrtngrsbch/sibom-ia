@@ -5,8 +5,15 @@
       "args": [
         "-y",
         "vercel-mcp",
-        "VERCEL_API_KEY=your_vercel_token_here"
+        "VERCEL_API_KEY=${VERCEL_API_KEY}"
       ]
+    },
+    "hostinger-api": {
+      "command": "hostinger-api-mcp",
+      "env": {
+        "DEBUG": "false",
+        "API_TOKEN": "${HOSTINGER_API_TOKEN}"
+      }
     }
   }
 }

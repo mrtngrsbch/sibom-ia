@@ -119,8 +119,8 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 ```bash
 cd chatbot
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 Abre [http://localhost:3000](http://localhost:3000) y prueba una consulta.
@@ -153,7 +153,7 @@ Si ves estos logs, ¡funciona! 🎉
 
 **Build Command** (default está bien):
 ```bash
-npm run build
+pnpm run build
 ```
 
 **Output Directory**: `.next`
@@ -375,7 +375,7 @@ jsDelivr tiene CDN global (más rápido) pero cache de 12 horas.
 - [ ] Archivos subidos a GitHub
 - [ ] Acceso a GitHub Raw verificado
 - [ ] `.env.local` configurado con GitHub
-- [ ] Probado localmente (`npm run dev`)
+- [ ] Probado localmente (`pnpm run dev`)
 - [ ] Proyecto importado en Vercel
 - [ ] Variables de entorno configuradas en Vercel
 - [ ] Deploy exitoso

@@ -135,7 +135,7 @@ python sibom_scraper.py --limit 15
 
 ```bash
 # Crontab: Ejecutar diariamente
-0 2 * * * cd /path/to/python-cli && source venv/bin/activate && python sibom_scraper.py --limit 100 --skip-existing --parallel 3
+0 2 * * * cd /path/to/python-cli && source .venv/bin/activate && python cli.py sibom --limit 100 --skip-existing --parallel 3
 ```
 
 - Procesa solo boletines nuevos

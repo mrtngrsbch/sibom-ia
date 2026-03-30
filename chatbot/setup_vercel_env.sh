@@ -10,7 +10,7 @@ echo ""
 # Verificar que vercel CLI esté instalado
 if ! command -v vercel &> /dev/null; then
     echo "❌ Vercel CLI no está instalado"
-    echo "Instala con: npm install -g vercel"
+    echo "Instala con: pnpm add -g vercel"
     exit 1
 fi
 

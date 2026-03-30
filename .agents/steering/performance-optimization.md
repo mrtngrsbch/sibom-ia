@@ -534,7 +534,7 @@ export function getMemoryUsage() {
 ### Bundle Analysis
 ```bash
 # Análisis de bundle size
-npm run build
+pnpm run build
 npx @next/bundle-analyzer
 
 # Lighthouse CI para métricas web vitals

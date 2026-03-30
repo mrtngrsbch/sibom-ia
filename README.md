@@ -2,7 +2,7 @@
 
 # SIBOM IA
 
-> **Estado Actual**: 🟢 Producción - 2025-01-17 (v2.1 con Bun runtime)
+> **Estado Actual**: 🟢 Producción - 2025-01-17 (v2.1 con pnpm)
 
 El repositorio ha sido limpiado y sincronizado. Toda la documentación obsoleta y scripts viejos fueron archivados. Arquitectura actual estable y lista para desarrollo.
 
@@ -32,7 +32,7 @@ Sistema de detección de anegamiento y salinización usando imágenes Sentinel-2
 Chatbot con RAG para consultar los boletines + módulo de análisis satelital integrado
 - **Ubicación**: [`chatbot/`](chatbot/)
 - **Función**: Búsqueda semántica, consultas en lenguaje natural, visualización de imágenes satelitales
-- **Tecnologías**: Next.js 16, React 19, TypeScript, Tailwind, Vercel AI SDK, **Bun** (dev runtime)
+- **Tecnologías**: Next.js 16, React 19, TypeScript, Tailwind, Vercel AI SDK, pnpm
 - **Características**: BM25, embeddings, streaming, galería de imágenes satelitales, miniaturas, descargas
 
 ## 🚀 Inicio Rápido
@@ -41,22 +41,20 @@ Chatbot con RAG para consultar los boletines + módulo de análisis satelital in
 
 ```bash
 cd python-cli
-python3 -m venv venv
-source venv/bin/activate  # En Windows: venv\Scripts\activate
-pip install -r requirements.txt
+bash install.sh  # Crea .venv con uv
 cp .env.example .env
 # Edita .env y agrega tu OPENROUTER_API_KEY
-python3 sibom_scraper.py --limit 5
+python3 cli.py sibom --limit 5
 ```
 
 ### Paso 2: Consultar Boletines (Frontend)
 
 ```bash
 cd chatbot
-bun install              # O: npm install
+pnpm install
 cp .env.example .env.local
 # Edita .env.local con tu OPENROUTER_API_KEY
-bun run dev              # O: npm run dev
+pnpm run dev
 # Abre http://localhost:3000
 ```
 
@@ -68,16 +66,16 @@ bun run dev              # O: npm run dev
 
 # Manual (sin Docker)
 cd sat-analysis
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+uv venv .venv
+source .venv/bin/activate
+uv pip install -r requirements.txt
 python -m uvicorn api.main:app --reload --port 8001
 
 # Frontend satélite
 # Abre http://localhost:3000/satelite
 ```
 
-> **Nota:** El proyecto usa **Bun** como runtime de desarrollo (10-20x más rápido que Node.js). El deployment a Vercel usa Node.js automáticamente.
+> **Nota:** El proyecto usa pnpm como gestor oficial del frontend, también en CI y deploy.
 
 **El chatbot leerá automáticamente los boletines extraídos** en `python-cli/boletines/`
 

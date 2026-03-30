@@ -34,6 +34,6 @@ Se ha reemplazado completamente el sistema de visualización de datos (`/datos`)
 ## 📝 Instrucciones de Deploy
 1. **Scraping**: Ejecutar scrape normal.
 2. **Build Analytics**: Ejecutar `python python-cli/scripts/build_analytics.py` antes del deploy o build de Next.js.
-3. **Build Frontend**: `bun run build`.
+3. **Build Frontend**: `pnpm run build`.
 
 El snapshot generado debe incluirse en los artefactos de despliegue.

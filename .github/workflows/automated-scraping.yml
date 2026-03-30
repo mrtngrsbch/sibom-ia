@@ -91,7 +91,7 @@ jobs:
           source .venv/bin/activate
 
           # Build command based on inputs
-          CMD="python3 sibom_scraper.py --skip-existing"
+          CMD="python3 cli.py sibom --skip-existing"
 
           if [ -n "${{ github.event.inputs.municipality }}" ]; then
             CMD="$CMD --municipality '${{ github.event.inputs.municipality }}'"
@@ -387,8 +387,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.28.2
+
       - name: Install wrangler
-        run: npm install -g wrangler
+        run: pnpm add -g wrangler
 
       - name: Configure wrangler
         run: |
@@ -486,13 +496,35 @@ jobs:
           EOF
 
           # Add job statuses
-          for job in scrape extract validate compress deploy-r2; do
-            if [ "${{ needs.$job.result }}" == "success" ]; then
-              echo "  ✅ $job: SUCCESS" >> workflow-summary.txt
-            else
-              echo "  ❌ $job: ${{ needs.$job.result }}" >> workflow-summary.txt
-            fi
-          done
+          if [ "${{ needs.scrape.result }}" == "success" ]; then
+            echo "  ✅ scrape: SUCCESS" >> workflow-summary.txt
+          else
+            echo "  ❌ scrape: ${{ needs.scrape.result }}" >> workflow-summary.txt
+          fi
+
+          if [ "${{ needs.extract.result }}" == "success" ]; then
+            echo "  ✅ extract: SUCCESS" >> workflow-summary.txt
+          else
+            echo "  ❌ extract: ${{ needs.extract.result }}" >> workflow-summary.txt
+          fi
+
+          if [ "${{ needs.validate.result }}" == "success" ]; then
+            echo "  ✅ validate: SUCCESS" >> workflow-summary.txt
+          else
+            echo "  ❌ validate: ${{ needs.validate.result }}" >> workflow-summary.txt
+          fi
+
+          if [ "${{ needs.compress.result }}" == "success" ]; then
+            echo "  ✅ compress: SUCCESS" >> workflow-summary.txt
+          else
+            echo "  ❌ compress: ${{ needs.compress.result }}" >> workflow-summary.txt
+          fi
+
+          if [ "${{ needs.deploy-r2.result }}" == "success" ]; then
+            echo "  ✅ deploy-r2: SUCCESS" >> workflow-summary.txt
+          else
+            echo "  ❌ deploy-r2: ${{ needs.deploy-r2.result }}" >> workflow-summary.txt
+          fi
 
           # Add reports
           if [ -f reports/scraping-report/scraping-report.txt ]; then

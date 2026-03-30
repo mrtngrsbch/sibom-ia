@@ -91,7 +91,7 @@ cd python-cli
 python compress_for_r2.py
 
 # 2. Subir a R2
-npm install -g wrangler
+pnpm add -g wrangler
 wrangler login
 ./upload_to_r2.sh
 ```
@@ -137,7 +137,7 @@ python compress_for_r2.py
 
 ### ¿Por qué falló `vercel --prod`?
 
-Vercel CLI necesita que ejecutes `npm run build` localmente primero, pero tu app Next.js requiere variables de entorno de producción que solo están en Vercel. El flujo GitHub → Vercel resuelve esto automáticamente.
+Vercel CLI necesita que ejecutes `pnpm run build` localmente primero, pero tu app Next.js requiere variables de entorno de producción que solo están en Vercel. El flujo GitHub → Vercel resuelve esto automáticamente.
 
 ### ¿Cuánto cuesta?
 

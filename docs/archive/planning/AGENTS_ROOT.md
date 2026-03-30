@@ -23,14 +23,14 @@ This is a polyglot repository with two main applications:
 
 ### Chatbot (Next.js)
 
-- **Install**: `cd chatbot && npm install`
-- **Dev**: `cd chatbot && npm run dev`
-- **Build**: `cd chatbot && npm run build`
-- **Start (production)**: `cd chatbot && npm run start`
-- **Lint**: `cd chatbot && npm run lint`
+- **Install**: `cd chatbot && pnpm install`
+- **Dev**: `cd chatbot && pnpm run dev`
+- **Build**: `cd chatbot && pnpm run build`
+- **Start (production)**: `cd chatbot && pnpm run start`
+- **Lint**: `cd chatbot && pnpm run lint`
 - **Test**: `cd chatbot && npm test`
-- **Test UI**: `cd chatbot && npm run test:ui`
-- **Test Coverage**: `cd chatbot && npm run test:coverage`
+- **Test UI**: `cd chatbot && pnpm run test:ui`
+- **Test Coverage**: `cd chatbot && pnpm run test:coverage`
 
 #### Ejecutar un solo test (Chatbot)
 
@@ -42,7 +42,7 @@ cd chatbot && npm test -- test-query-analyzer
 cd chatbot && npm test -- --watch test-query-analyzer
 
 # Test específico con coverage
-cd chatbot && npm run test:coverage -- test-query-analyzer
+cd chatbot && pnpm run test:coverage -- test-query-analyzer
 
 # Test en un archivo específico
 cd chatbot && npm test -- src/lib/rag/__tests__/table-formatter.test.ts

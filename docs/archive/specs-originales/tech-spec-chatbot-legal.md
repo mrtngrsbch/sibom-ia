@@ -409,16 +409,16 @@ graph TB
 
 ```bash
 # Instalar dependencias
-npm install
+pnpm install
 
 # Levantar ChromaDB local
 docker run -p 8000:8000 chromadb/chroma
 
 # Indexar boletines
-npm run index
+pnpm run index
 
 # Desarrollo
-npm run dev
+pnpm run dev
 
 # Deploy
 vercel deploy

@@ -117,11 +117,10 @@ FROM node:20-alpine AS deps
 WORKDIR /app
 
 # Copiar archivos de dependencias
-COPY package.json package-lock.json* ./
+COPY package.json pnpm-lock.yaml ./
 
 # Instalar dependencias
-RUN npm ci --only=production && \
-    npm cache clean --force
+RUN corepack enable && pnpm install --frozen-lockfile --prod
 
 # Stage 2: Builder
 FROM node:20-alpine AS builder
@@ -137,7 +136,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
 # Construir la aplicación
-RUN npm run build
+RUN pnpm run build
 
 # Stage 3: Runner (Producción)
 FROM node:20-alpine AS runner

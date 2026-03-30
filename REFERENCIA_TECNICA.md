@@ -336,7 +336,7 @@ Output format: Constrained by rules in system prompt
 
 ```
 Pre-deployment:
-  ✓ npm run build (no errors)
+  ✓ pnpm run build (no errors)
   ✓ All TS files compile
   ✓ route.ts properly updated
   ✓ Environment variables set

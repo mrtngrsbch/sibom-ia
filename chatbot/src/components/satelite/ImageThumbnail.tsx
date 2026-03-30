@@ -1,9 +1,11 @@
 'use client';
 
+import Image from 'next/image';
+import { useState } from 'react';
+
 import { Badge } from '@/components/ui/badge';
 import { ImageIcon } from '@/lib/icons';
-import { useState } from 'react';
-import Image from 'next/image';
+import { getSatAssetUrl } from '@/lib/sat-api';
 import type { ImageUrls } from '@/lib/types';
 
 interface ImageThumbnailProps {
@@ -24,7 +26,6 @@ export function ImageThumbnail({ images, date, water_ha, wetland_ha, total_ha, o
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  // Usar la imagen de clasificación por defecto, o RGB si no está disponible
   const thumbnailUrl = images?.clasificacion || images?.rgb;
 
   if (!thumbnailUrl) {
@@ -35,39 +36,36 @@ export function ImageThumbnail({ images, date, water_ha, wetland_ha, total_ha, o
     );
   }
 
-  // Calcular porcentaje afectado
-  const affectedPercent = total_ha > 0
-    ? ((water_ha + wetland_ha) / total_ha * 100)
-    : 0;
+  const affectedPercent = total_ha > 0 ? ((water_ha + wetland_ha) / total_ha) * 100 : 0;
 
-  // Color del badge según severidad
   const getBadgeVariant = (percent: number) => {
     if (percent > 50) return 'destructive';
     if (percent > 25) return 'default';
     return 'secondary';
   };
 
-  const apiBaseUrl = process.env.NEXT_PUBLIC_SAT_API_URL || 'http://localhost:8001';
-  const fullUrl = `${apiBaseUrl}${thumbnailUrl}`;
+  const fullUrl = getSatAssetUrl(thumbnailUrl);
 
   return (
     <button
+      type="button"
       onClick={() => onOpenModal(fullUrl)}
       className="relative w-16 h-12 rounded overflow-hidden border border-slate-200 dark:border-slate-700 hover:border-primary-500 hover:ring-2 hover:ring-primary-500/20 transition-all group"
     >
-      {isLoading && (
-        <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse" />
-      )}
+      {isLoading && <div className="absolute inset-0 bg-slate-200 dark:bg-slate-800 animate-pulse" />}
 
       {hasError ? (
         <div className="absolute inset-0 bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
           <ImageIcon className="w-4 h-4 text-slate-400" />
         </div>
       ) : (
-        <img
+        <Image
           src={fullUrl}
           alt={`Clasificación ${date}`}
-          className="w-full h-full object-cover"
+          fill
+          unoptimized
+          sizes="64px"
+          className="object-cover"
           onLoad={() => setIsLoading(false)}
           onError={() => {
             setIsLoading(false);
@@ -76,7 +74,6 @@ export function ImageThumbnail({ images, date, water_ha, wetland_ha, total_ha, o
         />
       )}
 
-      {/* Badge de afectación */}
       <Badge
         variant={getBadgeVariant(affectedPercent)}
         className="absolute -bottom-1 -right-1 w-5 h-5 p-0 flex items-center justify-center text-[10px] font-bold"
@@ -84,7 +81,6 @@ export function ImageThumbnail({ images, date, water_ha, wetland_ha, total_ha, o
         {Math.round(affectedPercent)}%
       </Badge>
 
-      {/* Icono de zoom al hover */}
       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
         <ImageIcon className="w-4 h-4 text-white" />
       </div>

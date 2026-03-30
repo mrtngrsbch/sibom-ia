@@ -13,7 +13,7 @@
  * URL base del Sistema de Boletines Municipales (SIBOM)
  * Este es el dominio oficial donde se publican los boletines.
  */
-export const SIBOM_BASE_URL = 'https://sibom.slyt.gba.gob.ar';
+export const SIBOM_BASE_URL = "https://sibom.slyt.gba.gob.ar";
 
 /**
  * Construye la URL completa de un boletín a partir de su path relativo
@@ -21,37 +21,41 @@ export const SIBOM_BASE_URL = 'https://sibom.slyt.gba.gob.ar';
  * @returns URL completa al boletín en SIBOM
  */
 export function buildBulletinUrl(relativePath: string): string {
-  if (!relativePath) return SIBOM_BASE_URL;
-  
-  // Si ya es una URL completa, devolverla tal cual
-  if (relativePath.startsWith('http://') || relativePath.startsWith('https://')) {
-    return relativePath;
-  }
-  
-  // Asegurar que el path comience con /
-  const path = relativePath.startsWith('/') ? relativePath : `/${relativePath}`;
-  
-  return `${SIBOM_BASE_URL}${path}`;
+	if (!relativePath) return SIBOM_BASE_URL;
+
+	// Si ya es una URL completa, devolverla tal cual
+	if (
+		relativePath.startsWith("http://") ||
+		relativePath.startsWith("https://")
+	) {
+		return relativePath;
+	}
+
+	// Asegurar que el path comience con /
+	const path = relativePath.startsWith("/") ? relativePath : `/${relativePath}`;
+
+	return `${SIBOM_BASE_URL}${path}`;
 }
 
 /**
  * Configuración de la aplicación
  */
 export const APP_CONFIG = {
-  /** Nombre de la aplicación */
-  appName: 'Mangrullo',
-  
-  /** Descripción breve */
-  description: 'Observatorio independiente de la decepción municipal | Chatbot especializado en legislación, ordenanzas y decretos de municipios de la Provincia de Buenos Aires, Argentina.',
-  
-  /** Duración del cache del índice en milisegundos */
-  indexCacheDuration: 10 * 60 * 1000, // 10 minutos
-  
-  /** Número máximo de documentos a recuperar por consulta */
-  defaultRetrievalLimit: 5,
-  
-  /** URL base de SIBOM */
-  sibomBaseUrl: SIBOM_BASE_URL,
+	/** Nombre de la aplicación */
+	appName: "Mangrullo",
+
+	/** Descripción breve */
+	description:
+		"Observatorio independiente de la derrota municipal | Chatbot especializado en legislación, ordenanzas y decretos de municipios de la Provincia de Buenos Aires, Argentina.",
+
+	/** Duración del cache del índice en milisegundos */
+	indexCacheDuration: 10 * 60 * 1000, // 10 minutos
+
+	/** Número máximo de documentos a recuperar por consulta */
+	defaultRetrievalLimit: 5,
+
+	/** URL base de SIBOM */
+	sibomBaseUrl: SIBOM_BASE_URL,
 } as const;
 
 export default APP_CONFIG;

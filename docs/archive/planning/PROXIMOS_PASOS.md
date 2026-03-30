@@ -102,8 +102,8 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 ```bash
 cd chatbot
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 Abre [http://localhost:3000](http://localhost:3000) y prueba:
@@ -133,7 +133,7 @@ Si ves esto, ¡funciona! 🎉
 
 3. **Configurar Build**:
    - Root Directory: `chatbot`
-   - Build Command: `npm run build` (default)
+   - Build Command: `pnpm run build` (default)
    - Output Directory: `.next` (default)
 
 4. **Environment Variables** (copiar de `.env.local`):
@@ -291,7 +291,7 @@ NEXT_PUBLIC_APP_URL     # URL de Vercel
 2. ⬜ Crear repo GitHub `sibom-data` (público)
 3. ⬜ Subir archivos .gz a GitHub
 4. ⬜ Configurar `.env.local` con tu usuario GitHub
-5. ⬜ Probar local: `npm run dev`
+5. ⬜ Probar local: `pnpm run dev`
 6. ⬜ Deploy a Vercel
 7. ⬜ Configurar variables en Vercel
 8. ⬜ Verificar funcionamiento

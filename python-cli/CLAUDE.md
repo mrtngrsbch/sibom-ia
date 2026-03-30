@@ -6,16 +6,16 @@
 
 ```bash
 # Activar entorno
-source venv/bin/activate
+source .venv/bin/activate
 
 # Procesar N boletines
-python3 sibom_scraper.py --limit N
+python3 cli.py sibom --limit N
 
 # Boletín específico
-python3 sibom_scraper.py --url https://sibom.slyt.gba.gob.ar/bulletins/[ID]
+python3 cli.py sibom --url https://sibom.slyt.gba.gob.ar/bulletins/[ID]
 
 # Con paralelismo
-python3 sibom_scraper.py --limit N --parallel 3
+python3 cli.py sibom --limit N --parallel 3
 
 # Skip existentes
 python3 sibom_scraper.py --skip-existing

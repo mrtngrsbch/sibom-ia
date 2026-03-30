@@ -650,7 +650,7 @@ python scripts/migrate_balances_to_qdrant.py --yes --overwrite
 **Pasos:**
 ```bash
 cd chatbot
-npm run dev  # o bun run dev
+pnpm run dev
 
 # Abrir http://localhost:3000
 # Probar queries:

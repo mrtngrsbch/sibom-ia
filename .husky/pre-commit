@@ -92,12 +92,10 @@ if git diff --cached --name-only | grep -q "python-cli/.*\.py$"; then
         cd python-cli
 
         # Check if pytest is available
-        if [ -d ".venv" ] || [ -d "venv" ]; then
+        if [ -d ".venv" ]; then
             # Activate venv if exists
             if [ -f ".venv/bin/activate" ]; then
                 source .venv/bin/activate
-            elif [ -f "venv/bin/activate" ]; then
-                source venv/bin/activate
             fi
 
             # Run tests

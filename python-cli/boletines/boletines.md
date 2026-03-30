@@ -3,18 +3,18 @@
 | 130º | 28/03/2025 | 130º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/12478](https://sibom.slyt.gba.gob.ar/bulletins/12478) | 🤖 Creado |
 | 118º | 04/09/2024 | 118º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/11289](https://sibom.slyt.gba.gob.ar/bulletins/11289) | 🤖 Creado |
 | 116º | 14/08/2024 | 116º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/11065](https://sibom.slyt.gba.gob.ar/bulletins/11065) | ✅ Completado |
-| 87º | 22/01/2025 | 87º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/11586](https://sibom.slyt.gba.gob.ar/bulletins/11586) | ✅ Completado |
-| 81º | 11/09/2024 | 81º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/11320](https://sibom.slyt.gba.gob.ar/bulletins/11320) | ✅ Completado |
-| 61º | 28/08/2023 | 61º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/8475](https://sibom.slyt.gba.gob.ar/bulletins/8475) | ✅ Completado |
-| 47º | 27/05/2021 | 47º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/5263](https://sibom.slyt.gba.gob.ar/bulletins/5263) | ✅ Completado |
-| 36º | 22/02/2021 | 36º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/4831](https://sibom.slyt.gba.gob.ar/bulletins/4831) | ✅ Completado |
-| 32º | 31/08/2020 | 32º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/4108](https://sibom.slyt.gba.gob.ar/bulletins/4108) | ✅ Completado |
-| 29º | 24/06/2020 | 29º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/3825](https://sibom.slyt.gba.gob.ar/bulletins/3825) | ✅ Completado |
+| 87º | 20/05/2025 | 87º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12772](https://sibom.slyt.gba.gob.ar/bulletins/12772) | ✅ Completado |
+| 81º | 20/01/2025 | 81º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12106](https://sibom.slyt.gba.gob.ar/bulletins/12106) | ✅ Completado |
+| 61º | 27/11/2023 | 61º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/9735](https://sibom.slyt.gba.gob.ar/bulletins/9735) | ✅ Completado |
+| 47º | 01/08/2022 | 47º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/7303](https://sibom.slyt.gba.gob.ar/bulletins/7303) | ✅ Completado |
+| 36º | 18/08/2021 | 36º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/5754](https://sibom.slyt.gba.gob.ar/bulletins/5754) | ✅ Completado |
+| 32º | 01/06/2021 | 32º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/5141](https://sibom.slyt.gba.gob.ar/bulletins/5141) | ✅ Completado |
+| 29º | 03/03/2021 | 29º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4890](https://sibom.slyt.gba.gob.ar/bulletins/4890) | ✅ Completado |
 | 198º | 09/11/2023 | 198º de Exaltación de la Cruz | [https://sibom.slyt.gba.gob.ar/bulletins/9692](https://sibom.slyt.gba.gob.ar/bulletins/9692) | ✅ Completado |
-| 58º | 29/08/2022 | 58º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/7486](https://sibom.slyt.gba.gob.ar/bulletins/7486) | ✅ Completado |
-| 76º | 07/12/2023 | 76º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/9855](https://sibom.slyt.gba.gob.ar/bulletins/9855) | ✅ Completado |
-| 64º | 27/10/2023 | 64º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/9603](https://sibom.slyt.gba.gob.ar/bulletins/9603) | ✅ Completado |
-| 4º | 13/12/2017 | 4º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/539](https://sibom.slyt.gba.gob.ar/bulletins/539) | ✅ Completado |
+| 58º | 02/10/2023 | 58º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/9391](https://sibom.slyt.gba.gob.ar/bulletins/9391) | ✅ Completado |
+| 76º | 02/10/2024 | 76º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11465](https://sibom.slyt.gba.gob.ar/bulletins/11465) | ✅ Completado |
+| 64º | 21/12/2023 | 64º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/9902](https://sibom.slyt.gba.gob.ar/bulletins/9902) | ✅ Completado |
+| 4º | 02/01/2019 | 4º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/1672](https://sibom.slyt.gba.gob.ar/bulletins/1672) | ✅ Completado |
 | 420º | 25/04/2025 | 420º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/12654](https://sibom.slyt.gba.gob.ar/bulletins/12654) | ⚠️ Sin contenido |
 | 374º | 03/09/2024 | 374º de Campana | [https://sibom.slyt.gba.gob.ar/bulletins/11281](https://sibom.slyt.gba.gob.ar/bulletins/11281) | ⚠️ Sin contenido |
 | 321º | 04/09/2025 | 321º de Exaltación de la Cruz | [https://sibom.slyt.gba.gob.ar/bulletins/13462](https://sibom.slyt.gba.gob.ar/bulletins/13462) | ✅ Completado |
@@ -145,102 +145,102 @@
 | 109º | 26/06/2024 | 109º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10770](https://sibom.slyt.gba.gob.ar/bulletins/10770) | ✅ Completado |
 | 108º | 29/05/2024 | 108º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10684](https://sibom.slyt.gba.gob.ar/bulletins/10684) | ✅ Completado |
 | 107º | 03/05/2024 | 107º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10525](https://sibom.slyt.gba.gob.ar/bulletins/10525) | ✅ Completado |
-| 106º | 25/04/2024 | 106º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10464](https://sibom.slyt.gba.gob.ar/bulletins/10464) | ✅ Completado |
-| 105º | 08/04/2024 | 105º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10382](https://sibom.slyt.gba.gob.ar/bulletins/10382) | ✅ Completado |
-| 104º | 27/03/2024 | 104º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10370](https://sibom.slyt.gba.gob.ar/bulletins/10370) | 🤖 Creado |
-| 103º | 27/03/2024 | 103º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10351](https://sibom.slyt.gba.gob.ar/bulletins/10351) | 🤖 Creado |
-| 102º | 06/03/2024 | 102º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10251](https://sibom.slyt.gba.gob.ar/bulletins/10251) | ✅ Completado |
-| 101º | 04/03/2024 | 101º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10245](https://sibom.slyt.gba.gob.ar/bulletins/10245) | 🤖 Creado |
-| 100º | 02/02/2024 | 100º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10109](https://sibom.slyt.gba.gob.ar/bulletins/10109) | ✅ Completado |
-| 99º | 22/01/2024 | 99º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10103](https://sibom.slyt.gba.gob.ar/bulletins/10103) | 🤖 Creado |
-| 98º | 22/01/2024 | 98º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10098](https://sibom.slyt.gba.gob.ar/bulletins/10098) | 🤖 Creado |
-| 97º | 19/01/2024 | 97º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10095](https://sibom.slyt.gba.gob.ar/bulletins/10095) | 🤖 Creado |
-| 96º | 19/01/2024 | 96º de Daireaux | [https://sibom.slyt.gba.gob.ar/bulletins/10072](https://sibom.slyt.gba.gob.ar/bulletins/10072) | ✅ Completado |
-| 95º | 19/05/2025 | 95º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/12713](https://sibom.slyt.gba.gob.ar/bulletins/12713) | ✅ Completado |
-| 94º | 05/05/2025 | 94º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/12616](https://sibom.slyt.gba.gob.ar/bulletins/12616) | ✅ Completado |
-| 93º | 21/04/2025 | 93º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/12613](https://sibom.slyt.gba.gob.ar/bulletins/12613) | ✅ Completado |
-| 92º | 14/04/2025 | 92º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/12413](https://sibom.slyt.gba.gob.ar/bulletins/12413) | ✅ Completado |
-| 91º | 18/03/2025 | 91º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/12379](https://sibom.slyt.gba.gob.ar/bulletins/12379) | ✅ Completado |
-| 90º | 11/03/2025 | 90º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/12346](https://sibom.slyt.gba.gob.ar/bulletins/12346) | ✅ Completado |
-| 89º | 06/03/2025 | 89º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/12241](https://sibom.slyt.gba.gob.ar/bulletins/12241) | ✅ Completado |
-| 88º | 10/02/2025 | 88º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/12121](https://sibom.slyt.gba.gob.ar/bulletins/12121) | ✅ Completado |
-| 86º | 21/10/2024 | 86º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/11519](https://sibom.slyt.gba.gob.ar/bulletins/11519) | ✅ Completado |
-| 85º | 14/10/2024 | 85º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/11463](https://sibom.slyt.gba.gob.ar/bulletins/11463) | ✅ Completado |
-| 84º | 30/09/2024 | 84º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/11412](https://sibom.slyt.gba.gob.ar/bulletins/11412) | ✅ Completado |
-| 83º | 23/09/2024 | 83º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/11380](https://sibom.slyt.gba.gob.ar/bulletins/11380) | ✅ Completado |
-| 82º | 17/09/2024 | 82º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/11356](https://sibom.slyt.gba.gob.ar/bulletins/11356) | ✅ Completado |
-| 80º | 06/09/2024 | 80º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/11272](https://sibom.slyt.gba.gob.ar/bulletins/11272) | ✅ Completado |
-| 79º | 02/09/2024 | 79º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/11243](https://sibom.slyt.gba.gob.ar/bulletins/11243) | ✅ Completado |
-| 78º | 26/08/2024 | 78º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/11203](https://sibom.slyt.gba.gob.ar/bulletins/11203) | ✅ Completado |
-| 77º | 05/02/2024 | 77º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/10142](https://sibom.slyt.gba.gob.ar/bulletins/10142) | ✅ Completado |
-| 75º | 06/12/2023 | 75º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/9847](https://sibom.slyt.gba.gob.ar/bulletins/9847) | ✅ Completado |
-| 74º | 05/12/2023 | 74º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/9838](https://sibom.slyt.gba.gob.ar/bulletins/9838) | ✅ Completado |
-| 73º | 04/12/2023 | 73º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/9823](https://sibom.slyt.gba.gob.ar/bulletins/9823) | ✅ Completado |
-| 72º | 01/12/2023 | 72º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/9794](https://sibom.slyt.gba.gob.ar/bulletins/9794) | ✅ Completado |
-| 71º | 28/11/2023 | 71º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/9768](https://sibom.slyt.gba.gob.ar/bulletins/9768) | ✅ Completado |
-| 70º | 24/11/2023 | 70º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/9762](https://sibom.slyt.gba.gob.ar/bulletins/9762) | ✅ Completado |
-| 69º | 17/11/2023 | 69º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/9710](https://sibom.slyt.gba.gob.ar/bulletins/9710) | ✅ Completado |
-| 68º | 14/11/2023 | 68º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/9698](https://sibom.slyt.gba.gob.ar/bulletins/9698) | ✅ Completado |
-| 67º | 09/11/2023 | 67º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/9665](https://sibom.slyt.gba.gob.ar/bulletins/9665) | ✅ Completado |
-| 66º | 06/11/2023 | 66º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/9634](https://sibom.slyt.gba.gob.ar/bulletins/9634) | ✅ Completado |
-| 65º | 01/11/2023 | 65º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/9611](https://sibom.slyt.gba.gob.ar/bulletins/9611) | ✅ Completado |
-| 63º | 25/10/2023 | 63º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/9591](https://sibom.slyt.gba.gob.ar/bulletins/9591) | ✅ Completado |
-| 62º | 24/10/2023 | 62º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/9564](https://sibom.slyt.gba.gob.ar/bulletins/9564) | ✅ Completado |
-| 60º | 29/03/2023 | 60º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/7676](https://sibom.slyt.gba.gob.ar/bulletins/7676) | ✅ Completado |
-| 59º | 29/09/2022 | 59º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/7636](https://sibom.slyt.gba.gob.ar/bulletins/7636) | ✅ Completado |
-| 57º | 26/08/2022 | 57º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/7473](https://sibom.slyt.gba.gob.ar/bulletins/7473) | ✅ Completado |
-| 56º | 02/08/2022 | 56º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/7326](https://sibom.slyt.gba.gob.ar/bulletins/7326) | ✅ Completado |
-| 55º | 14/06/2022 | 55º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/7109](https://sibom.slyt.gba.gob.ar/bulletins/7109) | ✅ Completado |
-| 54º | 19/04/2022 | 54º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/6880](https://sibom.slyt.gba.gob.ar/bulletins/6880) | ✅ Completado |
-| 53º | 11/04/2022 | 53º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/6427](https://sibom.slyt.gba.gob.ar/bulletins/6427) | ✅ Completado |
-| 52º | 09/12/2021 | 52º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/6192](https://sibom.slyt.gba.gob.ar/bulletins/6192) | ✅ Completado |
-| 51º | 09/11/2021 | 51º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/6179](https://sibom.slyt.gba.gob.ar/bulletins/6179) | ✅ Completado |
-| 50º | 23/06/2021 | 50º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/5533](https://sibom.slyt.gba.gob.ar/bulletins/5533) | ✅ Completado |
-| 49º | 04/06/2021 | 49º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/5460](https://sibom.slyt.gba.gob.ar/bulletins/5460) | ✅ Completado |
-| 48º | 01/06/2021 | 48º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/5447](https://sibom.slyt.gba.gob.ar/bulletins/5447) | ✅ Completado |
-| 46º | 22/04/2021 | 46º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/5235](https://sibom.slyt.gba.gob.ar/bulletins/5235) | ✅ Completado |
-| 45º | 21/04/2021 | 45º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/5223](https://sibom.slyt.gba.gob.ar/bulletins/5223) | ✅ Completado |
-| 44º | 20/04/2021 | 44º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/5214](https://sibom.slyt.gba.gob.ar/bulletins/5214) | ✅ Completado |
-| 43º | 19/04/2021 | 43º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/5203](https://sibom.slyt.gba.gob.ar/bulletins/5203) | ✅ Completado |
-| 42º | 16/04/2021 | 42º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/5197](https://sibom.slyt.gba.gob.ar/bulletins/5197) | ✅ Completado |
-| 41º | 15/04/2021 | 41º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/5187](https://sibom.slyt.gba.gob.ar/bulletins/5187) | ✅ Completado |
-| 40º | 14/04/2021 | 40º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/5167](https://sibom.slyt.gba.gob.ar/bulletins/5167) | ✅ Completado |
-| 39º | 12/04/2021 | 39º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/5144](https://sibom.slyt.gba.gob.ar/bulletins/5144) | ✅ Completado |
-| 38º | 07/04/2021 | 38º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/5099](https://sibom.slyt.gba.gob.ar/bulletins/5099) | ✅ Completado |
-| 37º | 26/03/2021 | 37º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/5097](https://sibom.slyt.gba.gob.ar/bulletins/5097) | ✅ Completado |
+| 106º | 29/01/2026 | 106º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/14396](https://sibom.slyt.gba.gob.ar/bulletins/14396) | ✅ Completado |
+| 105º | 23/12/2025 | 105º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/14046](https://sibom.slyt.gba.gob.ar/bulletins/14046) | ✅ Completado |
+| 104º | 11/12/2025 | 104º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/14045](https://sibom.slyt.gba.gob.ar/bulletins/14045) | ✅ Completado |
+| 103º | 14/11/2025 | 103º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13865](https://sibom.slyt.gba.gob.ar/bulletins/13865) | ✅ Completado |
+| 102º | 12/11/2025 | 102º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13864](https://sibom.slyt.gba.gob.ar/bulletins/13864) | ✅ Completado |
+| 101º | 15/10/2025 | 101º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13699](https://sibom.slyt.gba.gob.ar/bulletins/13699) | ✅ Completado |
+| 100º | 14/10/2025 | 100º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13696](https://sibom.slyt.gba.gob.ar/bulletins/13696) | ✅ Completado |
+| 99º | 14/10/2025 | 99º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13695](https://sibom.slyt.gba.gob.ar/bulletins/13695) | ✅ Completado |
+| 98º | 13/10/2025 | 98º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13556](https://sibom.slyt.gba.gob.ar/bulletins/13556) | ✅ Completado |
+| 97º | 16/09/2025 | 97º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13516](https://sibom.slyt.gba.gob.ar/bulletins/13516) | ✅ Completado |
+| 96º | 12/09/2025 | 96º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13511](https://sibom.slyt.gba.gob.ar/bulletins/13511) | ✅ Completado |
+| 95º | 12/09/2025 | 95º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13342](https://sibom.slyt.gba.gob.ar/bulletins/13342) | ✅ Completado |
+| 94º | 08/08/2025 | 94º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13276](https://sibom.slyt.gba.gob.ar/bulletins/13276) | ✅ Completado |
+| 93º | 08/08/2025 | 93º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13196](https://sibom.slyt.gba.gob.ar/bulletins/13196) | ✅ Completado |
+| 92º | 16/07/2025 | 92º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13117](https://sibom.slyt.gba.gob.ar/bulletins/13117) | ✅ Completado |
+| 91º | 08/07/2025 | 91º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/13086](https://sibom.slyt.gba.gob.ar/bulletins/13086) | ✅ Completado |
+| 90º | 12/06/2025 | 90º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12968](https://sibom.slyt.gba.gob.ar/bulletins/12968) | ✅ Completado |
+| 89º | 12/06/2025 | 89º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12899](https://sibom.slyt.gba.gob.ar/bulletins/12899) | ✅ Completado |
+| 88º | 20/05/2025 | 88º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12816](https://sibom.slyt.gba.gob.ar/bulletins/12816) | ✅ Completado |
+| 86º | 07/05/2025 | 86º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12732](https://sibom.slyt.gba.gob.ar/bulletins/12732) | ✅ Completado |
+| 85º | 07/05/2025 | 85º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12731](https://sibom.slyt.gba.gob.ar/bulletins/12731) | ✅ Completado |
+| 84º | 07/05/2025 | 84º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12719](https://sibom.slyt.gba.gob.ar/bulletins/12719) | ✅ Completado |
+| 83º | 21/03/2025 | 83º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12439](https://sibom.slyt.gba.gob.ar/bulletins/12439) | ✅ Completado |
+| 82º | 18/02/2025 | 82º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/12116](https://sibom.slyt.gba.gob.ar/bulletins/12116) | ✅ Completado |
+| 80º | 23/12/2024 | 80º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11847](https://sibom.slyt.gba.gob.ar/bulletins/11847) | ✅ Completado |
+| 79º | 05/12/2024 | 79º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11816](https://sibom.slyt.gba.gob.ar/bulletins/11816) | ✅ Completado |
+| 78º | 05/12/2024 | 78º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11815](https://sibom.slyt.gba.gob.ar/bulletins/11815) | ✅ Completado |
+| 77º | 05/12/2024 | 77º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11580](https://sibom.slyt.gba.gob.ar/bulletins/11580) | ✅ Completado |
+| 75º | 17/09/2024 | 75º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11317](https://sibom.slyt.gba.gob.ar/bulletins/11317) | ✅ Completado |
+| 74º | 05/09/2024 | 74º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11304](https://sibom.slyt.gba.gob.ar/bulletins/11304) | ✅ Completado |
+| 73º | 03/09/2024 | 73º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11205](https://sibom.slyt.gba.gob.ar/bulletins/11205) | ✅ Completado |
+| 72º | 14/08/2024 | 72º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11145](https://sibom.slyt.gba.gob.ar/bulletins/11145) | ✅ Completado |
+| 71º | 14/08/2024 | 71º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/11095](https://sibom.slyt.gba.gob.ar/bulletins/11095) | ✅ Completado |
+| 70º | 17/07/2024 | 70º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/10849](https://sibom.slyt.gba.gob.ar/bulletins/10849) | ✅ Completado |
+| 69º | 19/06/2024 | 69º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/10673](https://sibom.slyt.gba.gob.ar/bulletins/10673) | ✅ Completado |
+| 68º | 25/04/2024 | 68º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/10478](https://sibom.slyt.gba.gob.ar/bulletins/10478) | ✅ Completado |
+| 67º | 16/04/2024 | 67º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/10441](https://sibom.slyt.gba.gob.ar/bulletins/10441) | ✅ Completado |
+| 66º | 12/04/2024 | 66º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/10349](https://sibom.slyt.gba.gob.ar/bulletins/10349) | ✅ Completado |
+| 65º | 21/03/2024 | 65º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/10087](https://sibom.slyt.gba.gob.ar/bulletins/10087) | ✅ Completado |
+| 63º | 14/12/2023 | 63º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/9857](https://sibom.slyt.gba.gob.ar/bulletins/9857) | ✅ Completado |
+| 62º | 06/12/2023 | 62º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/9796](https://sibom.slyt.gba.gob.ar/bulletins/9796) | ✅ Completado |
+| 60º | 24/10/2023 | 60º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/9539](https://sibom.slyt.gba.gob.ar/bulletins/9539) | ✅ Completado |
+| 59º | 11/10/2023 | 59º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/9498](https://sibom.slyt.gba.gob.ar/bulletins/9498) | ✅ Completado |
+| 57º | 10/08/2023 | 57º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/9210](https://sibom.slyt.gba.gob.ar/bulletins/9210) | ✅ Completado |
+| 56º | 07/08/2023 | 56º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/9164](https://sibom.slyt.gba.gob.ar/bulletins/9164) | ✅ Completado |
+| 55º | 07/07/2023 | 55º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/8898](https://sibom.slyt.gba.gob.ar/bulletins/8898) | ✅ Completado |
+| 54º | 15/06/2023 | 54º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/8590](https://sibom.slyt.gba.gob.ar/bulletins/8590) | ✅ Completado |
+| 53º | 17/04/2023 | 53º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/8261](https://sibom.slyt.gba.gob.ar/bulletins/8261) | ✅ Completado |
+| 52º | 05/01/2023 | 52º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/8019](https://sibom.slyt.gba.gob.ar/bulletins/8019) | ✅ Completado |
+| 51º | 30/11/2022 | 51º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/7865](https://sibom.slyt.gba.gob.ar/bulletins/7865) | ✅ Completado |
+| 50º | 31/10/2022 | 50º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/7705](https://sibom.slyt.gba.gob.ar/bulletins/7705) | ✅ Completado |
+| 49º | 28/09/2022 | 49º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/7612](https://sibom.slyt.gba.gob.ar/bulletins/7612) | ✅ Completado |
+| 48º | 22/09/2022 | 48º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/7491](https://sibom.slyt.gba.gob.ar/bulletins/7491) | ✅ Completado |
+| 46º | 12/07/2022 | 46º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/7212](https://sibom.slyt.gba.gob.ar/bulletins/7212) | ✅ Completado |
+| 45º | 03/06/2022 | 45º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/7083](https://sibom.slyt.gba.gob.ar/bulletins/7083) | ✅ Completado |
+| 44º | 26/05/2022 | 44º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/6906](https://sibom.slyt.gba.gob.ar/bulletins/6906) | ✅ Completado |
+| 43º | 28/03/2022 | 43º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/6779](https://sibom.slyt.gba.gob.ar/bulletins/6779) | ✅ Completado |
+| 42º | 23/03/2022 | 42º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/6696](https://sibom.slyt.gba.gob.ar/bulletins/6696) | ✅ Completado |
+| 41º | 15/02/2022 | 41º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/6602](https://sibom.slyt.gba.gob.ar/bulletins/6602) | ✅ Completado |
+| 40º | 13/12/2021 | 40º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/6290](https://sibom.slyt.gba.gob.ar/bulletins/6290) | ✅ Completado |
+| 39º | 12/11/2021 | 39º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/6147](https://sibom.slyt.gba.gob.ar/bulletins/6147) | ✅ Completado |
+| 38º | 12/10/2021 | 38º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/6041](https://sibom.slyt.gba.gob.ar/bulletins/6041) | ✅ Completado |
+| 37º | 08/09/2021 | 37º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/5831](https://sibom.slyt.gba.gob.ar/bulletins/5831) | ✅ Completado |
 | 475º | 16/01/2026 | 475º de Bahia Blanca | [https://sibom.slyt.gba.gob.ar/bulletins/14228](https://sibom.slyt.gba.gob.ar/bulletins/14228) | ✅ Completado |
-| 35º | 20/01/2021 | 35º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/4712](https://sibom.slyt.gba.gob.ar/bulletins/4712) | ✅ Completado |
-| 34º | 10/12/2020 | 34º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/4556](https://sibom.slyt.gba.gob.ar/bulletins/4556) | ✅ Completado |
-| 33º | 29/10/2020 | 33º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/4437](https://sibom.slyt.gba.gob.ar/bulletins/4437) | ✅ Completado |
-| 31º | 21/07/2020 | 31º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/3936](https://sibom.slyt.gba.gob.ar/bulletins/3936) | ✅ Completado |
-| 30º | 08/07/2020 | 30º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/3888](https://sibom.slyt.gba.gob.ar/bulletins/3888) | ✅ Completado |
-| 28º | 18/05/2020 | 28º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/3639](https://sibom.slyt.gba.gob.ar/bulletins/3639) | ✅ Completado |
-| 27º | 14/05/2020 | 27º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/3610](https://sibom.slyt.gba.gob.ar/bulletins/3610) | ✅ Completado |
-| 26º | 08/05/2020 | 26º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/3591](https://sibom.slyt.gba.gob.ar/bulletins/3591) | ✅ Completado |
-| 25º | 19/11/2019 | 25º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/2910](https://sibom.slyt.gba.gob.ar/bulletins/2910) | ✅ Completado |
-| 24º | 18/07/2019 | 24º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/2405](https://sibom.slyt.gba.gob.ar/bulletins/2405) | ✅ Completado |
-| 23º | 15/05/2019 | 23º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/2212](https://sibom.slyt.gba.gob.ar/bulletins/2212) | ✅ Completado |
-| 22º | 12/04/2019 | 22º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/2098](https://sibom.slyt.gba.gob.ar/bulletins/2098) | ✅ Completado |
-| 21º | 03/04/2019 | 21º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/2088](https://sibom.slyt.gba.gob.ar/bulletins/2088) | ✅ Completado |
-| 20º | 29/03/2019 | 20º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/1968](https://sibom.slyt.gba.gob.ar/bulletins/1968) | ✅ Completado |
-| 19º | 16/02/2019 | 19º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/1959](https://sibom.slyt.gba.gob.ar/bulletins/1959) | ✅ Completado |
-| 18º | 31/01/2019 | 18º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/1907](https://sibom.slyt.gba.gob.ar/bulletins/1907) | ✅ Completado |
-| 17º | 16/01/2019 | 17º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/1818](https://sibom.slyt.gba.gob.ar/bulletins/1818) | ✅ Completado |
-| 16º | 03/01/2019 | 16º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/1792](https://sibom.slyt.gba.gob.ar/bulletins/1792) | ✅ Completado |
-| 15º | 18/12/2018 | 15º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/1741](https://sibom.slyt.gba.gob.ar/bulletins/1741) | ✅ Completado |
-| 14º | 13/11/2018 | 14º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/1601](https://sibom.slyt.gba.gob.ar/bulletins/1601) | ✅ Completado |
-| 13º | 25/09/2018 | 13º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/1389](https://sibom.slyt.gba.gob.ar/bulletins/1389) | ✅ Completado |
-| 12º | 20/07/2018 | 12º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/1156](https://sibom.slyt.gba.gob.ar/bulletins/1156) | ✅ Completado |
-| 11º | 15/06/2018 | 11º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/1067](https://sibom.slyt.gba.gob.ar/bulletins/1067) | ✅ Completado |
-| 10º | 15/06/2018 | 10º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/1066](https://sibom.slyt.gba.gob.ar/bulletins/1066) | ✅ Completado |
-| 9º | 15/06/2018 | 9º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/1044](https://sibom.slyt.gba.gob.ar/bulletins/1044) | ✅ Completado |
-| 8º | 06/06/2018 | 8º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/1032](https://sibom.slyt.gba.gob.ar/bulletins/1032) | ✅ Completado |
-| 7º | 12/05/2018 | 7º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/891](https://sibom.slyt.gba.gob.ar/bulletins/891) | ✅ Completado |
-| 6º | 18/04/2018 | 6º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/709](https://sibom.slyt.gba.gob.ar/bulletins/709) | ✅ Completado |
-| 5º | 15/01/2018 | 5º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/649](https://sibom.slyt.gba.gob.ar/bulletins/649) | ✅ Completado |
-| 3º | 12/11/2017 | 3º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/479](https://sibom.slyt.gba.gob.ar/bulletins/479) | ✅ Completado |
-| 2º | 09/10/2017 | 2º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/407](https://sibom.slyt.gba.gob.ar/bulletins/407) | ✅ Completado |
-| 1º | 29/09/2017 | 1º de Dolores | [https://sibom.slyt.gba.gob.ar/bulletins/28](https://sibom.slyt.gba.gob.ar/bulletins/28) | ✅ Completado |
+| 35º | 26/07/2021 | 35º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/5682](https://sibom.slyt.gba.gob.ar/bulletins/5682) | ✅ Completado |
+| 34º | 16/06/2021 | 34º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/5498](https://sibom.slyt.gba.gob.ar/bulletins/5498) | ✅ Completado |
+| 33º | 03/06/2021 | 33º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/5453](https://sibom.slyt.gba.gob.ar/bulletins/5453) | ✅ Completado |
+| 31º | 23/03/2021 | 31º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/5088](https://sibom.slyt.gba.gob.ar/bulletins/5088) | ✅ Completado |
+| 30º | 23/03/2021 | 30º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/5013](https://sibom.slyt.gba.gob.ar/bulletins/5013) | ✅ Completado |
+| 28º | 01/02/2021 | 28º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4802](https://sibom.slyt.gba.gob.ar/bulletins/4802) | ✅ Completado |
+| 27º | 15/01/2021 | 27º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4786](https://sibom.slyt.gba.gob.ar/bulletins/4786) | ✅ Completado |
+| 26º | 14/01/2021 | 26º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4760](https://sibom.slyt.gba.gob.ar/bulletins/4760) | ✅ Completado |
+| 25º | 07/01/2021 | 25º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4632](https://sibom.slyt.gba.gob.ar/bulletins/4632) | ✅ Completado |
+| 24º | 15/12/2020 | 24º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4473](https://sibom.slyt.gba.gob.ar/bulletins/4473) | ✅ Completado |
+| 23º | 04/11/2020 | 23º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4347](https://sibom.slyt.gba.gob.ar/bulletins/4347) | ✅ Completado |
+| 22º | 13/10/2020 | 22º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4316](https://sibom.slyt.gba.gob.ar/bulletins/4316) | ✅ Completado |
+| 21º | 06/10/2020 | 21º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4229](https://sibom.slyt.gba.gob.ar/bulletins/4229) | ✅ Completado |
+| 20º | 16/09/2020 | 20º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4192](https://sibom.slyt.gba.gob.ar/bulletins/4192) | ✅ Completado |
+| 19º | 09/09/2020 | 19º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4100](https://sibom.slyt.gba.gob.ar/bulletins/4100) | ✅ Completado |
+| 18º | 24/08/2020 | 18º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/4051](https://sibom.slyt.gba.gob.ar/bulletins/4051) | ✅ Completado |
+| 17º | 11/08/2020 | 17º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/3963](https://sibom.slyt.gba.gob.ar/bulletins/3963) | ✅ Completado |
+| 16º | 17/07/2020 | 16º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/3866](https://sibom.slyt.gba.gob.ar/bulletins/3866) | ✅ Completado |
+| 15º | 08/01/2020 | 15º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2878](https://sibom.slyt.gba.gob.ar/bulletins/2878) | ✅ Completado |
+| 14º | 11/11/2019 | 14º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2758](https://sibom.slyt.gba.gob.ar/bulletins/2758) | ✅ Completado |
+| 13º | 08/10/2019 | 13º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2636](https://sibom.slyt.gba.gob.ar/bulletins/2636) | ✅ Completado |
+| 12º | 29/08/2019 | 12º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2496](https://sibom.slyt.gba.gob.ar/bulletins/2496) | ✅ Completado |
+| 11º | 19/07/2019 | 11º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2431](https://sibom.slyt.gba.gob.ar/bulletins/2431) | ✅ Completado |
+| 10º | 01/07/2019 | 10º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2383](https://sibom.slyt.gba.gob.ar/bulletins/2383) | ✅ Completado |
+| 9º | 12/06/2019 | 9º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2221](https://sibom.slyt.gba.gob.ar/bulletins/2221) | ✅ Completado |
+| 8º | 30/04/2019 | 8º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2150](https://sibom.slyt.gba.gob.ar/bulletins/2150) | ✅ Completado |
+| 7º | 18/04/2019 | 7º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2081](https://sibom.slyt.gba.gob.ar/bulletins/2081) | ✅ Completado |
+| 6º | 29/03/2019 | 6º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/2036](https://sibom.slyt.gba.gob.ar/bulletins/2036) | ✅ Completado |
+| 5º | 18/03/2019 | 5º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/1795](https://sibom.slyt.gba.gob.ar/bulletins/1795) | ✅ Completado |
+| 3º | 03/12/2018 | 3º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/1564](https://sibom.slyt.gba.gob.ar/bulletins/1564) | ✅ Completado |
+| 2º | 31/10/2018 | 2º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/1479](https://sibom.slyt.gba.gob.ar/bulletins/1479) | ✅ Completado |
+| 1º | 08/10/2018 | 1º de Carlos Tejedor | [https://sibom.slyt.gba.gob.ar/bulletins/1213](https://sibom.slyt.gba.gob.ar/bulletins/1213) | ✅ Completado |
 | 253º | 09/05/2024 | 253º de Exaltación de la Cruz | [https://sibom.slyt.gba.gob.ar/bulletins/10605](https://sibom.slyt.gba.gob.ar/bulletins/10605) | ✅ Completado |
 | 252º | 09/05/2024 | 252º de Exaltación de la Cruz | [https://sibom.slyt.gba.gob.ar/bulletins/10604](https://sibom.slyt.gba.gob.ar/bulletins/10604) | ✅ Completado |
 | 251º | 09/05/2024 | 251º de Exaltación de la Cruz | [https://sibom.slyt.gba.gob.ar/bulletins/10581](https://sibom.slyt.gba.gob.ar/bulletins/10581) | ✅ Completado |

@@ -69,7 +69,7 @@
 ### 1. Instalar dependencias del chatbot
 ```bash
 cd chatbot
-npm install
+pnpm install
 ```
 
 ### 2. Probar localmente
@@ -81,7 +81,7 @@ uvicorn api.main:app --reload
 
 # Terminal 2: Iniciar chatbot
 cd chatbot
-npm run dev
+pnpm run dev
 ```
 
 ### 3. Desplegar en VPS

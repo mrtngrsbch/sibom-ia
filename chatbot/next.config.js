@@ -1,6 +1,30 @@
 /** @type {import('next').NextConfig} */
+const allowedDevOrigins = [
+  'newly-welcome-glowworm.ngrok-free.app',
+  ...(process.env.NEXT_ALLOWED_DEV_ORIGINS || '')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean),
+];
+
 const nextConfig = {
   reactStrictMode: true,
+  allowedDevOrigins,
+
+  async redirects() {
+    return [
+      {
+        source: '/satelite;',
+        destination: '/satelite',
+        permanent: false,
+      },
+      {
+        source: '/satelite/:path*;',
+        destination: '/satelite/:path*',
+        permanent: false,
+      },
+    ];
+  },
 
   /** Configuración experimental */
   experimental: {

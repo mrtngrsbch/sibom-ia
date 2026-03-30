@@ -143,3 +143,6 @@ chatbot/robots.txt
 chatbot/yarn.lock
 
 .mcp.json
+
+# Centinela
+centinela/*

@@ -681,89 +681,111 @@ Pero hay ${retrievedContext.sources.length} resultados EN TOTAL que el usuario p
 			console.log(`[ChatAPI] Usando modelo premium para búsqueda: ${modelId}`);
 		}
 
-	// LAYER 4: Detectar si necesita verificación
-	const shouldVerify = needsVerification(query, enhancedFilters.type);
-	console.log(`[ChatAPI] 🔍 Verificación necesaria: ${shouldVerify}`);
+		// LAYER 4: Detectar si necesita verificación
+		const shouldVerify = needsVerification(query, enhancedFilters.type);
+		console.log(`[ChatAPI] 🔍 Verificación necesaria: ${shouldVerify}`);
 
-	// Extraer source chunks para verificación
-	const sourceChunks: string[] = [];
-	if (shouldVerify && retrievedContext) {
-		// Extract text from sources for verification
-		// Note: Las sources no tienen campo 'content', usar bulletinContents desde retrieveContext
-		console.log(`[ChatAPI] 📄 Intentando extraer chunks desde retrievedContext...`);
-		// Por ahora, extraer context text directamente
-		if (retrievedContext.context && retrievedContext.context.length > 0) {
-			sourceChunks.push(retrievedContext.context);
-		}
-		console.log(`[ChatAPI] 📄 Source chunks para verificación: ${sourceChunks.length}`);
-	}
-
-	// LAYER 4: Verificación si es query Balance con números
-	if (shouldVerify && sourceChunks.length > 0) {
-		console.log(`[ChatAPI] 🔍 Layer 4 activo: Generando respuesta con verificación`);
-		try {
-			const result = await generateText({
-				model: openrouter(modelId),
-				system: systemPrompt,
-				messages: recentMessages,
-				temperature: 0.3,
-				maxOutputTokens: isMassiveListing ? 500 : 4000,
-			});
-
-			const generatedResponse = result.text;
-			console.log(`[ChatAPI] ✅ Respuesta generada: ${generatedResponse.length} chars`);
-
-			// Verificar números en la respuesta
-			const verificationReport = verifyResponse(generatedResponse, sourceChunks);
-			console.log(`[ChatAPI] 📊 Verificación completada:`);
-			console.log(`[ChatAPI]   - Números totales: ${verificationReport.totalNumbers}`);
-			console.log(`[ChatAPI]   - Verificados: ${verificationReport.verifiedNumbers}`);
-			console.log(`[ChatAPI]   - Confidence: ${(verificationReport.overallConfidence * 100).toFixed(1)}%`);
-			console.log(`[ChatAPI]   - Hallucination: ${verificationReport.possibleHallucination ? 'YES ⚠️' : 'NO ✅'}`);
-
-			// Agregar badge de confianza
-			const verifiedResponse = addConfidenceBadge(generatedResponse, verificationReport);
-			console.log(`[ChatAPI] ✅ Badge agregado, enviando respuesta`);
-
-			// Convertir respuesta verificada a stream
-			const encoder = new TextEncoder();
-			const verifiedStream = new ReadableStream({
-				start(controller) {
-					// Enviar respuesta completa en chunks pequeños para simular streaming
-					const chunkSize = 50;
-					for (let i = 0; i < verifiedResponse.length; i += chunkSize) {
-						const chunk = verifiedResponse.slice(i, i + chunkSize);
-						const escapedChunk = chunk
-							.replace(/"/g, '\\"')
-							.replace(/\n/g, "\\n");
-						controller.enqueue(encoder.encode(`0:"${escapedChunk}"\n`));
-					}
-					controller.close();
-				},
-			});
-
-			return new Response(verifiedStream, {
-				status: 200,
-				headers: {
-					"Content-Type": "text/plain; charset=utf-8",
-					"X-Vercel-AI-Data-Stream": "v1",
-					"Cache-Control": "no-cache",
-					"X-Accel-Buffering": "no",
-				},
-			});
-		} catch (verifyError: unknown) {
-			console.error(
-				"[ChatAPI] Error en generación con verificación:",
-				verifyError,
+		// Extraer source chunks para verificación
+		const sourceChunks: string[] = [];
+		if (shouldVerify && retrievedContext) {
+			// Extract text from sources for verification
+			// Note: Las sources no tienen campo 'content', usar bulletinContents desde retrieveContext
+			console.log(
+				`[ChatAPI] 📄 Intentando extraer chunks desde retrievedContext...`,
 			);
-			// Fallback: intentar streaming normal
-			console.log("[ChatAPI] Fallback: usando streamText sin verificación");
+			// Por ahora, extraer context text directamente
+			if (retrievedContext.context && retrievedContext.context.length > 0) {
+				sourceChunks.push(retrievedContext.context);
+			}
+			console.log(
+				`[ChatAPI] 📄 Source chunks para verificación: ${sourceChunks.length}`,
+			);
 		}
-	}
 
-	// Generar respuesta con streaming (sin verificación o fallback)
-	try {
-		console.log(`[ChatAPI] Iniciando streamText con modelo: ${modelId}`);
+		// LAYER 4: Verificación si es query Balance con números
+		if (shouldVerify && sourceChunks.length > 0) {
+			console.log(
+				`[ChatAPI] 🔍 Layer 4 activo: Generando respuesta con verificación`,
+			);
+			try {
+				const result = await generateText({
+					model: openrouter(modelId),
+					system: systemPrompt,
+					messages: recentMessages,
+					temperature: 0.3,
+					maxOutputTokens: isMassiveListing ? 500 : 4000,
+				});
+
+				const generatedResponse = result.text;
+				console.log(
+					`[ChatAPI] ✅ Respuesta generada: ${generatedResponse.length} chars`,
+				);
+
+				// Verificar números en la respuesta
+				const verificationReport = verifyResponse(
+					generatedResponse,
+					sourceChunks,
+				);
+				console.log(`[ChatAPI] 📊 Verificación completada:`);
+				console.log(
+					`[ChatAPI]   - Números totales: ${verificationReport.totalNumbers}`,
+				);
+				console.log(
+					`[ChatAPI]   - Verificados: ${verificationReport.verifiedNumbers}`,
+				);
+				console.log(
+					`[ChatAPI]   - Confidence: ${(verificationReport.overallConfidence * 100).toFixed(1)}%`,
+				);
+				console.log(
+					`[ChatAPI]   - Hallucination: ${verificationReport.possibleHallucination ? "YES ⚠️" : "NO ✅"}`,
+				);
+
+				// Agregar badge de confianza
+				const verifiedResponse = addConfidenceBadge(
+					generatedResponse,
+					verificationReport,
+				);
+				console.log(`[ChatAPI] ✅ Badge agregado, enviando respuesta`);
+
+				// Convertir respuesta verificada a stream
+				const encoder = new TextEncoder();
+				const verifiedStream = new ReadableStream({
+					start(controller) {
+						// Enviar respuesta completa en chunks pequeños para simular streaming
+						const chunkSize = 50;
+						for (let i = 0; i < verifiedResponse.length; i += chunkSize) {
+							const chunk = verifiedResponse.slice(i, i + chunkSize);
+							const escapedChunk = chunk
+								.replace(/"/g, '\\"')
+								.replace(/\n/g, "\\n");
+							controller.enqueue(encoder.encode(`0:"${escapedChunk}"\n`));
+						}
+						controller.close();
+					},
+				});
+
+				return new Response(verifiedStream, {
+					status: 200,
+					headers: {
+						"Content-Type": "text/plain; charset=utf-8",
+						"X-Vercel-AI-Data-Stream": "v1",
+						"Cache-Control": "no-cache",
+						"X-Accel-Buffering": "no",
+					},
+				});
+			} catch (verifyError: unknown) {
+				console.error(
+					"[ChatAPI] Error en generación con verificación:",
+					verifyError,
+				);
+				// Fallback: intentar streaming normal
+				console.log("[ChatAPI] Fallback: usando streamText sin verificación");
+			}
+		}
+
+		// Generar respuesta con streaming (sin verificación o fallback)
+		try {
+			console.log(`[ChatAPI] Iniciando streamText con modelo: ${modelId}`);
 
 			console.log(
 				`[ChatAPI] Enviando ${recentMessages.length} mensajes al LLM`,
@@ -778,17 +800,38 @@ Pero hay ${retrievedContext.sources.length} resultados EN TOTAL que el usuario p
 				maxOutputTokens: isMassiveListing ? 500 : 4000,
 			});
 
-			console.log(
-				`[ChatAPI] 📤 Enviando stream con toDataStreamResponse()`,
-			);
+			const textStream = result.textStream;
+			const encoder = new TextEncoder();
 
-			// toDataStreamResponse() genera la Response correcta con:
-			// - Content-Type: text/plain; charset=utf-8
-			// - X-Vercel-AI-Data-Stream: v1
-			// - Transfer-Encoding: chunked (compatible con proxies/ngrok)
-			// Sin estos headers, useChat() no puede parsear la respuesta correctamente
-			return result.toDataStreamResponse({
+			const compatibleStream = new ReadableStream({
+				async start(controller) {
+					try {
+						for await (const chunk of textStream) {
+							const escapedChunk = chunk
+								.replace(/\\/g, "\\\\")
+								.replace(/"/g, '\\"')
+								.replace(/\n/g, "\\n")
+								.replace(/\r/g, "\\r");
+							controller.enqueue(encoder.encode(`0:"${escapedChunk}"\n`));
+						}
+						controller.close();
+					} catch (error) {
+						console.error("[ChatAPI] Error en stream:", error);
+						controller.error(error);
+					}
+				},
+			});
+
+			console.log(`[ChatAPI] 📤 Enviando stream con Data Stream Protocol v1`);
+
+			// IMPORTANTE: Content-Type DEBE ser text/plain + X-Vercel-AI-Data-Stream: v1
+			// para que useChat() parsee los chunks correctamente.
+			// text/event-stream hace que ngrok y otros proxies buffereen la respuesta completa.
+			return new Response(compatibleStream, {
+				status: 200,
 				headers: {
+					"Content-Type": "text/plain; charset=utf-8",
+					"X-Vercel-AI-Data-Stream": "v1",
 					"Cache-Control": "no-cache",
 					"X-Accel-Buffering": "no",
 				},

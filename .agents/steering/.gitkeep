@@ -1,0 +1,28 @@
+# Steering
+
+Esta carpeta contiene reglas y restricciones que los agentes DEBEN cumplir.
+
+## Archivos de steering
+
+- `python-patterns.md` - Patrones de código Python
+- `typescript-react-patterns.md` - Patrones TypeScript/React
+- `error-handling.md` - Estrategias de manejo de errores
+- `llm-usage.md` - Uso de modelos LLM
+- `performance.md` - Principios de optimización
+
+## Naturaleza de las reglas
+
+Las reglas en steering son **HARD CONSTRAINTS**:
+
+- ✅ "DEBE usar type hints explícitos"
+- ✅ "NUNCA usar `any` en TypeScript"
+- ✅ "SIEMPRE manejar errores con try-except"
+
+Los agentes deben **interpretar y aplicar** estas reglas, no ignorarlas.
+
+## Conflicto de reglas
+
+Si un agente detecta un conflicto entre reglas:
+1. Preguntar antes de proceder
+2. Documentar la decisión tomada
+3. Proponer actualización de steering

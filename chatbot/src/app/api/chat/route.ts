@@ -745,9 +745,9 @@ Pero hay ${retrievedContext.sources.length} resultados EN TOTAL que el usuario p
 			return new Response(verifiedStream, {
 				status: 200,
 				headers: {
-					"Content-Type": "text/event-stream",
+					"Content-Type": "text/plain; charset=utf-8",
+					"X-Vercel-AI-Data-Stream": "v1",
 					"Cache-Control": "no-cache",
-					Connection: "keep-alive",
 					"X-Accel-Buffering": "no",
 				},
 			});
@@ -778,56 +778,18 @@ Pero hay ${retrievedContext.sources.length} resultados EN TOTAL que el usuario p
 				maxOutputTokens: isMassiveListing ? 500 : 4000,
 			});
 
-			/**
-			 * SOLUCIÓN ROBUSTA Y PERMANENTE:
-			 *
-			 * Usamos stream manual en Next.js porque:
-			 * 1. Next.js API routes retornan Web API Response (no Node ServerResponse)
-			 * 2. El protocolo de Vercel AI SDK es estable: `0:"text"\n` es el formato core
-			 * 3. Esta es la forma más directa y visible del protocolo
-			 * 4. Es resistente a cambios porque no depende de métodos de SDK que podrían cambiar
-			 *
-			 * Si SDK depreca toUIMessageStreamResponse(), la estructura textStream seguirá igual
-			 * porque es el Iterator<string> base que genera streamText()
-			 *
-			 * COMPATIBILIDAD: Funciona con:
-			 * - @ai-sdk/react parseDataStreamPart (v1.0.0+)
-			 * - Vercel AI SDK (v6.0+)
-			 * - Navegadores modernos (ReadableStream API)
-			 */
-
-			const textStream = result.textStream;
-			const encoder = new TextEncoder();
-
-			const compatibleStream = new ReadableStream({
-				async start(controller) {
-					try {
-						for await (const chunk of textStream) {
-							// Formato: 0:"texto_escapado"\n
-							// Este es el formato del protocolo Vercel AI (estable y bien documentado)
-							const escapedChunk = chunk
-								.replace(/"/g, '\\"')
-								.replace(/\n/g, "\\n");
-							controller.enqueue(encoder.encode(`0:"${escapedChunk}"\n`));
-						}
-						controller.close();
-					} catch (error) {
-						console.error("[ChatAPI] Error en stream:", error);
-						controller.error(error);
-					}
-				},
-			});
-
 			console.log(
-				`[ChatAPI] 📤 Enviando stream con formato estable 0:"text"\\n`,
+				`[ChatAPI] 📤 Enviando stream con toDataStreamResponse()`,
 			);
 
-			return new Response(compatibleStream, {
-				status: 200,
+			// toDataStreamResponse() genera la Response correcta con:
+			// - Content-Type: text/plain; charset=utf-8
+			// - X-Vercel-AI-Data-Stream: v1
+			// - Transfer-Encoding: chunked (compatible con proxies/ngrok)
+			// Sin estos headers, useChat() no puede parsear la respuesta correctamente
+			return result.toDataStreamResponse({
 				headers: {
-					"Content-Type": "text/event-stream",
 					"Cache-Control": "no-cache",
-					Connection: "keep-alive",
 					"X-Accel-Buffering": "no",
 				},
 			});

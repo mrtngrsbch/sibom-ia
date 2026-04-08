@@ -71,6 +71,7 @@ export interface AnalyzeResponse {
 	task_id: string;
 	partida: string;
 	status: TaskStatus;
+	sensor?: "sentinel-2" | "sentinel-1" | "modis";
 	progress: number;
 	message: string;
 	total_images: number;
@@ -87,6 +88,7 @@ export interface AnalyzeRequest {
 	years: number;
 	samples_per_year: number;
 	max_clouds: number;
+	sensor?: "sentinel-2" | "sentinel-1" | "modis";
 }
 
 /**

@@ -46,6 +46,11 @@ Este chatbot nace como la **alternativa superior** al buscador de SIBOM:
 
 **Analogía**: SIBOM es como una biblioteca con libros valiosos pero mal organizada. Nosotros somos el bibliotecario experto que encuentra exactamente lo que necesitas.
 
+### Scraping
+
+Escrapeamos otros datos de las webs municipales, particularmente los que no están en SIBOM, como decretos y resoluciones. Esto nos permite ofrecer una cobertura más completa y actualizada.
+
+
 ## 🚀 Objetivo
 
 Convertirse en la **herramienta de referencia** para consultar legislación municipal de la Provincia de Buenos Aires, ayudando a:
@@ -57,7 +62,7 @@ Convertirse en la **herramienta de referencia** para consultar legislación muni
 
 ## 🤝 Apoyá el Proyecto
 
-Este proyecto es **gratuito y de código abierto**. Si te resulta útil y querés apoyar su desarrollo y mantenimiento, podés invitarme un cafecito:
+Este proyecto es **gratuito y de código abierto**. Si te resulta útil y querés apoyar su desarrollo y mantenimiento, podés invitarme un café:
 
 **[☕ Donar en Matecito](https://www.matecito.co/)**
 

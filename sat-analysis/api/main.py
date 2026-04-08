@@ -40,6 +40,7 @@ from .models import (
     HealthResponse,
 )
 from .tasks import task_store, run_analysis_task, load_partidos
+from .tasks_extra import run_s1_analysis_task, run_modis_analysis_task
 
 # Configurar logging
 logging.basicConfig(
@@ -146,8 +147,13 @@ async def create_analysis(
     El análisis es asíncrono y retorna inmediatamente con un task_id.
     Usa GET /api/analyze/{task_id} para consultar el estado y resultados.
 
+    Sensores disponibles:
+    - sentinel-2 (default): Decena de índices ópticos, requiere baja nubosidad
+    - sentinel-1: SAR radar, funciona con nubes, detección de agua y humedad
+    - modis: 500 m resolución, 8 días de composición, NDVI/NDWI/EVI
+
     Args:
-        request: Parámetros de análisis (partida, years, samples_per_year, max_clouds)
+        request: Parámetros de análisis (partida, years, samples_per_year, max_clouds, sensor)
         background_tasks: FastAPI BackgroundTasks para ejecutar en segundo plano
 
     Returns:
@@ -166,6 +172,7 @@ async def create_analysis(
         task_id=task_id,
         partida=request.partida,
         status=TaskStatus.PENDING,
+        sensor=request.sensor,
         progress=0.0,
         message="Análisis iniciado, en cola para procesamiento",
         total_images=0,
@@ -183,30 +190,52 @@ async def create_analysis(
         codigo_partido = partida_input[:3]
         partida_individual = partida_input[3:]
     else:
-        # Asumir que es solo la partida individual
-        # Usar código por defecto o intentar extraer del formato
         codigo_partido = "002"  # Default Alberti
         partida_individual = partida_input
 
-    # Agregar tarea de fondo
-    background_tasks.add_task(
-        run_analysis_task,
-        task_id,
-        partida_individual,
-        codigo_partido,
-        request.years,
-        request.samples_per_year,
-        request.max_clouds,
-        OUTPUT_DIR,
-    )
+    # Disparar tarea según sensor
+    if request.sensor == "sentinel-1":
+        background_tasks.add_task(
+            run_s1_analysis_task,
+            task_id,
+            partida_individual,
+            codigo_partido,
+            request.years,
+            request.samples_per_year,
+            OUTPUT_DIR,
+        )
+    elif request.sensor == "modis":
+        background_tasks.add_task(
+            run_modis_analysis_task,
+            task_id,
+            partida_individual,
+            codigo_partido,
+            request.years,
+            request.samples_per_year,
+            OUTPUT_DIR,
+        )
+    else:
+        # sentinel-2 (default)
+        background_tasks.add_task(
+            run_analysis_task,
+            task_id,
+            partida_individual,
+            codigo_partido,
+            request.years,
+            request.samples_per_year,
+            request.max_clouds,
+            OUTPUT_DIR,
+        )
 
     logger.info(
-        f"Análisis iniciado: task_id={task_id}, partida={request.partida}")
+        "Análisis iniciado: task_id=%s, partida=%s, sensor=%s",
+        task_id, request.partida, request.sensor,
+    )
 
     return TaskCreateResponse(
         task_id=task_id,
         status=TaskStatus.PENDING,
-        message="Análisis iniciado correctamente",
+        message=f"Análisis {request.sensor} iniciado correctamente",
     )
 
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 
@@ -43,24 +44,8 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="es" suppressHydrationWarning>
-			<head>
-				<script
-					dangerouslySetInnerHTML={{
-						__html: `
-              (function() {
-                const theme = localStorage.getItem('theme-preference') || 'system';
-                const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-                if (isDark) {
-                  document.documentElement.classList.add('dark');
-                } else {
-                  document.documentElement.classList.remove('dark');
-                }
-              })();
-            `,
-					}}
-				/>
-			</head>
 			<body className={inter.className}>
+				<Script src="/theme-init.js" strategy="beforeInteractive" />
 				<ThemeProvider defaultTheme="system">
 					<div className="min-h-screen bg-slate-50 dark:bg-slate-900">
 						{children}

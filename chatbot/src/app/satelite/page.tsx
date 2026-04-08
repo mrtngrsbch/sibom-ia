@@ -10,13 +10,28 @@ import {
 	type AnalyzeRequest,
 	type AnalyzeResponse,
 } from "@/lib/sat-api";
-import {
-	Card,
-	CardContent,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+
+const SESSION_KEY_ANALYSIS = "sat_analysis_last";
+const SESSION_KEY_TASK = "sat_analysis_taskId";
+
+function loadPersistedAnalysis(): {
+	analysis: AnalyzeResponse | null;
+	taskId: string | null;
+} {
+	if (typeof window === "undefined") return { analysis: null, taskId: null };
+	try {
+		const raw = sessionStorage.getItem(SESSION_KEY_ANALYSIS);
+		const taskId = sessionStorage.getItem(SESSION_KEY_TASK);
+		return {
+			analysis: raw ? (JSON.parse(raw) as AnalyzeResponse) : null,
+			taskId: taskId ?? null,
+		};
+	} catch {
+		return { analysis: null, taskId: null };
+	}
+}
 
 /**
  * Página principal de análisis satelital
@@ -31,6 +46,23 @@ export default function SatelitePage() {
 	const [taskId, setTaskId] = useState<string | null>(null);
 
 	const client = getSatAnalysisClient();
+
+	// Restaurar último análisis al montar
+	useEffect(() => {
+		const { analysis: saved, taskId: savedTask } = loadPersistedAnalysis();
+		if (saved) {
+			setAnalysis(saved);
+			// Si estaba en progreso al salir, reanudar polling
+			if (
+				savedTask &&
+				saved.status !== "completed" &&
+				saved.status !== "failed"
+			) {
+				setTaskId(savedTask);
+				setLoading(true);
+			}
+		}
+	}, []);
 
 	const fetchPartidos = async () => {
 		try {
@@ -53,6 +85,30 @@ export default function SatelitePage() {
 	useEffect(() => {
 		fetchPartidos();
 	}, []);
+
+	// Persistir análisis cuando cambia
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+		if (analysis) {
+			try {
+				sessionStorage.setItem(SESSION_KEY_ANALYSIS, JSON.stringify(analysis));
+			} catch {
+				// sessionStorage lleno o no disponible — ignorar silenciosamente
+			}
+		} else {
+			sessionStorage.removeItem(SESSION_KEY_ANALYSIS);
+		}
+	}, [analysis]);
+
+	// Persistir taskId cuando cambia
+	useEffect(() => {
+		if (typeof window === "undefined") return;
+		if (taskId) {
+			sessionStorage.setItem(SESSION_KEY_TASK, taskId);
+		} else {
+			sessionStorage.removeItem(SESSION_KEY_TASK);
+		}
+	}, [taskId]);
 
 	// Polling para actualizar estado del análisis
 	useEffect(() => {
@@ -127,8 +183,60 @@ export default function SatelitePage() {
 							Análisis Satelital
 						</h1>
 						<p className="text-slate-600 dark:text-slate-400">
-							Detección de anegamiento y salinización usando imágenes Sentinel-2
+							Detección de anegamiento y salinización usando Sentinel-2,
+							Sentinel-1 SAR y MODIS
 						</p>
+					</div>
+				</div>
+
+				{/* Resumen de capas */}
+				<div className="mt-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 p-4">
+					<p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-3">
+						16 capas de análisis disponibles
+					</p>
+					<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+						{/* Sentinel-2 */}
+						<div className="space-y-1.5">
+							<p className="font-semibold text-blue-700 dark:text-blue-400">
+								🛰 Sentinel-2 — 8 capas
+							</p>
+							<ul className="space-y-0.5 text-slate-600 dark:text-slate-400">
+								<li>RGB · Color real</li>
+								<li>Clasificación · 4 categorías de uso de suelo</li>
+								<li>NDWI · Índice de agua</li>
+								<li>MNDWI · NDWI modificado (agua turbia)</li>
+								<li>NDVI · Índice de vegetación</li>
+								<li>NDMI · Índice de humedad</li>
+								<li>NDSI · Índice de nieve/sal</li>
+								<li>Salinidad · Ratio SWIR2 + NIR</li>
+							</ul>
+						</div>
+
+						{/* Sentinel-1 */}
+						<div className="space-y-1.5">
+							<p className="font-semibold text-emerald-700 dark:text-emerald-400">
+								📡 Sentinel-1 SAR — 4 capas
+							</p>
+							<ul className="space-y-0.5 text-slate-600 dark:text-slate-400">
+								<li>SAR VV · Backscatter vertical</li>
+								<li>SAR VH · Backscatter cruzado</li>
+								<li>SAR RGB · Composición VV/VH/ratio</li>
+								<li>SAR Agua · Máscara agua/humedad</li>
+							</ul>
+						</div>
+
+						{/* MODIS */}
+						<div className="space-y-1.5">
+							<p className="font-semibold text-amber-700 dark:text-amber-400">
+								🌍 MODIS — 4 capas
+							</p>
+							<ul className="space-y-0.5 text-slate-600 dark:text-slate-400">
+								<li>RGB · Color real 500 m</li>
+								<li>NDVI · Vegetación (compuesto 8 días)</li>
+								<li>NDWI · Agua (compuesto 8 días)</li>
+								<li>EVI · Vegetación mejorada</li>
+							</ul>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -193,32 +301,82 @@ export default function SatelitePage() {
 					<CardTitle className="text-lg">Información</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-						<div>
-							<p className="font-medium mb-2">Fuente de datos</p>
-							<p className="text-slate-600 dark:text-slate-400">
-								Sentinel-2 L2A (MSI) - Resolución 10m
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+						{/* Sentinel-2 */}
+						<div className="space-y-3">
+							<p className="font-semibold text-blue-700 dark:text-blue-400 border-b border-blue-200 dark:border-blue-800 pb-1">
+								🛰 Sentinel-2 (óptico)
 							</p>
+							<div>
+								<p className="font-medium">Resolución</p>
+								<p className="text-slate-600 dark:text-slate-400">10 m/píxel</p>
+							</div>
+							<div>
+								<p className="font-medium">Índices calculados</p>
+								<p className="text-slate-600 dark:text-slate-400">
+									NDWI · MNDWI · NDVI · NDMI · NDSI · Salinidad
+								</p>
+							</div>
+							<div>
+								<p className="font-medium">Clasificación</p>
+								<p className="text-slate-600 dark:text-slate-400">
+									4 categorías: Agua, Humedal, Vegetación, Otros
+								</p>
+							</div>
 						</div>
-						<div>
-							<p className="font-medium mb-2">Proveedor</p>
-							<p className="text-slate-600 dark:text-slate-400">
-								Microsoft Planetary Computer (STAC)
+
+						{/* Sentinel-1 */}
+						<div className="space-y-3">
+							<p className="font-semibold text-emerald-700 dark:text-emerald-400 border-b border-emerald-200 dark:border-emerald-800 pb-1">
+								📡 Sentinel-1 (SAR radar)
 							</p>
+							<div>
+								<p className="font-medium">Resolución</p>
+								<p className="text-slate-600 dark:text-slate-400">10 m/píxel</p>
+							</div>
+							<div>
+								<p className="font-medium">Imágenes generadas</p>
+								<p className="text-slate-600 dark:text-slate-400">
+									VV · VH · RGB SAR (VV/VH/ratio)
+								</p>
+							</div>
+							<div>
+								<p className="font-medium">Detección</p>
+								<p className="text-slate-600 dark:text-slate-400">
+									Agua y zonas húmedas por backscatter
+								</p>
+							</div>
 						</div>
-						<div>
-							<p className="font-medium mb-2">Índices calculados</p>
-							<p className="text-slate-600 dark:text-slate-400">
-								NDWI, MNDWI, NDVI, NDMI, NDSI, Salinity
+
+						{/* MODIS */}
+						<div className="space-y-3">
+							<p className="font-semibold text-amber-700 dark:text-amber-400 border-b border-amber-200 dark:border-amber-800 pb-1">
+								🌍 MODIS (composición 8 días)
 							</p>
-						</div>
-						<div>
-							<p className="font-medium mb-2">Clasificación</p>
-							<p className="text-slate-600 dark:text-slate-400">
-								4 categorías: Agua, Humedal, Vegetación, Otros
-							</p>
+							<div>
+								<p className="font-medium">Resolución</p>
+								<p className="text-slate-600 dark:text-slate-400">
+									500 m/píxel
+								</p>
+							</div>
+							<div>
+								<p className="font-medium">Índices calculados</p>
+								<p className="text-slate-600 dark:text-slate-400">
+									NDVI · NDWI · EVI
+								</p>
+							</div>
+							<div>
+								<p className="font-medium">Uso recomendado</p>
+								<p className="text-slate-600 dark:text-slate-400">
+									Tendencias temporales y cobertura regional
+								</p>
+							</div>
 						</div>
 					</div>
+
+					<p className="text-xs text-slate-400 dark:text-slate-500 mt-4 pt-3 border-t border-slate-200 dark:border-slate-700">
+						Proveedor: Microsoft Planetary Computer (STAC) — Todos los sensores
+					</p>
 				</CardContent>
 			</Card>
 		</div>

@@ -17,11 +17,12 @@ from sat_analysis.models.schemas import ImageResult
 from sat_analysis.config import get_settings
 
 from .models import (
-    TaskStatus,
+    AnalysisSummary,
     AnalyzeResponse,
     ImageResultDTO,
     ImageUrls,
-    AnalysisSummary,
+    SensorType,
+    TaskStatus,
 )
 
 logger = logging.getLogger(__name__)
@@ -484,6 +485,18 @@ def _save_per_image_visualizations(
                 im = ax.imshow(data, cmap=cmap)
 
             plt.colorbar(im, ax=ax, label=title_name)
+
+            # Dibujar perímetro de la parcela sobre todos los índices
+            if parcel_mask is not None:
+                contour_mask = parcel_mask.astype(float)
+                ax.contour(
+                    contour_mask,
+                    levels=[0.5],
+                    colors=['white'],
+                    linewidths=2.0,
+                    alpha=0.9,
+                )
+
             ax.set_title(f"{title_name} - {partida_clean} | {date_str}",
                         fontsize=10, fontweight='bold')
             ax.axis('off')
@@ -511,29 +524,30 @@ def _save_per_image_visualizations(
                 p2, p98 = np.percentile(valid_pixels, [2, 98])
                 rgb = np.clip((rgb - p2) / (p98 - p2), 0, 1)
 
-            # Aplicar máscara si está disponible
+            # Aplicar máscara si está disponible (atenuar exterior)
             if parcel_mask is not None:
                 mask_3d = np.stack([parcel_mask] * 3, axis=-1)
-                rgb_masked = np.where(mask_3d, rgb, rgb * 0.3)
+                rgb_display = np.where(mask_3d, rgb, rgb * 0.3)
             else:
-                rgb_masked = rgb
+                rgb_display = rgb
 
-            fig, axes = plt.subplots(1, 2, figsize=(16, 7))
+            fig, ax = plt.subplots(figsize=(10, 8))
+            ax.imshow(rgb_display)
 
-            # Panel izquierdo: imagen completa
-            axes[0].imshow(rgb)
-            axes[0].set_title(f"Sentinel-2 RGB - {date_str}", fontsize=11, fontweight='bold')
-            axes[0].axis('off')
-
-            # Panel derecho: parcela destacada
-            axes[1].imshow(rgb_masked)
+            # Dibujar perímetro de la parcela
             if parcel_mask is not None:
                 contour_mask = parcel_mask.astype(float)
-                axes[1].contour(contour_mask, levels=[0.5], colors=['#FF5722'], linewidths=1.5)
-            axes[1].set_title(f"Parcela {partida_clean} - {date_str}", fontsize=11, fontweight='bold')
-            axes[1].axis('off')
+                ax.contour(
+                    contour_mask,
+                    levels=[0.5],
+                    colors=['#FF5722'],
+                    linewidths=2.0,
+                    alpha=0.9,
+                )
 
-            plt.suptitle(f"Sentinel-2 True Color | {date_str}", fontsize=13, fontweight='bold', y=1.02)
+            ax.set_title(f"Sentinel-2 RGB - Parcela {partida_clean} | {date_str}",
+                        fontsize=11, fontweight='bold')
+            ax.axis('off')
             plt.tight_layout()
 
             rgb_filename = f"rgb_{partida_clean}_{date_str}.png"

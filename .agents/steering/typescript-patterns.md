@@ -485,4 +485,55 @@ When implementing new TypeScript modules in this project:
 - [ ] Add accessibility attributes and test keyboard navigation
 - [ ] ✅ **NEVER use `any` type** - always specify types explicitly
 - [ ] ✅ **Use API Routes** - never use Server Actions for backend logic
+
+---
+
+## Streaming con Vercel AI SDK (Next.js API Routes)
+
+### ⚠️ Regla crítica: headers del Data Stream Protocol
+
+Cuando se devuelve un `ReadableStream` manual desde un API Route al cliente `useChat()`,
+los headers **deben ser exactamente**:
+
+```typescript
+return new Response(stream, {
+  status: 200,
+  headers: {
+    "Content-Type": "text/plain; charset=utf-8",
+    "X-Vercel-AI-Data-Stream": "v1",
+    "Cache-Control": "no-cache",
+    "X-Accel-Buffering": "no",        // evita buffering en nginx/ngrok
+  },
+});
+```
+
+**❌ NUNCA usar `Content-Type: text/event-stream`** para respuestas del AI SDK:
+- Los proxies (ngrok, nginx) bufferean SSE hasta recibir la respuesta completa.
+- El cliente `useChat()` no puede parsear el stream en tiempo real.
+- La UI queda bloqueada sin mostrar nada hasta que termina.
+
+### Formato de chunk del Data Stream Protocol
+
+```typescript
+// Cada chunk de texto debe tener este formato exacto:
+const escapedChunk = chunk
+  .replace(/\\/g, "\\\\")   // PRIMERO escapar backslashes
+  .replace(/"/g, '\\"')     // luego comillas dobles
+  .replace(/\n/g, "\\n")   // luego saltos de línea
+  .replace(/\r/g, "\\r");  // luego retornos de carro
+controller.enqueue(encoder.encode(`0:"${escapedChunk}"\n`));
+```
+
+### ⚠️ Métodos del SDK que NO existen en `ai@6.x`
+
+| Método | Estado |
+|--------|--------|
+| `result.toDataStreamResponse()` | ❌ No existe en `ai@6.x` (solo en v5) |
+| `result.toUIMessageStreamResponse()` | ✅ Existe en `ai@6.x` (usa SSE, no recomendado con proxies) |
+| `result.textStream` | ✅ Existe — usar con stream manual + headers correctos |
+
+**Antes de usar cualquier método del resultado de `streamText()`, verificar:**
+```bash
+grep "toDataStreamResponse\|toUIMessageStreamResponse" node_modules/ai/dist/index.js
+```
 - [ ] ✅ **Use Server Components** - prefer 'use server' logic for data fetching

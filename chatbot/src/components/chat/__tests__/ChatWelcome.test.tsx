@@ -14,7 +14,7 @@ describe("ChatWelcome", () => {
 
 		expect(screen.getByText("¿En qué puedo ayudarte?")).toBeInTheDocument();
 		expect(
-			screen.getByText(/observatorio independiente de la derrota municipal/i),
+			screen.getByText(/observatorio independiente de la deriva municipal/i),
 		).toBeInTheDocument();
 	});
 

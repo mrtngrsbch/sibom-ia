@@ -31,7 +31,7 @@ export function ChatWelcome({ isLoading, onQuestionClick }: ChatWelcomeProps) {
 					¿En qué puedo ayudarte?
 				</h2>
 				<p className="text-slate-600 dark:text-slate-400 max-w-md mx-auto">
-					Mangrullo es un observatorio independiente de la derrota municipal.
+					Mangrullo es un observatorio independiente de la deriva municipal.
 				</p>
 			</div>
 

@@ -1,3 +1,17 @@
+export interface DiagnosticScore {
+	name: string;
+	value: number;
+	label?: string;
+	interpretation?: string;
+	component_score?: number;
+}
+
+export interface DiagnosticResult {
+	overall_score: number;
+	risk_level: string;
+	scores: DiagnosticScore[];
+	interpretation: string;
+}
 /**
  * types.ts
  *
@@ -252,6 +266,7 @@ export interface AnalyzeResponse {
 	total_images: number;
 	results?: SatelliteImageResult[];
 	summary?: AnalysisSummary;
+	diagnostic?: DiagnosticResult;
 	error?: string;
 }
 

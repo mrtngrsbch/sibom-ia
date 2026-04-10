@@ -116,6 +116,23 @@ class AnalysisSummary(BaseModel):
     trend_wetland: str  # "up", "down", "stable"
 
 
+
+# Modelos de diagnóstico profesional
+class DiagnosticScore(BaseModel):
+    """Puntaje de diagnóstico por sensor o índice."""
+    name: str
+    value: float
+    label: Optional[str] = None
+    interpretation: Optional[str] = None
+    component_score: Optional[float] = None
+
+class DiagnosticResult(BaseModel):
+    """Resultado de diagnóstico profesional del análisis."""
+    overall_score: float
+    risk_level: str = "Desconocido"
+    scores: list[DiagnosticScore]
+    interpretation: str
+
 class AnalyzeResponse(BaseModel):
     """Respuesta de análisis para polling."""
     task_id: str
@@ -127,6 +144,7 @@ class AnalyzeResponse(BaseModel):
     total_images: int = Field(default=0)
     results: Optional[List[ImageResultDTO]] = None
     summary: Optional[AnalysisSummary] = None
+    diagnostic: Optional[DiagnosticResult] = None
     error: Optional[str] = None
 
 

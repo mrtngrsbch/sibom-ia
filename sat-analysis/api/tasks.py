@@ -267,10 +267,13 @@ async def run_analysis_task(
         # 6. Calcular resumen estadístico
         summary = _calculate_summary(results, total_area_ha, date_range, partida, years, samples_per_year)
 
-        # 7. Guardar imágenes (opcional, para debug)
+        # 7. Calcular diagnóstico profesional
+        diagnostic = _calculate_diagnostic(results, summary)
+
+        # 8. Guardar imágenes (opcional, para debug)
         await _save_indices_images_async(results, partida, output_dir)
 
-        # 8. Actualizar tarea como completada
+        # 9. Actualizar tarea como completada
         response = await task_store.get(task_id)
         if response:
             response.status = TaskStatus.COMPLETED
@@ -291,6 +294,7 @@ async def run_analysis_task(
                 for i, r in enumerate(results)
             ]
             response.summary = summary
+            response.diagnostic = diagnostic
 
         await task_store.set(task_id, response)
 
@@ -300,6 +304,124 @@ async def run_analysis_task(
         response = await task_store.get(task_id)
         if response:
             response.error = str(e)
+
+
+# Diagnóstico profesional automático
+def _calculate_diagnostic(results: list, summary: 'AnalysisSummary') -> 'DiagnosticResult':
+    """
+    Diagnóstico de riesgo hídrico con algoritmo ponderado multi-métrica.
+
+    Componentes:
+      S1 (35%) — Exposición media: fracción promedio de área afectada (agua + humedal)
+      S2 (30%) — Pico de exposición: fracción máxima en el peor evento registrado
+      S3 (20%) — Frecuencia: % de imágenes con área afectada > 10 %
+      S4 (15%) — Tendencia: pendiente de regresión lineal (positiva = empeoramiento)
+
+    Escala de riesgo final:
+      >= 75  → Bajo
+      50–74  → Moderado
+      30–49  → Elevado
+      < 30   → Alto
+    """
+    if not results or not summary:
+        return None
+
+    from .models import DiagnosticResult, DiagnosticScore
+
+    total_area = summary.total_area_ha or 1.0
+    n = len(results)
+
+    # ── 1. Fracción afectada (agua + humedal) por imagen ─────────────────
+    affected = [(r.water_ha + r.wetland_ha) / total_area * 100 for r in results]
+    avg_affected = sum(affected) / n
+    max_affected = max(affected)
+
+    # ── 2. Frecuencia de eventos significativos (> 10 % del área) ────────
+    THRESHOLD = 10.0
+    freq_pct = sum(1 for f in affected if f > THRESHOLD) / n * 100
+
+    # ── 3. Tendencia por regresión lineal (pendiente en %·imagen⁻¹) ──────
+    if n >= 3:
+        xs = list(range(n))
+        x_mean = (n - 1) / 2.0
+
+        def _slope(vals: list) -> float:
+            y_mean = sum(vals) / n
+            num = sum((xs[i] - x_mean) * (vals[i] - y_mean) for i in range(n))
+            den = sum((x - x_mean) ** 2 for x in xs)
+            return num / den if den > 0 else 0.0
+
+        water_slope = _slope([r.water_ha / total_area * 100 for r in results])
+        wetland_slope = _slope([r.wetland_ha / total_area * 100 for r in results])
+    else:
+        water_slope = wetland_slope = 0.0
+
+    # ── 4. Puntajes por componente (0 = crítico, 100 = sin riesgo) ───────
+    S1 = max(0.0, 100.0 - avg_affected * 2.0)    # 50 % avg  → S1 = 0
+    S2 = max(0.0, 100.0 - max_affected * 1.5)     # 67 % pico → S2 = 0
+    S3 = max(0.0, 100.0 - freq_pct * 1.5)         # 67 % freq → S3 = 0
+    combined_slope = water_slope + wetland_slope
+    S4 = max(0.0, 100.0 - max(0.0, combined_slope) * 20.0)
+
+    # ── 5. Score global ponderado ─────────────────────────────────────────
+    overall = round(0.35 * S1 + 0.30 * S2 + 0.20 * S3 + 0.15 * S4, 1)
+
+    # ── 6. Nivel de riesgo e interpretación ──────────────────────────────
+    if overall >= 75:
+        risk_level = "Bajo"
+        interpretation = "Sin riesgo significativo de anegamiento/salinización."
+    elif overall >= 50:
+        risk_level = "Moderado"
+        interpretation = "Riesgo moderado: se recomienda monitoreo periódico."
+    elif overall >= 30:
+        risk_level = "Elevado"
+        interpretation = "Riesgo elevado: considerar medidas de drenaje o manejo hídrico."
+    else:
+        risk_level = "Alto"
+        interpretation = "Riesgo alto: se recomienda intervención técnica urgente."
+
+    def _trend_label(sl: float) -> str:
+        if sl > 0.5:
+            return "creciente ↑"
+        if sl < -0.5:
+            return "decreciente ↓"
+        return "estable →"
+
+    return DiagnosticResult(
+        overall_score=overall,
+        risk_level=risk_level,
+        scores=[
+            DiagnosticScore(
+                name="Exposición media",
+                value=round(avg_affected, 1),
+                label="% área afectada (prom.)",
+                interpretation="Fracción promedio de área con agua+humedal sobre el total de la parcela.",
+                component_score=round(S1, 1),
+            ),
+            DiagnosticScore(
+                name="Pico de exposición",
+                value=round(max_affected, 1),
+                label="% área en el peor evento",
+                interpretation="Máxima fracción afectada registrada en el período analizado.",
+                component_score=round(S2, 1),
+            ),
+            DiagnosticScore(
+                name="Frecuencia de eventos",
+                value=round(freq_pct, 1),
+                label="% imágenes con >10 % área afectada",
+                interpretation="Qué tan frecuentes son los eventos de anegamiento significativos.",
+                component_score=round(S3, 1),
+            ),
+            DiagnosticScore(
+                name="Tendencia temporal",
+                value=round(combined_slope, 2),
+                label="pendiente %·imagen⁻¹",
+                interpretation=f"Agua: {_trend_label(water_slope)}, Humedal: {_trend_label(wetland_slope)}",
+                component_score=round(S4, 1),
+            ),
+        ],
+        interpretation=interpretation,
+    )
 
 
 def _calculate_summary(

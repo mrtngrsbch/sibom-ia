@@ -46,7 +46,7 @@ export const APP_CONFIG = {
 
 	/** Descripción breve */
 	description:
-		"Observatorio independiente de la derrota municipal | Chatbot especializado en legislación, ordenanzas y decretos de municipios de la Provincia de Buenos Aires, Argentina.",
+		"Observatorio independiente de la deriva municipal | Chatbot especializado en legislación, ordenanzas y decretos de municipios de la Provincia de Buenos Aires, Argentina.",
 
 	/** Duración del cache del índice en milisegundos */
 	indexCacheDuration: 10 * 60 * 1000, // 10 minutos

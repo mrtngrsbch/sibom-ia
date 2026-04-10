@@ -29,14 +29,7 @@ import {
 	ResponsiveContainer,
 	CartesianGrid,
 } from "recharts";
-import {
-	Droplets,
-	Cloud,
-	Leaf,
-	TrendingUp,
-	TrendingDown,
-	Minus,
-} from "@/lib/icons";
+import { Droplets, Cloud, TrendingUp, TrendingDown, Minus } from "@/lib/icons";
 import { ImagesPanel } from "./ImagesPanel";
 import { ImageThumbnail } from "./ImageThumbnail";
 import { ImageModal } from "./ImageModal";
@@ -162,6 +155,15 @@ export function ResultsPanel({ analysis, taskId }: ResultsPanelProps) {
 			otros: r.other_ha,
 			total: r.water_ha + r.wetland_ha + r.vegetation_ha + r.other_ha,
 		})) || [];
+
+	// Info de color/etiqueta según nivel de riesgo (escala 0–100)
+	const getRiskInfo = (score: number) => {
+		if (score >= 75) return { label: "Bajo", className: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300" };
+		if (score >= 50) return { label: "Moderado", className: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300" };
+		if (score >= 30) return { label: "Elevado", className: "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300" };
+		return { label: "Alto", className: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300" };
+	};
+	const riskInfo = analysis.diagnostic ? getRiskInfo(analysis.diagnostic.overall_score) : null;
 
 	return (
 		<div className="space-y-6">
@@ -300,13 +302,107 @@ export function ResultsPanel({ analysis, taskId }: ResultsPanelProps) {
 				</Card>
 			)}
 
-			{/* Tabs con gráfico, tabla e imágenes */}
-			<Tabs defaultValue="chart" className="w-full">
-				<TabsList className="grid w-full max-w-md grid-cols-3">
-					<TabsTrigger value="chart">Gráfico de Evolución</TabsTrigger>
-					<TabsTrigger value="table">Tabla de Datos</TabsTrigger>
-					<TabsTrigger value="images">Imágenes</TabsTrigger>
+			{/* Tabs con Diagnóstico, gráfico, tabla e imágenes */}
+			<Tabs defaultValue="diagnostic" className="w-full">
+				<TabsList className="flex flex-wrap h-auto gap-1 w-full justify-start bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+					<TabsTrigger value="diagnostic" className="text-xs sm:text-sm">
+						Diagnóstico
+					</TabsTrigger>
+					<TabsTrigger value="chart" className="text-xs sm:text-sm">
+						Gráfico de Evolución
+					</TabsTrigger>
+					<TabsTrigger value="table" className="text-xs sm:text-sm">
+						Tabla de Datos
+					</TabsTrigger>
+					<TabsTrigger value="images" className="text-xs sm:text-sm">
+						Imágenes
+					</TabsTrigger>
 				</TabsList>
+				<TabsContent value="diagnostic" className="mt-4">
+					<Card>
+						<CardHeader>
+							<CardTitle>Diagnóstico Profesional</CardTitle>
+							<CardDescription>
+								Evaluación automática del riesgo de anegamiento/salinización
+							</CardDescription>
+						</CardHeader>
+						<CardContent>
+							{analysis.diagnostic && riskInfo ? (
+								<div className="space-y-5">
+									{/* Score general + badge de riesgo */}
+									<div className="flex items-center gap-6">
+										<div className="text-center">
+											<span className="text-5xl font-bold tabular-nums">
+												{analysis.diagnostic.overall_score.toFixed(0)}
+											</span>
+											<p className="text-xs text-slate-500 mt-0.5">/ 100</p>
+										</div>
+										<div className="flex-1 space-y-2">
+											<span
+												className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium ${riskInfo.className}`}
+											>
+												Riesgo {analysis.diagnostic.risk_level ?? riskInfo.label}
+											</span>
+											<Progress
+												value={analysis.diagnostic.overall_score}
+												className="h-2"
+											/>
+										</div>
+									</div>
+
+									{/* Interpretación */}
+									<div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-sm text-slate-700 dark:text-slate-200">
+										{analysis.diagnostic.interpretation}
+									</div>
+
+									{/* Componentes del puntaje */}
+									<div className="space-y-4">
+										<p className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+											Detalle por componente
+										</p>
+										{analysis.diagnostic.scores.map((score) => (
+											<div key={score.name} className="space-y-1.5">
+												<div className="flex justify-between items-baseline text-sm">
+													<span className="font-medium">{score.name}</span>
+													<span className="text-slate-500 tabular-nums">
+														{score.value.toFixed(2)}
+														{score.label ? ` ${score.label}` : ""}
+													</span>
+												</div>
+												{score.component_score !== undefined && (
+													<Progress
+														value={score.component_score}
+														className="h-1.5"
+													/>
+												)}
+												{score.interpretation && (
+													<p className="text-xs text-slate-400">
+														{score.interpretation}
+													</p>
+												)}
+											</div>
+										))}
+									</div>
+								</div>
+							) : (
+								<div className="space-y-3">
+									<p className="text-amber-600 dark:text-amber-400 font-medium">
+										Diagnóstico no disponible en este resultado.
+									</p>
+									<p className="text-slate-500 dark:text-slate-400 text-sm">
+										<strong>Motivo:</strong> Este análisis fue generado con una
+										versión anterior del sistema que no incluía el módulo de
+										diagnóstico automático.
+									</p>
+									<p className="text-slate-500 dark:text-slate-400 text-sm">
+										Vuelve a ejecutar el análisis para obtener la evaluación de
+										riesgo de anegamiento/salinización.
+									</p>
+								</div>
+							)}
+						</CardContent>
+					</Card>
+				</TabsContent>
 
 				<TabsContent value="chart" className="mt-4">
 					<Card>
@@ -405,7 +501,7 @@ export function ResultsPanel({ analysis, taskId }: ResultsPanelProps) {
 									</TableRow>
 								</TableHeader>
 								<TableBody>
-									{results?.map((r, i) => {
+									{results?.map((r) => {
 										const total =
 											r.water_ha + r.wetland_ha + r.vegetation_ha + r.other_ha;
 										const afectado = (
@@ -414,7 +510,7 @@ export function ResultsPanel({ analysis, taskId }: ResultsPanelProps) {
 										).toFixed(1);
 
 										return (
-											<TableRow key={i}>
+											<TableRow key={r.date}>
 												<TableCell>
 													<ImageThumbnail
 														images={r.images}

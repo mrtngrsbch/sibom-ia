@@ -67,6 +67,21 @@ export interface AnalysisSummary {
 /**
  * Respuesta del endpoint de análisis
  */
+export interface DiagnosticScore {
+	name: string;
+	value: number;
+	label?: string;
+	interpretation?: string;
+	component_score?: number;
+}
+
+export interface DiagnosticResult {
+	overall_score: number;
+	risk_level: string;
+	scores: DiagnosticScore[];
+	interpretation: string;
+}
+
 export interface AnalyzeResponse {
 	task_id: string;
 	partida: string;
@@ -77,6 +92,7 @@ export interface AnalyzeResponse {
 	total_images: number;
 	results?: SatelliteImageResult[];
 	summary?: AnalysisSummary;
+	diagnostic?: DiagnosticResult;
 	error?: string;
 }
 

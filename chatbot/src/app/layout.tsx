@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 		template: "%s | Mangrullo",
 	},
 	description:
-		"Observatorio independiente de la derrota municipal | Chatbot especializado en legislación, ordenanzas y decretos de municipios de la Provincia de Buenos Aires, Argentina.",
+		"Observatorio independiente de la deriva municipal | Chatbot especializado en legislación, ordenanzas y decretos de municipios de la Provincia de Buenos Aires, Argentina.",
 	keywords: [
 		"legislación municipal",
 		"ordenanzas",

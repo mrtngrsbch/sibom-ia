@@ -166,7 +166,7 @@ export function Sidebar({
 							Mangrullo
 						</h2>
 						<p className="text-xs text-slate-500 dark:text-slate-400">
-							Observatorio independiente de la derrota municipal
+							Observatorio independiente de la deriva municipal
 						</p>
 					</div>
 				</div>

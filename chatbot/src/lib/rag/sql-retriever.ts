@@ -15,7 +15,8 @@
  * - Zero LLM calls for computational queries
  */
 
-import initSqlJs, { Database } from 'sql.js';
+import initSqlJs from 'sql.js';
+import type { Database } from 'sql.js';
 import path from 'path';
 import fs from 'fs/promises';
 
@@ -25,7 +26,7 @@ import fs from 'fs/promises';
 
 export interface SQLQueryResult {
   success: boolean;
-  data?: any[];
+  data?: Record<string, string | number | null>[];
   error?: string;
   query?: string;
   executionTime?: number;
@@ -99,46 +100,58 @@ async function loadDatabase(): Promise<Database> {
 }
 
 /**
- * Executes a SQL query
- * @param query - SQL query string
+ * Executes a SQL query with optional bind parameters (prevents SQL injection)
+ * @param query - SQL query string (use ? for positional params)
+ * @param bindParams - Optional positional parameters bound to ? placeholders
  * @returns Query result
  */
-export async function executeQuery(query: string): Promise<SQLQueryResult> {
+export async function executeQuery(
+  query: string,
+  bindParams: (string | number | null)[] = []
+): Promise<SQLQueryResult> {
   const startTime = Date.now();
 
   try {
     const db = await loadDatabase();
-    const results = db.exec(query);
 
-    const executionTime = Date.now() - startTime;
-
-    if (results.length === 0) {
+    // Use prepared statement when bind params are provided
+    if (bindParams.length > 0) {
+      const stmt = db.prepare(query);
+      const rows: Record<string, string | number | null>[] = [];
+      try {
+        stmt.bind(bindParams);
+        while (stmt.step()) {
+          rows.push(stmt.getAsObject() as Record<string, string | number | null>);
+        }
+      } finally {
+        stmt.free();
+      }
       return {
         success: true,
-        data: [],
+        data: rows,
         query,
-        executionTime
+        executionTime: Date.now() - startTime,
       };
     }
 
-    // Convert results to array of objects
+    const results = db.exec(query);
+    const executionTime = Date.now() - startTime;
+
+    if (results.length === 0) {
+      return { success: true, data: [], query, executionTime };
+    }
+
     const columns = results[0].columns;
     const values = results[0].values;
-
     const data = values.map(row => {
-      const obj: any = {};
+      const obj: Record<string, string | number | null> = {};
       columns.forEach((col, i) => {
-        obj[col] = row[i];
+        obj[col] = row[i] as string | number | null;
       });
       return obj;
     });
 
-    return {
-      success: true,
-      data,
-      query,
-      executionTime
-    };
+    return { success: true, data, query, executionTime };
   } catch (error) {
     console.error('[SQL] Query error:', error);
     return {
@@ -175,13 +188,16 @@ export async function getStatsByMunicipality(filters?: {
   `;
 
   const conditions: string[] = [];
+  const params: (string | number | null)[] = [];
 
   if (filters?.type) {
-    conditions.push(`type = '${filters.type}'`);
+    conditions.push(`type = ?`);
+    params.push(filters.type);
   }
 
   if (filters?.year) {
-    conditions.push(`year = ${filters.year}`);
+    conditions.push(`year = ?`);
+    params.push(filters.year);
   }
 
   if (conditions.length > 0) {
@@ -193,7 +209,7 @@ export async function getStatsByMunicipality(filters?: {
     ORDER BY total DESC
   `;
 
-  return executeQuery(query);
+  return executeQuery(query, params);
 }
 
 /**
@@ -221,7 +237,7 @@ export async function findMunicipalityByCount(
       };
     }
 
-    const data = result.data as AggregationResult[];
+    const data = result.data as unknown as AggregationResult[];
 
     // Sort by total (ascending for min, descending for max)
     const sorted = [...data].sort((a, b) => 
@@ -286,17 +302,21 @@ export async function getCountByMunicipalityAndType(
   `;
 
   const conditions: string[] = [];
+  const params: (string | number | null)[] = [];
 
   if (municipality) {
-    conditions.push(`municipality = '${municipality}'`);
+    conditions.push(`municipality = ?`);
+    params.push(municipality);
   }
 
   if (type) {
-    conditions.push(`type = '${type}'`);
+    conditions.push(`type = ?`);
+    params.push(type);
   }
 
   if (year) {
-    conditions.push(`year = ${year}`);
+    conditions.push(`year = ?`);
+    params.push(year);
   }
 
   if (conditions.length > 0) {
@@ -308,7 +328,7 @@ export async function getCountByMunicipalityAndType(
     ORDER BY count DESC
   `;
 
-  return executeQuery(query);
+  return executeQuery(query, params);
 }
 
 /**
@@ -332,13 +352,16 @@ export async function getTemporalStats(
   `;
 
   const conditions: string[] = [];
+  const params: (string | number | null)[] = [];
 
   if (municipality) {
-    conditions.push(`municipality = '${municipality}'`);
+    conditions.push(`municipality = ?`);
+    params.push(municipality);
   }
 
   if (type) {
-    conditions.push(`type = '${type}'`);
+    conditions.push(`type = ?`);
+    params.push(type);
   }
 
   if (conditions.length > 0) {
@@ -350,7 +373,7 @@ export async function getTemporalStats(
     ORDER BY year DESC
   `;
 
-  return executeQuery(query);
+  return executeQuery(query, params);
 }
 
 // ============================================================================
@@ -385,8 +408,6 @@ export function extractComparisonFilters(query: string): {
   year?: number;
   mode: 'max' | 'min';
 } {
-  const lowerQuery = query.toLowerCase();
-
   // Extract type
   let type: string | undefined;
   if (/decretos?/i.test(query)) type = 'decreto';

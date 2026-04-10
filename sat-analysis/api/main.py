@@ -272,7 +272,7 @@ async def list_tasks():
 
     NOTA: Este endpoint es para desarrollo/debug. Las tareas se pierden al reiniciar.
     """
-    tasks = await task_store.tasks if hasattr(task_store, 'tasks') else {}
+    tasks = task_store.tasks if hasattr(task_store, 'tasks') else {}
     return {
         "total": len(tasks),
         "tasks": [

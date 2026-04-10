@@ -111,6 +111,7 @@ export function calculateIDF(documents: string[][]): Map<string, number> {
  * Calcula la longitud promedio de documentos
  */
 export function calculateAvgDocLength(documents: string[][]): number {
+  if (documents.length === 0) return 0;
   const totalLength = documents.reduce((sum, doc) => sum + doc.length, 0);
   return totalLength / documents.length;
 }

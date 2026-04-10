@@ -217,11 +217,21 @@ function extractBalancePeriodFromQuery(query: string): string | null {
 
 // Cache de archivos JSON completos (30 min - ahorro masivo de bandwidth)
 interface FileCacheEntry {
-  content: any;
+  content: unknown;
   timestamp: number;
 }
 const fileCache = new Map<string, FileCacheEntry>();
 const FILE_CACHE_DURATION = 30 * 60 * 1000; // 30 minutos
+
+/** Evicta entradas expiradas del fileCache para evitar memory leak */
+function evictExpiredFileCache(): void {
+  const now = Date.now();
+  for (const [key, entry] of fileCache.entries()) {
+    if (now - entry.timestamp >= FILE_CACHE_DURATION) {
+      fileCache.delete(key);
+    }
+  }
+}
 
 // ============================================================================
 // FUNCIONES DE CONFIGURACIÓN
@@ -619,6 +629,8 @@ async function fetchGitHubFile(filename: string): Promise<any> {
     const content = await decompressIfNeeded(arrayBuffer, useGzip);
     const data = JSON.parse(content);
 
+    // Evictar entradas expiradas antes de escribir (evita memory leak)
+    evictExpiredFileCache();
     // Guardar en cache
     fileCache.set(filename, {
       content: data,
@@ -655,6 +667,8 @@ async function readLocalFile(filename: string): Promise<any> {
     const content = await fs.readFile(filePath, 'utf-8');
     const data = JSON.parse(content);
 
+    // Evictar entradas expiradas antes de escribir (evita memory leak)
+    evictExpiredFileCache();
     // Guardar en cache
     fileCache.set(filename, {
       content: data,
@@ -676,6 +690,8 @@ async function readLocalFile(filename: string): Promise<any> {
               const content = await fs.readFile(subPath, 'utf-8');
               const data = JSON.parse(content);
 
+              // Evictar entradas expiradas antes de escribir (evita memory leak)
+              evictExpiredFileCache();
               // Guardar en cache
               fileCache.set(filename, {
                 content: data,

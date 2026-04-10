@@ -110,9 +110,7 @@ export async function POST(req: Request) {
 			);
 		}
 
-		console.log(
-			`[ChatAPI] API Key detectada (longitud: ${apiKey.length})`,
-		);
+		console.log(`[ChatAPI] API Key detectada (longitud: ${apiKey.length})`);
 
 		// Configurar OpenRouter dentro de la petición para asegurar acceso a env vars
 		const openrouter = createOpenRouter({

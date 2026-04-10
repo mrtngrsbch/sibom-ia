@@ -15,38 +15,38 @@
  * - Zero LLM calls for computational queries
  */
 
-import initSqlJs from 'sql.js';
-import type { Database } from 'sql.js';
-import path from 'path';
-import fs from 'fs/promises';
+import initSqlJs from "sql.js";
+import type { Database } from "sql.js";
+import path from "path";
+import fs from "fs/promises";
 
 // ============================================================================
 // TYPE DEFINITIONS
 // ============================================================================
 
 export interface SQLQueryResult {
-  success: boolean;
-  data?: Record<string, string | number | null>[];
-  error?: string;
-  query?: string;
-  executionTime?: number;
+	success: boolean;
+	data?: Record<string, string | number | null>[];
+	error?: string;
+	query?: string;
+	executionTime?: number;
 }
 
 export interface AggregationResult {
-  municipality: string;
-  total: number;
-  decretos?: number;
-  ordenanzas?: number;
-  resoluciones?: number;
-  year_min?: number;
-  year_max?: number;
+	municipality: string;
+	total: number;
+	decretos?: number;
+	ordenanzas?: number;
+	resoluciones?: number;
+	year_min?: number;
+	year_max?: number;
 }
 
 export interface ComparisonResult {
-  success: boolean;
-  answer: string;
-  data: AggregationResult[];
-  markdown?: string;
+	success: boolean;
+	answer: string;
+	data: AggregationResult[];
+	markdown?: string;
 }
 
 // ============================================================================
@@ -61,42 +61,50 @@ let dbLoadTime: number = 0;
  * @returns Database instance
  */
 async function loadDatabase(): Promise<Database> {
-  // Return cached instance if available (< 5 minutes old)
-  if (dbInstance && Date.now() - dbLoadTime < 5 * 60 * 1000) {
-    return dbInstance;
-  }
+	// Return cached instance if available (< 5 minutes old)
+	if (dbInstance && Date.now() - dbLoadTime < 5 * 60 * 1000) {
+		return dbInstance;
+	}
 
-  console.log('[SQL] Loading database...');
-  const startTime = Date.now();
+	console.log("[SQL] Loading database...");
+	const startTime = Date.now();
 
-  try {
-    // Initialize sql.js
-    const SQL = await initSqlJs({
-      locateFile: (file) => `https://sql.js.org/dist/${file}`
-    });
+	try {
+		// Initialize sql.js
+		const SQL = await initSqlJs({
+			locateFile: (file) => `https://sql.js.org/dist/${file}`,
+		});
 
-    // Determine database path
-    const isProduction = process.env.NODE_ENV === 'production';
-    const dbPath = isProduction
-      ? path.join(process.cwd(), 'public', 'data', 'normativas.db')
-      : path.join(process.cwd(), '..', 'python-cli', 'boletines', 'normativas.db');
+		// Determine database path
+		const isProduction = process.env.NODE_ENV === "production";
+		const dbPath = isProduction
+			? path.join(process.cwd(), "public", "data", "normativas.db")
+			: path.join(
+					process.cwd(),
+					"..",
+					"python-cli",
+					"boletines",
+					"normativas.db",
+				);
 
-    // Read database file
-    const buffer = await fs.readFile(dbPath);
-    const db = new SQL.Database(buffer);
+		// Read database file
+		const buffer = await fs.readFile(dbPath);
+		const db = new SQL.Database(buffer);
 
-    // Cache instance
-    dbInstance = db;
-    dbLoadTime = Date.now();
+		// Cache instance
+		dbInstance = db;
+		dbLoadTime = Date.now();
 
-    const loadTime = Date.now() - startTime;
-    console.log(`[SQL] Database loaded in ${loadTime}ms`);
+		const loadTime = Date.now() - startTime;
+		console.log(`[SQL] Database loaded in ${loadTime}ms`);
 
-    return db;
-  } catch (error) {
-    console.error('[SQL] Error loading database:', error);
-    throw new Error(`Failed to load database: ${error instanceof Error ? error.message : String(error)}`);
-  }
+		return db;
+	} catch (error) {
+		console.error("[SQL] Error loading database:", error);
+		throw new Error(
+			`Failed to load database: ${error instanceof Error ? error.message : String(error)}`,
+		);
+	}
 }
 
 /**
@@ -106,60 +114,62 @@ async function loadDatabase(): Promise<Database> {
  * @returns Query result
  */
 export async function executeQuery(
-  query: string,
-  bindParams: (string | number | null)[] = []
+	query: string,
+	bindParams: (string | number | null)[] = [],
 ): Promise<SQLQueryResult> {
-  const startTime = Date.now();
+	const startTime = Date.now();
 
-  try {
-    const db = await loadDatabase();
+	try {
+		const db = await loadDatabase();
 
-    // Use prepared statement when bind params are provided
-    if (bindParams.length > 0) {
-      const stmt = db.prepare(query);
-      const rows: Record<string, string | number | null>[] = [];
-      try {
-        stmt.bind(bindParams);
-        while (stmt.step()) {
-          rows.push(stmt.getAsObject() as Record<string, string | number | null>);
-        }
-      } finally {
-        stmt.free();
-      }
-      return {
-        success: true,
-        data: rows,
-        query,
-        executionTime: Date.now() - startTime,
-      };
-    }
+		// Use prepared statement when bind params are provided
+		if (bindParams.length > 0) {
+			const stmt = db.prepare(query);
+			const rows: Record<string, string | number | null>[] = [];
+			try {
+				stmt.bind(bindParams);
+				while (stmt.step()) {
+					rows.push(
+						stmt.getAsObject() as Record<string, string | number | null>,
+					);
+				}
+			} finally {
+				stmt.free();
+			}
+			return {
+				success: true,
+				data: rows,
+				query,
+				executionTime: Date.now() - startTime,
+			};
+		}
 
-    const results = db.exec(query);
-    const executionTime = Date.now() - startTime;
+		const results = db.exec(query);
+		const executionTime = Date.now() - startTime;
 
-    if (results.length === 0) {
-      return { success: true, data: [], query, executionTime };
-    }
+		if (results.length === 0) {
+			return { success: true, data: [], query, executionTime };
+		}
 
-    const columns = results[0].columns;
-    const values = results[0].values;
-    const data = values.map(row => {
-      const obj: Record<string, string | number | null> = {};
-      columns.forEach((col, i) => {
-        obj[col] = row[i] as string | number | null;
-      });
-      return obj;
-    });
+		const columns = results[0].columns;
+		const values = results[0].values;
+		const data = values.map((row) => {
+			const obj: Record<string, string | number | null> = {};
+			columns.forEach((col, i) => {
+				obj[col] = row[i] as string | number | null;
+			});
+			return obj;
+		});
 
-    return { success: true, data, query, executionTime };
-  } catch (error) {
-    console.error('[SQL] Query error:', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : String(error),
-      query
-    };
-  }
+		return { success: true, data, query, executionTime };
+	} catch (error) {
+		console.error("[SQL] Query error:", error);
+		return {
+			success: false,
+			error: error instanceof Error ? error.message : String(error),
+			query,
+		};
+	}
 }
 
 // ============================================================================
@@ -172,10 +182,10 @@ export async function executeQuery(
  * @returns Aggregation results
  */
 export async function getStatsByMunicipality(filters?: {
-  type?: string;
-  year?: number;
+	type?: string;
+	year?: number;
 }): Promise<SQLQueryResult> {
-  let query = `
+	let query = `
     SELECT 
       municipality,
       COUNT(*) as total,
@@ -187,29 +197,29 @@ export async function getStatsByMunicipality(filters?: {
     FROM normativas
   `;
 
-  const conditions: string[] = [];
-  const params: (string | number | null)[] = [];
+	const conditions: string[] = [];
+	const params: (string | number | null)[] = [];
 
-  if (filters?.type) {
-    conditions.push(`type = ?`);
-    params.push(filters.type);
-  }
+	if (filters?.type) {
+		conditions.push(`type = ?`);
+		params.push(filters.type);
+	}
 
-  if (filters?.year) {
-    conditions.push(`year = ?`);
-    params.push(filters.year);
-  }
+	if (filters?.year) {
+		conditions.push(`year = ?`);
+		params.push(filters.year);
+	}
 
-  if (conditions.length > 0) {
-    query += ` WHERE ${conditions.join(' AND ')}`;
-  }
+	if (conditions.length > 0) {
+		query += ` WHERE ${conditions.join(" AND ")}`;
+	}
 
-  query += `
+	query += `
     GROUP BY municipality
     ORDER BY total DESC
   `;
 
-  return executeQuery(query, params);
+	return executeQuery(query, params);
 }
 
 /**
@@ -220,65 +230,66 @@ export async function getStatsByMunicipality(filters?: {
  * @returns Comparison result
  */
 export async function findMunicipalityByCount(
-  type?: string,
-  year?: number,
-  mode: 'max' | 'min' = 'max'
+	type?: string,
+	year?: number,
+	mode: "max" | "min" = "max",
 ): Promise<ComparisonResult> {
-  const startTime = Date.now();
+	const startTime = Date.now();
 
-  try {
-    const result = await getStatsByMunicipality({ type, year });
+	try {
+		const result = await getStatsByMunicipality({ type, year });
 
-    if (!result.success || !result.data || result.data.length === 0) {
-      return {
-        success: false,
-        answer: 'No se encontraron datos para la consulta.',
-        data: []
-      };
-    }
+		if (!result.success || !result.data || result.data.length === 0) {
+			return {
+				success: false,
+				answer: "No se encontraron datos para la consulta.",
+				data: [],
+			};
+		}
 
-    const data = result.data as unknown as AggregationResult[];
+		const data = result.data as unknown as AggregationResult[];
 
-    // Sort by total (ascending for min, descending for max)
-    const sorted = [...data].sort((a, b) => 
-      mode === 'max' ? b.total - a.total : a.total - b.total
-    );
+		// Sort by total (ascending for min, descending for max)
+		const sorted = [...data].sort((a, b) =>
+			mode === "max" ? b.total - a.total : a.total - b.total,
+		);
 
-    const winner = sorted[0];
-    const typeLabel = type ? type : 'normativas';
-    const yearLabel = year ? ` del año ${year}` : '';
+		const winner = sorted[0];
+		const typeLabel = type ? type : "normativas";
+		const yearLabel = year ? ` del año ${year}` : "";
 
-    // Generate answer
-    const answer = mode === 'max'
-      ? `**${winner.municipality}** es el municipio con más ${typeLabel}${yearLabel}, con un total de **${winner.total.toLocaleString('es-AR')}**.`
-      : `**${winner.municipality}** es el municipio con menos ${typeLabel}${yearLabel}, con un total de **${winner.total.toLocaleString('es-AR')}**.`;
+		// Generate answer
+		const answer =
+			mode === "max"
+				? `**${winner.municipality}** es el municipio con más ${typeLabel}${yearLabel}, con un total de **${winner.total.toLocaleString("es-AR")}**.`
+				: `**${winner.municipality}** es el municipio con menos ${typeLabel}${yearLabel}, con un total de **${winner.total.toLocaleString("es-AR")}**.`;
 
-    // Generate markdown table with top 5
-    const top5 = sorted.slice(0, 5);
-    let markdown = '\n\n### Ranking de Municipios\n\n';
-    markdown += '| Posición | Municipio | Total |\n';
-    markdown += '|----------|-----------|-------|\n';
-    top5.forEach((item, index) => {
-      markdown += `| ${index + 1} | ${item.municipality} | ${item.total.toLocaleString('es-AR')} |\n`;
-    });
+		// Generate markdown table with top 5
+		const top5 = sorted.slice(0, 5);
+		let markdown = "\n\n### Ranking de Municipios\n\n";
+		markdown += "| Posición | Municipio | Total |\n";
+		markdown += "|----------|-----------|-------|\n";
+		top5.forEach((item, index) => {
+			markdown += `| ${index + 1} | ${item.municipality} | ${item.total.toLocaleString("es-AR")} |\n`;
+		});
 
-    const executionTime = Date.now() - startTime;
-    console.log(`[SQL] Comparison query completed in ${executionTime}ms`);
+		const executionTime = Date.now() - startTime;
+		console.log(`[SQL] Comparison query completed in ${executionTime}ms`);
 
-    return {
-      success: true,
-      answer,
-      data: sorted,
-      markdown
-    };
-  } catch (error) {
-    console.error('[SQL] Comparison error:', error);
-    return {
-      success: false,
-      answer: 'Error al procesar la consulta comparativa.',
-      data: []
-    };
-  }
+		return {
+			success: true,
+			answer,
+			data: sorted,
+			markdown,
+		};
+	} catch (error) {
+		console.error("[SQL] Comparison error:", error);
+		return {
+			success: false,
+			answer: "Error al procesar la consulta comparativa.",
+			data: [],
+		};
+	}
 }
 
 /**
@@ -289,11 +300,11 @@ export async function findMunicipalityByCount(
  * @returns Count result
  */
 export async function getCountByMunicipalityAndType(
-  municipality?: string,
-  type?: string,
-  year?: number
+	municipality?: string,
+	type?: string,
+	year?: number,
 ): Promise<SQLQueryResult> {
-  let query = `
+	let query = `
     SELECT 
       municipality,
       type,
@@ -301,34 +312,34 @@ export async function getCountByMunicipalityAndType(
     FROM normativas
   `;
 
-  const conditions: string[] = [];
-  const params: (string | number | null)[] = [];
+	const conditions: string[] = [];
+	const params: (string | number | null)[] = [];
 
-  if (municipality) {
-    conditions.push(`municipality = ?`);
-    params.push(municipality);
-  }
+	if (municipality) {
+		conditions.push(`municipality = ?`);
+		params.push(municipality);
+	}
 
-  if (type) {
-    conditions.push(`type = ?`);
-    params.push(type);
-  }
+	if (type) {
+		conditions.push(`type = ?`);
+		params.push(type);
+	}
 
-  if (year) {
-    conditions.push(`year = ?`);
-    params.push(year);
-  }
+	if (year) {
+		conditions.push(`year = ?`);
+		params.push(year);
+	}
 
-  if (conditions.length > 0) {
-    query += ` WHERE ${conditions.join(' AND ')}`;
-  }
+	if (conditions.length > 0) {
+		query += ` WHERE ${conditions.join(" AND ")}`;
+	}
 
-  query += `
+	query += `
     GROUP BY municipality, type
     ORDER BY count DESC
   `;
 
-  return executeQuery(query, params);
+	return executeQuery(query, params);
 }
 
 /**
@@ -338,10 +349,10 @@ export async function getCountByMunicipalityAndType(
  * @returns Temporal stats
  */
 export async function getTemporalStats(
-  municipality?: string,
-  type?: string
+	municipality?: string,
+	type?: string,
 ): Promise<SQLQueryResult> {
-  let query = `
+	let query = `
     SELECT 
       year,
       COUNT(*) as total,
@@ -351,29 +362,29 @@ export async function getTemporalStats(
     FROM normativas
   `;
 
-  const conditions: string[] = [];
-  const params: (string | number | null)[] = [];
+	const conditions: string[] = [];
+	const params: (string | number | null)[] = [];
 
-  if (municipality) {
-    conditions.push(`municipality = ?`);
-    params.push(municipality);
-  }
+	if (municipality) {
+		conditions.push(`municipality = ?`);
+		params.push(municipality);
+	}
 
-  if (type) {
-    conditions.push(`type = ?`);
-    params.push(type);
-  }
+	if (type) {
+		conditions.push(`type = ?`);
+		params.push(type);
+	}
 
-  if (conditions.length > 0) {
-    query += ` WHERE ${conditions.join(' AND ')}`;
-  }
+	if (conditions.length > 0) {
+		query += ` WHERE ${conditions.join(" AND ")}`;
+	}
 
-  query += `
+	query += `
     GROUP BY year
     ORDER BY year DESC
   `;
 
-  return executeQuery(query, params);
+	return executeQuery(query, params);
 }
 
 // ============================================================================
@@ -386,16 +397,16 @@ export async function getTemporalStats(
  * @returns true if comparison query
  */
 export function isComparisonQuery(query: string): boolean {
-  const comparisonPatterns = [
-    /cu[aá]l.*municipio.*(m[aá]s|menos|mayor|menor|m[aá]ximo|m[ií]nimo)/i,
-    /qu[eé].*municipio.*(m[aá]s|menos|mayor|menor|m[aá]ximo|m[ií]nimo)/i,
-    /qu[eé].*partido.*(m[aá]s|menos|mayor|menor|m[aá]ximo|m[ií]nimo)/i,
-    /municipio.*(con|que|tiene).*(m[aá]s|menos|mayor|menor)/i,
-    /ranking.*municipios/i,
-    /comparar.*municipios/i,
-  ];
+	const comparisonPatterns = [
+		/cu[aá]l.*municipio.*(m[aá]s|menos|mayor|menor|m[aá]ximo|m[ií]nimo)/i,
+		/qu[eé].*municipio.*(m[aá]s|menos|mayor|menor|m[aá]ximo|m[ií]nimo)/i,
+		/qu[eé].*partido.*(m[aá]s|menos|mayor|menor|m[aá]ximo|m[ií]nimo)/i,
+		/municipio.*(con|que|tiene).*(m[aá]s|menos|mayor|menor)/i,
+		/ranking.*municipios/i,
+		/comparar.*municipios/i,
+	];
 
-  return comparisonPatterns.some(p => p.test(query));
+	return comparisonPatterns.some((p) => p.test(query));
 }
 
 /**
@@ -404,24 +415,24 @@ export function isComparisonQuery(query: string): boolean {
  * @returns Extracted filters
  */
 export function extractComparisonFilters(query: string): {
-  type?: string;
-  year?: number;
-  mode: 'max' | 'min';
+	type?: string;
+	year?: number;
+	mode: "max" | "min";
 } {
-  // Extract type
-  let type: string | undefined;
-  if (/decretos?/i.test(query)) type = 'decreto';
-  else if (/ordenanzas?/i.test(query)) type = 'ordenanza';
-  else if (/resoluciones?/i.test(query)) type = 'resolucion';
+	// Extract type
+	let type: string | undefined;
+	if (/decretos?/i.test(query)) type = "decreto";
+	else if (/ordenanzas?/i.test(query)) type = "ordenanza";
+	else if (/resoluciones?/i.test(query)) type = "resolucion";
 
-  // Extract year
-  const yearMatch = query.match(/\b(20\d{2})\b/);
-  const year = yearMatch ? parseInt(yearMatch[1], 10) : undefined;
+	// Extract year
+	const yearMatch = query.match(/\b(20\d{2})\b/);
+	const year = yearMatch ? parseInt(yearMatch[1], 10) : undefined;
 
-  // Extract mode (más/menos)
-  const mode = /menos|menor|m[ií]nimo/i.test(query) ? 'min' : 'max';
+	// Extract mode (más/menos)
+	const mode = /menos|menor|m[ií]nimo/i.test(query) ? "min" : "max";
 
-  return { type, year, mode };
+	return { type, year, mode };
 }
 
 /**
@@ -429,13 +440,15 @@ export function extractComparisonFilters(query: string): {
  * @param query - User query
  * @returns Comparison result
  */
-export async function handleComparisonQuery(query: string): Promise<ComparisonResult> {
-  console.log(`[SQL] Handling comparison query: "${query}"`);
+export async function handleComparisonQuery(
+	query: string,
+): Promise<ComparisonResult> {
+	console.log(`[SQL] Handling comparison query: "${query}"`);
 
-  const filters = extractComparisonFilters(query);
-  console.log(`[SQL] Extracted filters:`, filters);
+	const filters = extractComparisonFilters(query);
+	console.log(`[SQL] Extracted filters:`, filters);
 
-  return findMunicipalityByCount(filters.type, filters.year, filters.mode);
+	return findMunicipalityByCount(filters.type, filters.year, filters.mode);
 }
 
 // ============================================================================
@@ -447,61 +460,67 @@ export async function handleComparisonQuery(query: string): Promise<ComparisonRe
  * @returns Database stats
  */
 export async function getDatabaseStats(): Promise<{
-  totalNormativas: number;
-  municipalities: number;
-  years: { min: number; max: number };
-  byType: Record<string, number>;
+	totalNormativas: number;
+	municipalities: number;
+	years: { min: number; max: number };
+	byType: Record<string, number>;
 }> {
-  try {
-    const db = await loadDatabase();
+	try {
+		const db = await loadDatabase();
 
-    // Total normativas
-    const totalResult = db.exec('SELECT COUNT(*) as total FROM normativas');
-    const total = totalResult[0]?.values[0]?.[0] as number || 0;
+		// Total normativas
+		const totalResult = db.exec("SELECT COUNT(*) as total FROM normativas");
+		const total = (totalResult[0]?.values[0]?.[0] as number) || 0;
 
-    // Municipalities
-    const munResult = db.exec('SELECT COUNT(DISTINCT municipality) as count FROM normativas');
-    const municipalities = munResult[0]?.values[0]?.[0] as number || 0;
+		// Municipalities
+		const munResult = db.exec(
+			"SELECT COUNT(DISTINCT municipality) as count FROM normativas",
+		);
+		const municipalities = (munResult[0]?.values[0]?.[0] as number) || 0;
 
-    // Years
-    const yearResult = db.exec('SELECT MIN(year) as min, MAX(year) as max FROM normativas');
-    const years = {
-      min: yearResult[0]?.values[0]?.[0] as number || 0,
-      max: yearResult[0]?.values[0]?.[1] as number || 0
-    };
+		// Years
+		const yearResult = db.exec(
+			"SELECT MIN(year) as min, MAX(year) as max FROM normativas",
+		);
+		const years = {
+			min: (yearResult[0]?.values[0]?.[0] as number) || 0,
+			max: (yearResult[0]?.values[0]?.[1] as number) || 0,
+		};
 
-    // By type
-    const typeResult = db.exec('SELECT type, COUNT(*) as count FROM normativas GROUP BY type');
-    const byType: Record<string, number> = {};
-    typeResult[0]?.values.forEach(row => {
-      byType[row[0] as string] = row[1] as number;
-    });
+		// By type
+		const typeResult = db.exec(
+			"SELECT type, COUNT(*) as count FROM normativas GROUP BY type",
+		);
+		const byType: Record<string, number> = {};
+		typeResult[0]?.values.forEach((row) => {
+			byType[row[0] as string] = row[1] as number;
+		});
 
-    return {
-      totalNormativas: total,
-      municipalities,
-      years,
-      byType
-    };
-  } catch (error) {
-    console.error('[SQL] Error getting stats:', error);
-    return {
-      totalNormativas: 0,
-      municipalities: 0,
-      years: { min: 0, max: 0 },
-      byType: {}
-    };
-  }
+		return {
+			totalNormativas: total,
+			municipalities,
+			years,
+			byType,
+		};
+	} catch (error) {
+		console.error("[SQL] Error getting stats:", error);
+		return {
+			totalNormativas: 0,
+			municipalities: 0,
+			years: { min: 0, max: 0 },
+			byType: {},
+		};
+	}
 }
 
 /**
  * Closes database connection
  */
 export function closeDatabase(): void {
-  if (dbInstance) {
-    dbInstance.close();
-    dbInstance = null;
-    dbLoadTime = 0;
-    console.log('[SQL] Database closed');
-  }
+	if (dbInstance) {
+		dbInstance.close();
+		dbInstance = null;
+		dbLoadTime = 0;
+		console.log("[SQL] Database closed");
+	}
 }
